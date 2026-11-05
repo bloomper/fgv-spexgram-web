@@ -60,7 +60,7 @@ export function ItemView({ item: initial, canDownloadOriginals, report }: {
         )}
       </div>
       <div className="flex flex-wrap gap-2">
-        {item.media && (
+        {item.media && item.type === "PHOTO" && (
           <Button variant="outline" size="sm" onClick={() => {
             track("item-download", { original: false });
             void downloadFile(item.media!.previewUrl, downloadName(item, "preview"));

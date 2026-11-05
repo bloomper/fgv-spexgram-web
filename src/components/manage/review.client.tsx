@@ -5,11 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Check, Pencil, X } from "lucide-react";
+import { Check, Pencil, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ItemImage } from "@/components/gram/item-image.client";
 import { useDialogs } from "@/components/dialogs.client";
-import { reviewContributionsAction, reviewSuggestionAction } from "@/app/(app)/manage/actions.server";
+import { reviewContributionsAction, reviewSuggestionAction, updateItemsAction } from "@/app/(app)/manage/actions.server";
 import { altText, type GalleryItem } from "@/utils/gram";
 import { formatInstant, formatPeriod } from "@/utils/format";
 import { track } from "@/utils/umami";
@@ -67,6 +67,24 @@ export function ContributionReview({ items }: { items: (GalleryItem & { fileSize
     });
   };
 
+  // The contributor's name is the default credit; the editor checks it before the item is shown
+  const editPhotographer = async (id: string, current: string | null | undefined) => {
+    const value = await dialogs.prompt({ title: t("editPhotographer"), label: t("photographer"), defaultValue: current ?? "", maxLength: 200 });
+
+    if (value !== null) {
+      start(async () => {
+        const result = await updateItemsAction([id], { photographer: value });
+
+        if (result.ok) {
+          toast.success(t("photographerSaved"));
+          router.refresh();
+        } else {
+          toast.error(result.message);
+        }
+      });
+    }
+  };
+
   if (items.length === 0) {
     return <p className="text-muted-foreground">{t("none")}</p>;
   }
@@ -92,6 +110,14 @@ export function ContributionReview({ items }: { items: (GalleryItem & { fileSize
                 <div className="min-w-0 flex-1 text-sm">
                   <p className="truncate font-medium">{item.originalFileName ?? altText(item, locale)}</p>
                   <p className="text-xs text-muted-foreground">{[item.uploadedBy, formatInstant(item.createdAt)].filter(Boolean).join(" · ")}</p>
+                  <p className="text-xs">
+                    {t("photographer")}: {item.photographer ?? "–"}{" "}
+                    <button type="button" className="text-primary underline" disabled={pending}
+                            aria-label={t("editPhotographerOf", { name: item.originalFileName ?? altText(item, locale) })}
+                            onClick={() => editPhotographer(item.id, item.photographer)}>
+                      <User className="inline size-3" aria-hidden /> {t("editPhotographer")}
+                    </button>
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   <Button size="sm" disabled={pending} onClick={() => review([item.id], true)}><Check /> {t("accept")}</Button>

@@ -399,7 +399,8 @@
     "doneLabel": "Uppladdningar klara",
     "drop": "Dra hit bilder och filmer, många på en gång. De laddas upp i bakgrunden medan du gör annat.",
     "choose": "Välj filer",
-    "longVideos": "Filmer längre än {minutes} minuter tas inte emot; hela föreställningar hör hemma i"
+    "longVideos": "Filmer längre än {minutes} minuter tas inte emot; hela föreställningar hör hemma i",
+    "duplicate": "Finns redan i arkivet."
   },
   "ManageAlbums": {
     "title": "Redigera album",
@@ -457,7 +458,8 @@
     "confirmMembers": "Albumet blir synligt för alla med åtkomst till Spexgram, men inte för besökare.",
     "confirmUnpublished": "Albumet döljs för alla utom redaktörer.",
     "confirmItems": "Alla {count} bilder och filmer får samma synlighet.",
-    "saved": "Synligheten är ändrad"
+    "saved": "Synligheten är ändrad",
+    "skipped": "{count, plural, one {# bild eller film} other {# bilder och filmer}} behöll sin synlighet, eftersom en öppen anmälan döljer dem."
   },
   "Items": {
     "toolbar": "Markerade bilder",
@@ -503,7 +505,8 @@
     "makeCover": "Gör till omslag",
     "coverSet": "Omslaget är valt",
     "cancel": "Avbryt",
-    "save": "Spara"
+    "save": "Spara",
+    "skipped": "{count, plural, one {# bild eller film} other {# bilder och filmer}} behöll sin synlighet, eftersom en öppen anmälan döljer dem."
   },
   "Review": {
     "title": "Granska bidrag",
@@ -527,7 +530,11 @@
     "accepted": "{count, plural, one {Bidraget är godkänt} other {# bidrag är godkända}}",
     "rejected": "{count, plural, one {Bidraget är avvisat} other {# bidrag är avvisade}}",
     "suggestionAccepted": "Förslaget är godkänt och albumet publicerat för medlemmar",
-    "suggestionRejected": "Förslaget är avvisat"
+    "suggestionRejected": "Förslaget är avvisat",
+    "photographer": "Fotograf",
+    "editPhotographer": "Ändra fotograf",
+    "editPhotographerOf": "Ändra fotograf för {name}",
+    "photographerSaved": "Fotografen är ändrad"
   },
   "ManageReports": {
     "title": "Anmälningar",

@@ -45,7 +45,7 @@ graphql(`
         itemCount
         kind { id nameSv nameEn }
         spex { id title year revival parentId familyId categoryId categoryName }
-        cover { id caption type width height media { thumbnailUrl previewUrl expiresAt } }
+        cover { id caption type width height effectiveVisibility media { thumbnailUrl previewUrl expiresAt } }
     }
 `);
 

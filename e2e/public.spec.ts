@@ -11,7 +11,7 @@ test.describe("The public side, for visitors who are not logged in", () => {
     await expect(page.getByRole("link", { name: /Nobel 1975 – premiären/ })).toBeVisible();
     await expect(page.getByText("Sittning efter premiären")).toHaveCount(0);
     await expect(page.getByText("Opublicerat album")).toHaveCount(0);
-    await expect(page.getByText("spexgram@example.org")).toBeVisible();
+    await expect(page.getByRole("link", { name: "spexgram@example.org" })).toBeVisible();
   });
 
   test("a public album shows its public items, indexable and with Open Graph tags", async ({ page }) => {

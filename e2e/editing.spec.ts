@@ -122,4 +122,23 @@ test.describe("Editing", () => {
     await page.goto("/manage/audit");
     await expect(page.getByRole("link", { name: "Ändrade albumet Sittning efter premiären", exact: true })).toBeVisible();
   });
+
+  test("an item an open report hides keeps its visibility through a bulk change, and the editor is told", async ({ page, loginAs, mock }) => {
+    await loginAs("viewer");
+    await page.goto(`/items/${ids.publicItemInMembersAlbum}`);
+    await page.getByRole("button", { name: "Anmäl" }).click();
+    await page.getByRole("dialog").getByLabel("Jag är med på den och vill att den tas bort").check();
+    await page.getByRole("dialog").getByRole("button", { name: "Skicka anmälan" }).click();
+    await expect(page.getByText(/Anmälan är skickad/)).toBeVisible();
+
+    await loginAs("editor");
+    await page.goto(`/manage/albums/${ids.membersAlbum}`);
+    await page.getByRole("radio", { name: /Publik/ }).check();
+    await page.getByLabel(/Sätt också albumets/).check();
+    await page.getByRole("button", { name: "Ändra synligheten" }).click();
+    await answerDialog(page, "Ändra synligheten");
+
+    await expect(page.getByText("1 bild eller film behöll sin synlighet, eftersom en öppen anmälan döljer dem.")).toBeVisible();
+    expect((await mock.state()).items.find(item => item.id === ids.publicItemInMembersAlbum)?.visibility).toBe("UNPUBLISHED");
+  });
 });

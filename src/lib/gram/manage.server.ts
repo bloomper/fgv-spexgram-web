@@ -88,7 +88,7 @@ const AlbumUpdateMutation = graphql(`
 `);
 const AlbumSetVisibilityMutation = graphql(`
     mutation AlbumSetVisibility($id: ID!, $visibility: Visibility!, $items: Boolean) {
-        albumSetVisibility(id: $id, visibility: $visibility, items: $items) { id visibility }
+        albumSetVisibility(id: $id, visibility: $visibility, items: $items) { album { id visibility } skipped }
     }
 `);
 const AlbumSetCoverMutation = graphql(`
@@ -116,7 +116,7 @@ const ItemUpdateMutation = graphql(`
     mutation ItemUpdate($id: ID!, $input: ItemInput!) { itemUpdate(id: $id, input: $input) { id } }
 `);
 const ItemsUpdateMutation = graphql(`
-    mutation ItemsUpdate($ids: [ID!]!, $input: ItemsInput!) { itemsUpdate(ids: $ids, input: $input) { id } }
+    mutation ItemsUpdate($ids: [ID!]!, $input: ItemsInput!) { itemsUpdate(ids: $ids, input: $input) { items { id } skipped } }
 `);
 const ItemsTrashMutation = graphql(`
     mutation ItemsTrash($ids: [ID!]!) { itemsTrash(ids: $ids) { id } }
@@ -159,8 +159,8 @@ export const getTrash = async () => (await runQuery(TrashQuery, {}))?.trash;
 
 export const albumCreate = async (input: AlbumInput) => (await runMutation(AlbumCreateMutation, { input }))?.albumCreate;
 export const albumUpdate = (id: string, input: AlbumInput) => runMutation(AlbumUpdateMutation, { id, input });
-export const albumSetVisibility = (id: string, visibility: Visibility, items: boolean) =>
-  runMutation(AlbumSetVisibilityMutation, { id, visibility, items });
+export const albumSetVisibility = async (id: string, visibility: Visibility, items: boolean) =>
+  (await runMutation(AlbumSetVisibilityMutation, { id, visibility, items }))?.albumSetVisibility.skipped ?? 0;
 export const albumSetCover = (id: string, itemId: string | null) => runMutation(AlbumSetCoverMutation, { id, itemId });
 export const albumTrash = (id: string) => runMutation(AlbumTrashMutation, { id });
 export const albumRestore = (id: string) => runMutation(AlbumRestoreMutation, { id });
@@ -168,7 +168,8 @@ export const albumDelete = (id: string, keepItems: boolean) => runMutation(Album
 export const itemsAdd = async (albumId: string, uploadIds: string[]) =>
   (await runMutation(ItemsAddMutation, { albumId, uploadIds }))?.itemsAdd ?? [];
 export const itemUpdate = (id: string, input: ItemInput) => runMutation(ItemUpdateMutation, { id, input });
-export const itemsUpdate = (ids: string[], input: ItemsInput) => runMutation(ItemsUpdateMutation, { ids, input });
+export const itemsUpdate = async (ids: string[], input: ItemsInput) =>
+  (await runMutation(ItemsUpdateMutation, { ids, input }))?.itemsUpdate.skipped ?? 0;
 export const itemsTrash = (ids: string[]) => runMutation(ItemsTrashMutation, { ids });
 export const itemsRestore = (ids: string[]) => runMutation(ItemsRestoreMutation, { ids });
 export const itemsDelete = (ids: string[]) => runMutation(ItemsDeleteMutation, { ids });

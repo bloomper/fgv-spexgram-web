@@ -27,7 +27,7 @@ type Documents = {
     "\n    mutation AlbumKindsReorder($ids: [ID!]!) { albumKindsReorder(ids: $ids) { id } }\n": typeof types.AlbumKindsReorderDocument,
     "\n    mutation AlbumKindDelete($id: ID!) { albumKindDelete(id: $id) }\n": typeof types.AlbumKindDeleteDocument,
     "\n    fragment ItemFields on Item {\n        id\n        type\n        status\n        failure\n        takenAt\n        caption\n        photographer\n        latitude\n        longitude\n        width\n        height\n        durationMs\n        visibility\n        effectiveVisibility\n        contributionStatus\n        mine\n        uploadedBy\n        originalFileName\n        createdAt\n        album { id title visibility }\n        media { thumbnailUrl previewUrl videoUrl originalUrl expiresAt }\n    }\n": typeof types.ItemFieldsFragmentDoc,
-    "\n    fragment AlbumCardFields on Album {\n        id\n        title\n        dateFrom\n        dateTo\n        place\n        visibility\n        itemCount\n        kind { id nameSv nameEn }\n        spex { id title year revival parentId familyId categoryId categoryName }\n        cover { id caption type width height media { thumbnailUrl previewUrl expiresAt } }\n    }\n": typeof types.AlbumCardFieldsFragmentDoc,
+    "\n    fragment AlbumCardFields on Album {\n        id\n        title\n        dateFrom\n        dateTo\n        place\n        visibility\n        itemCount\n        kind { id nameSv nameEn }\n        spex { id title year revival parentId familyId categoryId categoryName }\n        cover { id caption type width height effectiveVisibility media { thumbnailUrl previewUrl expiresAt } }\n    }\n": typeof types.AlbumCardFieldsFragmentDoc,
     "\n    query Me {\n        me { username displayName email roles }\n        limits { maxUploadBytes maxVideoMinutes contributionMaxItems contributionMaxGb canDownloadOriginals }\n    }\n": typeof types.MeDocument,
     "\n    query Home {\n        startPage { welcome contactEmail }\n        recentAlbums(limit: 12) { ...AlbumCardFields }\n        thisDayInHistory(limit: 30) { ...ItemFields }\n        categories { id name albumCount }\n        years\n        albumKinds { id nameSv nameEn albumCount }\n        spexWithAlbums { id title year revival parentId familyId categoryName albumCount }\n    }\n": typeof types.HomeDocument,
     "\n    query Browse($filter: AlbumFilter, $page: Int, $size: Int) {\n        albums(filter: $filter, page: $page, size: $size) {\n            albums { ...AlbumCardFields }\n            totalCount\n            page\n            size\n        }\n        categories { id name albumCount }\n        years\n        albumKinds { id nameSv nameEn albumCount }\n        spexWithAlbums { id title year revival parentId familyId categoryName albumCount }\n    }\n": typeof types.BrowseDocument,
@@ -60,14 +60,14 @@ type Documents = {
     "\n    query Trash {\n        trash {\n            albums { id title dateFrom trashedAt itemCount }\n            items { ...ItemFields trashedAt }\n        }\n    }\n": typeof types.TrashDocument,
     "\n    mutation AlbumCreate($input: AlbumInput!) { albumCreate(input: $input) { id } }\n": typeof types.AlbumCreateDocument,
     "\n    mutation AlbumUpdate($id: ID!, $input: AlbumInput!) { albumUpdate(id: $id, input: $input) { id } }\n": typeof types.AlbumUpdateDocument,
-    "\n    mutation AlbumSetVisibility($id: ID!, $visibility: Visibility!, $items: Boolean) {\n        albumSetVisibility(id: $id, visibility: $visibility, items: $items) { id visibility }\n    }\n": typeof types.AlbumSetVisibilityDocument,
+    "\n    mutation AlbumSetVisibility($id: ID!, $visibility: Visibility!, $items: Boolean) {\n        albumSetVisibility(id: $id, visibility: $visibility, items: $items) { album { id visibility } skipped }\n    }\n": typeof types.AlbumSetVisibilityDocument,
     "\n    mutation AlbumSetCover($id: ID!, $itemId: ID) { albumSetCover(id: $id, itemId: $itemId) { id } }\n": typeof types.AlbumSetCoverDocument,
     "\n    mutation AlbumTrash($id: ID!) { albumTrash(id: $id) { id } }\n": typeof types.AlbumTrashDocument,
     "\n    mutation AlbumRestore($id: ID!) { albumRestore(id: $id) { id } }\n": typeof types.AlbumRestoreDocument,
     "\n    mutation AlbumDelete($id: ID!, $keepItems: Boolean) { albumDelete(id: $id, keepItems: $keepItems) }\n": typeof types.AlbumDeleteDocument,
     "\n    mutation ItemsAdd($albumId: ID!, $uploadIds: [String!]!) {\n        itemsAdd(albumId: $albumId, uploadIds: $uploadIds) {\n            uploadId fileName outcome message existingAlbumTitle\n            item { id }\n            existingItem { id album { id title } }\n        }\n    }\n": typeof types.ItemsAddDocument,
     "\n    mutation ItemUpdate($id: ID!, $input: ItemInput!) { itemUpdate(id: $id, input: $input) { id } }\n": typeof types.ItemUpdateDocument,
-    "\n    mutation ItemsUpdate($ids: [ID!]!, $input: ItemsInput!) { itemsUpdate(ids: $ids, input: $input) { id } }\n": typeof types.ItemsUpdateDocument,
+    "\n    mutation ItemsUpdate($ids: [ID!]!, $input: ItemsInput!) { itemsUpdate(ids: $ids, input: $input) { items { id } skipped } }\n": typeof types.ItemsUpdateDocument,
     "\n    mutation ItemsTrash($ids: [ID!]!) { itemsTrash(ids: $ids) { id } }\n": typeof types.ItemsTrashDocument,
     "\n    mutation ItemsRestore($ids: [ID!]!) { itemsRestore(ids: $ids) { id } }\n": typeof types.ItemsRestoreDocument,
     "\n    mutation ItemsDelete($ids: [ID!]!) { itemsDelete(ids: $ids) }\n": typeof types.ItemsDeleteDocument,
@@ -90,7 +90,7 @@ const documents: Documents = {
     "\n    mutation AlbumKindsReorder($ids: [ID!]!) { albumKindsReorder(ids: $ids) { id } }\n": types.AlbumKindsReorderDocument,
     "\n    mutation AlbumKindDelete($id: ID!) { albumKindDelete(id: $id) }\n": types.AlbumKindDeleteDocument,
     "\n    fragment ItemFields on Item {\n        id\n        type\n        status\n        failure\n        takenAt\n        caption\n        photographer\n        latitude\n        longitude\n        width\n        height\n        durationMs\n        visibility\n        effectiveVisibility\n        contributionStatus\n        mine\n        uploadedBy\n        originalFileName\n        createdAt\n        album { id title visibility }\n        media { thumbnailUrl previewUrl videoUrl originalUrl expiresAt }\n    }\n": types.ItemFieldsFragmentDoc,
-    "\n    fragment AlbumCardFields on Album {\n        id\n        title\n        dateFrom\n        dateTo\n        place\n        visibility\n        itemCount\n        kind { id nameSv nameEn }\n        spex { id title year revival parentId familyId categoryId categoryName }\n        cover { id caption type width height media { thumbnailUrl previewUrl expiresAt } }\n    }\n": types.AlbumCardFieldsFragmentDoc,
+    "\n    fragment AlbumCardFields on Album {\n        id\n        title\n        dateFrom\n        dateTo\n        place\n        visibility\n        itemCount\n        kind { id nameSv nameEn }\n        spex { id title year revival parentId familyId categoryId categoryName }\n        cover { id caption type width height effectiveVisibility media { thumbnailUrl previewUrl expiresAt } }\n    }\n": types.AlbumCardFieldsFragmentDoc,
     "\n    query Me {\n        me { username displayName email roles }\n        limits { maxUploadBytes maxVideoMinutes contributionMaxItems contributionMaxGb canDownloadOriginals }\n    }\n": types.MeDocument,
     "\n    query Home {\n        startPage { welcome contactEmail }\n        recentAlbums(limit: 12) { ...AlbumCardFields }\n        thisDayInHistory(limit: 30) { ...ItemFields }\n        categories { id name albumCount }\n        years\n        albumKinds { id nameSv nameEn albumCount }\n        spexWithAlbums { id title year revival parentId familyId categoryName albumCount }\n    }\n": types.HomeDocument,
     "\n    query Browse($filter: AlbumFilter, $page: Int, $size: Int) {\n        albums(filter: $filter, page: $page, size: $size) {\n            albums { ...AlbumCardFields }\n            totalCount\n            page\n            size\n        }\n        categories { id name albumCount }\n        years\n        albumKinds { id nameSv nameEn albumCount }\n        spexWithAlbums { id title year revival parentId familyId categoryName albumCount }\n    }\n": types.BrowseDocument,
@@ -123,14 +123,14 @@ const documents: Documents = {
     "\n    query Trash {\n        trash {\n            albums { id title dateFrom trashedAt itemCount }\n            items { ...ItemFields trashedAt }\n        }\n    }\n": types.TrashDocument,
     "\n    mutation AlbumCreate($input: AlbumInput!) { albumCreate(input: $input) { id } }\n": types.AlbumCreateDocument,
     "\n    mutation AlbumUpdate($id: ID!, $input: AlbumInput!) { albumUpdate(id: $id, input: $input) { id } }\n": types.AlbumUpdateDocument,
-    "\n    mutation AlbumSetVisibility($id: ID!, $visibility: Visibility!, $items: Boolean) {\n        albumSetVisibility(id: $id, visibility: $visibility, items: $items) { id visibility }\n    }\n": types.AlbumSetVisibilityDocument,
+    "\n    mutation AlbumSetVisibility($id: ID!, $visibility: Visibility!, $items: Boolean) {\n        albumSetVisibility(id: $id, visibility: $visibility, items: $items) { album { id visibility } skipped }\n    }\n": types.AlbumSetVisibilityDocument,
     "\n    mutation AlbumSetCover($id: ID!, $itemId: ID) { albumSetCover(id: $id, itemId: $itemId) { id } }\n": types.AlbumSetCoverDocument,
     "\n    mutation AlbumTrash($id: ID!) { albumTrash(id: $id) { id } }\n": types.AlbumTrashDocument,
     "\n    mutation AlbumRestore($id: ID!) { albumRestore(id: $id) { id } }\n": types.AlbumRestoreDocument,
     "\n    mutation AlbumDelete($id: ID!, $keepItems: Boolean) { albumDelete(id: $id, keepItems: $keepItems) }\n": types.AlbumDeleteDocument,
     "\n    mutation ItemsAdd($albumId: ID!, $uploadIds: [String!]!) {\n        itemsAdd(albumId: $albumId, uploadIds: $uploadIds) {\n            uploadId fileName outcome message existingAlbumTitle\n            item { id }\n            existingItem { id album { id title } }\n        }\n    }\n": types.ItemsAddDocument,
     "\n    mutation ItemUpdate($id: ID!, $input: ItemInput!) { itemUpdate(id: $id, input: $input) { id } }\n": types.ItemUpdateDocument,
-    "\n    mutation ItemsUpdate($ids: [ID!]!, $input: ItemsInput!) { itemsUpdate(ids: $ids, input: $input) { id } }\n": types.ItemsUpdateDocument,
+    "\n    mutation ItemsUpdate($ids: [ID!]!, $input: ItemsInput!) { itemsUpdate(ids: $ids, input: $input) { items { id } skipped } }\n": types.ItemsUpdateDocument,
     "\n    mutation ItemsTrash($ids: [ID!]!) { itemsTrash(ids: $ids) { id } }\n": types.ItemsTrashDocument,
     "\n    mutation ItemsRestore($ids: [ID!]!) { itemsRestore(ids: $ids) { id } }\n": types.ItemsRestoreDocument,
     "\n    mutation ItemsDelete($ids: [ID!]!) { itemsDelete(ids: $ids) }\n": types.ItemsDeleteDocument,
@@ -209,7 +209,7 @@ export function graphql(source: "\n    fragment ItemFields on Item {\n        id
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    fragment AlbumCardFields on Album {\n        id\n        title\n        dateFrom\n        dateTo\n        place\n        visibility\n        itemCount\n        kind { id nameSv nameEn }\n        spex { id title year revival parentId familyId categoryId categoryName }\n        cover { id caption type width height media { thumbnailUrl previewUrl expiresAt } }\n    }\n"): (typeof documents)["\n    fragment AlbumCardFields on Album {\n        id\n        title\n        dateFrom\n        dateTo\n        place\n        visibility\n        itemCount\n        kind { id nameSv nameEn }\n        spex { id title year revival parentId familyId categoryId categoryName }\n        cover { id caption type width height media { thumbnailUrl previewUrl expiresAt } }\n    }\n"];
+export function graphql(source: "\n    fragment AlbumCardFields on Album {\n        id\n        title\n        dateFrom\n        dateTo\n        place\n        visibility\n        itemCount\n        kind { id nameSv nameEn }\n        spex { id title year revival parentId familyId categoryId categoryName }\n        cover { id caption type width height effectiveVisibility media { thumbnailUrl previewUrl expiresAt } }\n    }\n"): (typeof documents)["\n    fragment AlbumCardFields on Album {\n        id\n        title\n        dateFrom\n        dateTo\n        place\n        visibility\n        itemCount\n        kind { id nameSv nameEn }\n        spex { id title year revival parentId familyId categoryId categoryName }\n        cover { id caption type width height effectiveVisibility media { thumbnailUrl previewUrl expiresAt } }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -341,7 +341,7 @@ export function graphql(source: "\n    mutation AlbumUpdate($id: ID!, $input: Al
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    mutation AlbumSetVisibility($id: ID!, $visibility: Visibility!, $items: Boolean) {\n        albumSetVisibility(id: $id, visibility: $visibility, items: $items) { id visibility }\n    }\n"): (typeof documents)["\n    mutation AlbumSetVisibility($id: ID!, $visibility: Visibility!, $items: Boolean) {\n        albumSetVisibility(id: $id, visibility: $visibility, items: $items) { id visibility }\n    }\n"];
+export function graphql(source: "\n    mutation AlbumSetVisibility($id: ID!, $visibility: Visibility!, $items: Boolean) {\n        albumSetVisibility(id: $id, visibility: $visibility, items: $items) { album { id visibility } skipped }\n    }\n"): (typeof documents)["\n    mutation AlbumSetVisibility($id: ID!, $visibility: Visibility!, $items: Boolean) {\n        albumSetVisibility(id: $id, visibility: $visibility, items: $items) { album { id visibility } skipped }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -369,7 +369,7 @@ export function graphql(source: "\n    mutation ItemUpdate($id: ID!, $input: Ite
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    mutation ItemsUpdate($ids: [ID!]!, $input: ItemsInput!) { itemsUpdate(ids: $ids, input: $input) { id } }\n"): (typeof documents)["\n    mutation ItemsUpdate($ids: [ID!]!, $input: ItemsInput!) { itemsUpdate(ids: $ids, input: $input) { id } }\n"];
+export function graphql(source: "\n    mutation ItemsUpdate($ids: [ID!]!, $input: ItemsInput!) { itemsUpdate(ids: $ids, input: $input) { items { id } skipped } }\n"): (typeof documents)["\n    mutation ItemsUpdate($ids: [ID!]!, $input: ItemsInput!) { itemsUpdate(ids: $ids, input: $input) { items { id } skipped } }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

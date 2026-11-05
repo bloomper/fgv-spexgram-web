@@ -51,6 +51,9 @@ export function VisibilityControl({ albumId, visibility, counts }: {
       if (result.ok) {
         track("album-visibility", { visibility: chosen, items });
         toast.success(t("saved"));
+        if (result.data > 0) {
+          toast.warning(t("skipped", { count: result.data }));
+        }
         setItems(false);
         router.refresh();
       } else {

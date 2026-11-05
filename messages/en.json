@@ -399,7 +399,8 @@
     "doneLabel": "Uploads finished",
     "drop": "Drag photos and videos here, many at a time. They upload in the background while you do other things.",
     "choose": "Choose files",
-    "longVideos": "Videos longer than {minutes} minutes are not accepted; whole shows belong in"
+    "longVideos": "Videos longer than {minutes} minutes are not accepted; whole shows belong in",
+    "duplicate": "Already in the archive."
   },
   "ManageAlbums": {
     "title": "Edit albums",
@@ -457,7 +458,8 @@
     "confirmMembers": "The album becomes visible to everyone with access to Spexgram, but not to visitors.",
     "confirmUnpublished": "The album is hidden from everyone but editors.",
     "confirmItems": "All {count} photos and videos get the same visibility.",
-    "saved": "The visibility has been changed"
+    "saved": "The visibility has been changed",
+    "skipped": "{count, plural, one {# photo or video} other {# photos and videos}} kept their visibility, since an open report hides them."
   },
   "Items": {
     "toolbar": "Selected items",
@@ -503,7 +505,8 @@
     "makeCover": "Make it the cover",
     "coverSet": "The cover has been chosen",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "skipped": "{count, plural, one {# photo or video} other {# photos and videos}} kept their visibility, since an open report hides them."
   },
   "Review": {
     "title": "Review contributions",
@@ -527,7 +530,11 @@
     "accepted": "{count, plural, one {The contribution has been accepted} other {# contributions have been accepted}}",
     "rejected": "{count, plural, one {The contribution has been rejected} other {# contributions have been rejected}}",
     "suggestionAccepted": "The suggestion has been accepted and the album published for members",
-    "suggestionRejected": "The suggestion has been rejected"
+    "suggestionRejected": "The suggestion has been rejected",
+    "photographer": "Photographer",
+    "editPhotographer": "Change photographer",
+    "editPhotographerOf": "Change photographer of {name}",
+    "photographerSaved": "The photographer has been changed"
   },
   "ManageReports": {
     "title": "Reports",

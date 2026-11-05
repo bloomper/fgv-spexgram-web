@@ -91,20 +91,21 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options }: {
 
   const toItemsIndex = (slide: number) => items.findIndex(item => item.id === shown[slide]?.id);
 
+  // A video is downloaded only as its original, when originals may be (spec 5.1); playing uses the browser version
   const buttons = current ? [
-    <ToolbarButton key="download" label={t("downloadPreview")} icon={Download}
-                   onClick={() => {
-                  if (current.media) {
-                    track("item-download", { original: false });
-                    void downloadFile(current.media.previewUrl, downloadName(current, "preview"));
-                  }
-                }} />,
+    ...(current.type === "PHOTO" && current.media ? [
+      <ToolbarButton key="download" label={t("downloadPreview")} icon={Download}
+                     onClick={() => {
+                       track("item-download", { original: false });
+                       void downloadFile(current.media!.previewUrl, downloadName(current, "preview"));
+                     }} />,
+    ] : []),
     ...(options.canDownloadOriginals && current.media?.originalUrl ? [
       <ToolbarButton key="original" label={t("downloadOriginal")} icon={HardDriveDownload}
-                   onClick={() => {
-                    track("item-download", { original: true });
-                    void downloadFile(current.media!.originalUrl!, current.originalFileName ?? downloadName(current, "original"));
-                  }} />,
+                     onClick={() => {
+                       track("item-download", { original: true });
+                       void downloadFile(current.media!.originalUrl!, current.originalFileName ?? downloadName(current, "original"));
+                     }} />,
     ] : []),
     <ToolbarButton key="report" label={t("report")} icon={Flag}
                    onClick={() => {

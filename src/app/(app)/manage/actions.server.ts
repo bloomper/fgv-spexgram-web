@@ -114,13 +114,17 @@ export async function updateAlbumAction(id: string, input: AlbumInput): Promise<
   });
 }
 
-export async function setAlbumVisibilityAction(id: string, visibility: Visibility, items: boolean): Promise<ActionResult<null>> {
+/**
+ * The data is how many items kept their visibility because an open report hides them.
+ */
+export async function setAlbumVisibilityAction(id: string, visibility: Visibility, items: boolean): Promise<ActionResult<number>> {
   requireId(id);
   requireVisibility(visibility);
   return editor(async () => {
-    await albumSetVisibility(id, visibility, items);
+    const skipped = await albumSetVisibility(id, visibility, items);
+
     changed([id]);
-    return null;
+    return skipped;
   });
 }
 
@@ -177,23 +181,25 @@ export async function updateItemAction(id: string, albumId: string | null, input
 }
 
 /**
- * Changes many items at once: caption, credit, visibility or album (which also sorts unsorted items).
+ * Changes many items at once: caption, credit, visibility or album (which also sorts unsorted items). The data is how
+ * many items kept their visibility because an open report hides them.
  */
-export async function updateItemsAction(ids: string[], input: ItemsInput, albumIds: string[] = []): Promise<ActionResult<null>> {
+export async function updateItemsAction(ids: string[], input: ItemsInput, albumIds: string[] = []): Promise<ActionResult<number>> {
   requireIds(ids);
   requireVisibility(input.visibility);
   if (input.albumId) {
     requireId(input.albumId);
   }
   return editor(async () => {
-    await itemsUpdate(ids, {
+    const skipped = await itemsUpdate(ids, {
       caption: input.caption === undefined || input.caption === null ? null : input.caption.trim().slice(0, 2000),
       photographer: input.photographer === undefined || input.photographer === null ? null : input.photographer.trim().slice(0, 200),
       visibility: input.visibility ?? null,
       albumId: input.albumId ?? null,
     });
+
     changed([...albumIds, input.albumId]);
-    return null;
+    return skipped;
   });
 }
 

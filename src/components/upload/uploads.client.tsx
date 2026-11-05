@@ -187,12 +187,14 @@ function UploadRow({ entry }: { entry: UploadEntry }) {
           {entry.state === "failed" && (entry.error ?? t("failed"))}
           {outcome === "CREATED" && (entry.mode === "contribution" ? t("contributed") : t("created"))}
           {outcome === "REJECTED" && t("rejected", { message: entry.result?.message ?? "" })}
-          {outcome === "DUPLICATE" && (entry.result?.existingItemId ? (
+          {outcome === "DUPLICATE" && (
             <>
-              {t("duplicateIn", { album: entry.result.existingAlbumTitle ?? "–" })}{" "}
-              <Link href={`/items/${entry.result.existingItemId}`} className="text-primary underline">{t("showExisting")}</Link>
+              {entry.result?.existingAlbumTitle ? t("duplicateIn", { album: entry.result.existingAlbumTitle }) : t("duplicate")}
+              {entry.result?.existingItemId && (
+                <>{" "}<Link href={`/items/${entry.result.existingItemId}`} className="text-primary underline">{t("showExisting")}</Link></>
+              )}
             </>
-          ) : t("duplicateIn", { album: entry.result?.existingAlbumTitle ?? "–" }))}
+          )}
         </span>
         {entry.state === "uploading" && (
           <span className="mt-1 block h-1 w-full overflow-hidden rounded bg-muted" aria-hidden>

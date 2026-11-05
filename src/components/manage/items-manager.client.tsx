@@ -65,7 +65,7 @@ export function ItemsManager({ albumId, albumTitle, items, coverId, spexflixUrl,
     return next;
   });
 
-  const run = (work: () => Promise<{ ok: boolean; message?: string }>, done: string, event?: string) => start(async () => {
+  const run = (work: () => Promise<{ ok: boolean; message?: string; data?: unknown }>, done: string, event?: string) => start(async () => {
     const result = await work();
 
     if (result.ok) {
@@ -73,6 +73,9 @@ export function ItemsManager({ albumId, albumTitle, items, coverId, spexflixUrl,
         track(event, { count: ids.length });
       }
       toast.success(done);
+      if (typeof result.data === "number" && result.data > 0) {
+        toast.warning(t("skipped", { count: result.data }));
+      }
       setSelected(new Set());
       router.refresh();
     } else {

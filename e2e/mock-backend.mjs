@@ -145,6 +145,7 @@ const requireAdmin = persona => {
 const notFound = () => new GraphQLError("NOT_FOUND", "Det finns inte, eller så har du inte tillgång till det.");
 
 const albumById = id => state.albums.find(candidate => candidate.id === id);
+const hiddenByReport = itemId => state.reports.some(r => r.itemId === itemId && r.status === "OPEN" && r.hiddenFrom);
 const itemById = id => state.items.find(candidate => candidate.id === id);
 
 function canSeeAlbum(persona, a) {
@@ -302,7 +303,12 @@ function uploadResult(persona, uploadId, a, contribution) {
   if (/dubblett/i.test(upload.name)) {
     const existing = itemById(uuidOf(101));
 
-    return { uploadId, fileName: upload.name, outcome: "DUPLICATE", message: null, item: null, existingItem: itemOut(persona, existing), existingAlbumTitle: albumById(existing.albumId).title };
+    // Only what the uploader may see is named
+    return {
+      uploadId, fileName: upload.name, outcome: "DUPLICATE", message: null, item: null,
+      existingItem: canSeeItem(persona, existing) ? itemOut(persona, existing) : null,
+      existingAlbumTitle: canSeeAlbum(persona, albumById(existing.albumId)) ? albumById(existing.albumId).title : null,
+    };
   }
 
   const created = item(state.nextId++, null, {
@@ -468,6 +474,7 @@ const resolvers = {
 
     state.reports.push(report);
     if (input.reason === "I_AM_IN_IT") {
+      report.hiddenFrom = found.visibility;
       found.visibility = isMember(persona) ? "UNPUBLISHED" : found.visibility === "PUBLIC" ? "MEMBERS" : found.visibility;
     }
     return { reportCreate: { id: report.id, status: "OPEN" } };
@@ -585,14 +592,20 @@ const resolvers = {
 
     const a = albumById(id);
 
+    let skipped = 0;
+
     a.visibility = visibility;
     if (items) {
       state.items.filter(i => i.albumId === id && !i.trashedAt && i.contributionStatus !== "WAITING").forEach(i => {
-        i.visibility = visibility;
+        if (hiddenByReport(i.id)) {
+          skipped++;
+        } else {
+          i.visibility = visibility;
+        }
       });
     }
     audit(persona, "VISIBILITY", "ALBUM", id, `Gjorde albumet ${a.title} ${visibility}`);
-    return { albumSetVisibility: { id, visibility } };
+    return { albumSetVisibility: { album: { id, visibility }, skipped } };
   },
   AlbumSetCover: (persona, { id, itemId }) => {
     requireEditor(persona);
@@ -632,16 +645,21 @@ const resolvers = {
   },
   ItemsUpdate: (persona, { ids, input }) => {
     const found = editableItems(persona, ids);
+    let skipped = 0;
 
     for (const i of found) {
       for (const field of ["caption", "photographer", "visibility", "albumId"]) {
         if (input[field] !== undefined && input[field] !== null) {
-          i[field] = input[field];
+          if (field === "visibility" && hiddenByReport(i.id)) {
+            skipped++;
+          } else {
+            i[field] = input[field];
+          }
         }
       }
     }
     audit(persona, input.visibility ? "VISIBILITY" : "UPDATE", "ITEM", ids[0], `Ändrade ${ids.length} bilder`);
-    return { itemsUpdate: found.map(i => ({ id: i.id })) };
+    return { itemsUpdate: { items: found.map(i => ({ id: i.id })), skipped } };
   },
   ItemsTrash: (persona, { ids }) => {
     editableItems(persona, ids).forEach(i => {
@@ -699,6 +717,8 @@ const resolvers = {
     Object.assign(report, { status: "HANDLED", outcome, outcomeMessage: message ?? null, handledAt: new Date().toISOString() });
     if (outcome === "REMOVED") {
       itemById(report.itemId).trashedAt = new Date().toISOString();
+    } else if (report.hiddenFrom) {
+      itemById(report.itemId).visibility = report.hiddenFrom;
     }
     return { reportHandle: { id, status: "HANDLED" } };
   },

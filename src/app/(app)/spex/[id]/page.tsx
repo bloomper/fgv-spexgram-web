@@ -25,14 +25,15 @@ const nameOf = (spex: { title?: string | null; year?: number | null } | null) =>
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const albums = ID.test(id) ? await getSpexAlbums(id).catch(() => []) : [];
+  // Built from public albums and public covers only: a member's page view must not put a members' photo in the tags
   const publicAlbums = albums.filter(album => album.visibility === "PUBLIC");
 
   if (publicAlbums.length === 0) {
     return privateMetadata();
   }
 
-  const cover = publicAlbums.find(album => album.cover?.media)?.cover;
-  const title = nameOf(spexOf(albums, id));
+  const cover = publicAlbums.map(album => album.cover).find(candidate => candidate?.effectiveVisibility === "PUBLIC" && candidate.media);
+  const title = nameOf(spexOf(publicAlbums, id));
 
   return publicMetadata({
     title: title || "Spexgram",

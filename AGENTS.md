@@ -43,7 +43,11 @@ endpoints for tus uploads and albums as zips; the files themselves come from the
 - Locale is a cookie (`sv` default); messages in `messages/{sv,en}.json`. The theme is dark by default. Swedish says
   "film/filmer" for videos, never "video", and "bild/bilder" for photos ("bilder och filmer" for items).
 - Auth: Better Auth + Keycloak, stateless. `getSessionContext()` in `src/utils/auth.server.ts` is the single entry
-  point; roles come from `resource_access["fgv-spexgram"].roles`: `USER` (access), `EDITOR`, `ADMIN`.
+  point; roles come from `resource_access["fgv-spexgram"].roles`: `USER` (access), `EDITOR`, `ADMIN`. The tokens stay
+  on the server: `disabledPaths` in `src/auth.ts` turns off Better Auth's `/get-access-token`, `/refresh-token` and
+  `/account-info` routes (they answer 404); `auth.api.getAccessToken` on the server is not affected.
+- GraphQL calls carry `X-Client-IP` (`src/lib/http/client-ip.ts`: Cloudflare's `cf-connecting-ip`, else the proxy's
+  `X-Forwarded-For`), which the server uses only to limit visitors' reports per address.
 - Only `NEXT_PUBLIC_TURNSTILE_SITE_KEY` has the prefix (the deploy repo names it so), and it too is read on the server
   at request time (`getViewer()`) and passed as a prop, never inlined at build time.
 - **The Content Security Policy is set in `src/proxy.ts`** (`src/utils/csp.ts`), not `next.config.ts`, because it
@@ -97,15 +101,17 @@ reach it, and GraphQL is called without a token.
   keep running while the user goes to other pages; the header's `UploadIndicator` shows them all, `UploadList` an
   album's. Two files at a time go through tus (`/api/uploads/[[...path]]`, metadata `filename` and `lastModified`), each
   then to `addUploadsAction`: `itemsAdd` for editors on `/manage/albums/[id]`, `contributionsAdd` for members on
-  `/albums/[id]/contribute`. The result per file is CREATED, DUPLICATE (with a link to the existing item, or the
-  album's title) or REJECTED (Immich's message). Files over `limits.maxUploadBytes` are refused before they are sent;
+  `/albums/[id]/contribute`. The result per file is CREATED, DUPLICATE (with a link to the existing item and the album's title when
+  the uploader may see them, else only "already in the archive") or REJECTED (Immich's message). Files over `limits.maxUploadBytes` are refused before they are sent;
   `SpexflixHint` points long videos to Spexflix. Only the album's own page is refreshed when an upload lands.
 - **Editing** (`/manage/albums/[id]`): drop zone, `ItemsManager` (check boxes; caption, photographer, visibility, move,
   trash for the selection; an item's fields, position and *make cover* in `ItemEditor`), `VisibilityControl` (the
   confirmation says how many items visitors will see: `publicAfter()`), `AlbumForm` with the shared `SpexPicker`, the
   trash and `RecordHistory`. Making items public in bulk is confirmed with their count.
-- **Review** (`/manage/contributions`): contributions per album (accept, accept and edit, reject with a message) and
-  album suggestions. **Reports** (`/manage/reports`): remove, corrected or keep, with a message to the reporter.
+- **Review** (`/manage/contributions`): contributions per album (accept, accept and edit, reject with a message), with
+  the photographer (the contributor's name by default) shown and editable, and album suggestions.
+- **Open reports win over bulk changes**: `albumSetVisibility` and `itemsUpdate` leave items an open *I am in it*
+  report hides as they are and answer how many they `skipped`; the editor is told in a toast. **Reports** (`/manage/reports`): remove, corrected or keep, with a message to the reporter.
   **Unsorted** (`/manage/unsorted`): grouped by day; move the selection to an album or a new one
   (`albumFromItemsAction`). **Trash**: restore; admins delete for good, an album with or without its items.
 - **Admin**: settings (start page texts for members and visitors, contact address, limits, originals for members,
