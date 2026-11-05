@@ -3,7 +3,7 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LogIn, Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { loginHref } from "@/utils/auth";
 
 /**
@@ -24,9 +24,9 @@ export function LoginPrompt({ noAccess = false }: { noAccess?: boolean }) {
         <p className="text-sm text-muted-foreground">{noAccess ? t("noAccessText") : t("text")}</p>
         {!noAccess && (
           <div className="flex justify-center pt-2">
-            <Button nativeButton={false} render={<a href={loginHref(query ? `${pathname}?${query}` : pathname)} />}>
-              <LogIn /> {t("login")}
-            </Button>
+            <a href={loginHref(query ? `${pathname}?${query}` : pathname)} className={buttonVariants()}>
+              <LogIn aria-hidden /> {t("login")}
+            </a>
           </div>
         )}
       </div>

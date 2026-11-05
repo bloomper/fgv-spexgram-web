@@ -166,7 +166,7 @@
     "adminAudit": "Audit log"
   },
   "Home": {
-    "title": "Spexgram",
+    "title": "Welcome to Spexgram",
     "greeting": "Hello {name}!",
     "intro": "Photos and short videos from the spex, sorted in albums. Browse, search, and add your own photos to an album.",
     "introVisitor": "Photos and short videos from the spex through the years. What is public is shown here; log in with your FGV account to see more.",

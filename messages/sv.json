@@ -166,7 +166,7 @@
     "adminAudit": "Granskningslogg"
   },
   "Home": {
-    "title": "Spexgram",
+    "title": "Välkommen till Spexgram",
     "greeting": "Hej {name}!",
     "intro": "Spexens bilder och korta filmer, sorterade i album. Bläddra, sök, och lägg till dina egna bilder i ett album.",
     "introVisitor": "Bilder och korta filmer från spexen genom åren. Här visas det som är publikt; logga in med ditt FGV-konto för att se mer.",
