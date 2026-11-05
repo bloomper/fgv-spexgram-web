@@ -11,6 +11,8 @@ services:
       - NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/caddy-root.crt
       - BETTER_AUTH_URL=https://spexgram.fgv.local.nu:9443
       - API_GRAPHQL_ENDPOINT=https://api.spexgram.fgv.local.nu:8443/api/graphql
+      - API_ENDPOINT=https://api.spexgram.fgv.local.nu:8443
+      - MEDIA_ORIGIN=https://media.spexgram.fgv.local.nu:8443
       - KEYCLOAK_ISSUER=https://auth.fgv.local.nu:8443/auth/realms/fgv
     env_file:
       - .env
@@ -19,6 +21,7 @@ services:
       - "spexgram.fgv.local.nu:host-gateway"
       - "auth.fgv.local.nu:host-gateway"
       - "api.spexgram.fgv.local.nu:host-gateway"
+      - "media.spexgram.fgv.local.nu:host-gateway"
       - "analytics.fgv.local.nu:host-gateway"
     restart: always
     healthcheck:
