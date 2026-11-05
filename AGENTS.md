@@ -118,10 +118,10 @@ reach it, and GraphQL is called without a token.
 
 ## Look
 
-Spexgram has a look of its own, unlike Spexify and Spexflix: the mark (an aperture with a spotlight in a rose-to-amber
-rounded square) in `Logo`/`LogoHome` and `src/app/icon.svg`, the wordmark `LogoText`, `favicon.ico`, `apple-icon.png`,
-the PWA icons in `public/` (made from `icon.svg` with `rsvg-convert`), and the rose primary colour in
-`src/app/globals.css` (light and dark). Keycloak's login page stays FGV's.
+The look is FGV's, the same as Spexregister's, Nyuppsättning's, Spexify's and Spexflix's: `Logo`, `LogoText` and
+`LogoHome` in `src/components/`, `src/app/favicon.ico`, and the colours in `src/app/globals.css`. Don't give the
+application a logo or colours of its own; the name "Spexgram" is shown as text (the header's title). `src/app/icon.svg`
+(the FGV logo) is only for the installable app's manifest.
 
 ## Consent and visitor statistics
 

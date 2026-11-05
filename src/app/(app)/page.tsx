@@ -4,7 +4,6 @@ import { HomeSection } from "@/components/home-section";
 import { AlbumGrid } from "@/components/gram/album-card";
 import { BrowseChips } from "@/components/gram/browse-chips";
 import { Gallery } from "@/components/gram/gallery.client";
-import { LogoHome } from "@/components/logo-home";
 import { getHome, getMe } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
 
@@ -31,7 +30,6 @@ export default async function HomePage() {
   return (
     <div className="space-y-8 p-4 sm:p-6">
       <section className="flex items-start gap-4">
-        <div className="hidden size-16 shrink-0 sm:block"><LogoHome /></div>
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             {me?.me ? t("greeting", { name: me.me.displayName ?? me.me.username }) : t("title")}

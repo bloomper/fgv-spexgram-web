@@ -26,8 +26,7 @@ addresses. The product spec is in [fgv-spexgram-spec][2].
 - **Uploads:** [tus-js-client](https://github.com/tus/tus-js-client), resumable, in chunks of at most 50 MB
 - **Bot check:** [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/), for visitors' reports
 
-Spexgram has a look of its own (its mark, wordmark, favicon, PWA icons and a rose colour in light and dark); Keycloak's
-login page stays FGV's.
+The look (logo, favicon and colours) is FGV's, shared with Spexregister, Nyuppsättning, Spexify and Spexflix.
 
 ## Getting Started
 

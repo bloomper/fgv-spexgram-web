@@ -36,7 +36,6 @@ import { LogoText } from "@/components/logo-text";
 import { Role } from "@/types/auth";
 import { hasAccess, isAdmin, isEditor } from "@/utils/auth";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useIsClient } from "@/hooks/use-is-client.client";
 
@@ -149,9 +148,10 @@ export function AppSidebar({ roles, accountUrl, user, ...props }: AppSidebarProp
             <SidebarMenuButton
               size="lg"
               render={
-                <Link
-                  href="/"
-                  aria-label="Spexgram"
+                <a
+                  href="https://www.fgv.nu"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-3 flex-nowrap bg-transparent! hover:bg-transparent! active:bg-transparent! focus:bg-transparent!"
                 />
               }
@@ -160,7 +160,7 @@ export function AppSidebar({ roles, accountUrl, user, ...props }: AppSidebarProp
                 className="flex aspect-square size-10 shrink-0 items-center justify-center rounded-lg group-data-[collapsible=icon]:size-8">
                 <Logo />
               </div>
-              <div className="min-w-0 flex-1 overflow-hidden pl-2">
+              <div className="min-w-0 flex-1 overflow-hidden pl-4">
                 <LogoText className="h-10 w-auto text-foreground" />
               </div>
             </SidebarMenuButton>
