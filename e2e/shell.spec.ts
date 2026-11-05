@@ -34,4 +34,15 @@ test.describe("The application shell", () => {
 
     await expect(page.getByRole("heading", { level: 1, name: "Sittning efter premiären" })).toBeVisible();
   });
+
+  test("the tokens stay on the server: Better Auth's token routes answer 404, the session still works", async ({ page, loginAs }) => {
+    await loginAs("viewer");
+    for (const path of ["/api/auth/get-access-token", "/api/auth/refresh-token"]) {
+      expect((await page.request.post(path, { data: { providerId: "keycloak" } })).status(), path).toBe(404);
+    }
+    expect((await page.request.get("/api/auth/account-info")).status()).toBe(404);
+    // Pages still read the token on the server
+    await page.goto("/contributions");
+    await expect(page.getByRole("heading", { level: 1, name: "Mina bidrag" })).toBeVisible();
+  });
 });

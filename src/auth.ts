@@ -16,6 +16,9 @@ export const auth = betterAuth({
   onAPIError: {
     errorURL: "/api/auth/login-error",
   },
+  // The access and refresh tokens stay on the server: getSessionContext() reads them with auth.api, which these do not
+  // affect, and browser code has no use for them
+  disabledPaths: ["/get-access-token", "/refresh-token", "/account-info"],
   plugins: [
     genericOAuth({
       config: [
