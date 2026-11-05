@@ -388,7 +388,7 @@ const resolvers = {
 
     return { item: canSeeItem(persona, found) ? itemOut(persona, found) : null, limits: limitsOut(persona) };
   },
-  ItemsById: (persona, { ids }) => ({ publicItems: ids.map(itemById).filter(i => canSeeItem(persona, i)).map(i => itemOut(persona, i)) }),
+  ItemMedia: (persona, { ids }) => ({ itemMedia: ids.map(itemById).filter(i => canSeeItem(persona, i)).map(i => itemOut(persona, i)) }),
   SpexAlbums: (persona, { spexId }) => ({
     spexAlbums: visibleAlbums(persona).filter(a => a.spexIds.some(id => id === spexId || SPEX.find(s => s.id === id)?.parentId === spexId))
       .map(a => albumOut(persona, a)),
@@ -418,7 +418,7 @@ const resolvers = {
     requireMember(persona);
     return {
       mapItems: state.items.filter(i => canSeeItem(persona, i) && !i.trashedAt && i.latitude !== null)
-        .map(i => ({ id: i.id, latitude: i.latitude, longitude: i.longitude, takenAt: i.takenAt, thumbnailUrl: mediaOf(persona, i)?.thumbnailUrl })),
+        .map(i => ({ id: i.id, latitude: i.latitude, longitude: i.longitude, takenAt: i.takenAt, thumbnailUrl: mediaOf(persona, i)?.thumbnailUrl, expiresAt: expires() })),
     };
   },
   MyContributions: persona => {
@@ -428,20 +428,15 @@ const resolvers = {
   MySuggestions: persona => {
     requireMember(persona);
 
-    const mine = state.suggestions.filter(s => isEditor(persona) || s.suggestedBy === persona.sub).map(s => suggestionOut(persona, s));
-
     return {
-      open: mine.filter(s => s.status === "OPEN"),
-      handled: mine.filter(s => s.status !== "OPEN"),
+      albumSuggestions: state.suggestions.filter(s => s.suggestedBy === persona.sub).map(s => suggestionOut(persona, s)),
       albumKinds: sortedKinds().map(kind => kindOut(kind.id)),
     };
   },
   MyReports: persona => {
     requireMember(persona);
 
-    const mine = state.reports.filter(r => r.reporter === persona.sub).map(r => reportOut(persona, r));
-
-    return { open: mine.filter(r => r.status === "OPEN"), handled: mine.filter(r => r.status !== "OPEN") };
+    return { reports: state.reports.filter(r => r.reporter === persona.sub).map(r => reportOut(persona, r)) };
   },
   Contribute: (persona, { id }) => {
     requireMember(persona);

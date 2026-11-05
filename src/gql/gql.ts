@@ -35,16 +35,15 @@ type Documents = {
     "\n    query AlbumMeta($id: ID!) {\n        album(id: $id) {\n            id\n            title\n            description\n            visibility\n            dateFrom\n            cover { id caption effectiveVisibility media { previewUrl expiresAt } }\n        }\n    }\n": typeof types.AlbumMetaDocument,
     "\n    query AlbumItems($id: ID!, $page: Int, $size: Int) {\n        album(id: $id) {\n            id\n            items(page: $page, size: $size) { items { ...ItemFields } totalCount page size }\n        }\n    }\n": typeof types.AlbumItemsDocument,
     "\n    query Item($id: ID!) {\n        item(id: $id) { ...ItemFields }\n        limits { canDownloadOriginals }\n    }\n": typeof types.ItemDocument,
-    "\n    query ItemsById($ids: [ID!]!) {\n        publicItems(ids: $ids) { ...ItemFields }\n    }\n": typeof types.ItemsByIdDocument,
+    "\n    query ItemMedia($ids: [ID!]!) {\n        itemMedia(ids: $ids) { ...ItemFields }\n    }\n": typeof types.ItemMediaDocument,
     "\n    query SpexAlbums($spexId: ID!) {\n        spexAlbums(spexId: $spexId) { ...AlbumCardFields description }\n    }\n": typeof types.SpexAlbumsDocument,
     "\n    query Search($q: String!) {\n        search(q: $q, limit: 60) {\n            albums { ...AlbumCardFields }\n            items { ...ItemFields }\n        }\n    }\n": typeof types.SearchDocument,
     "\n    query SmartSearch($q: String!, $filter: AlbumFilter) {\n        smartSearch(q: $q, filter: $filter, limit: 60) { ...ItemFields }\n    }\n": typeof types.SmartSearchDocument,
     "\n    query SearchFilters {\n        categories { id name albumCount }\n        years\n        albumKinds { id nameSv nameEn albumCount }\n    }\n": typeof types.SearchFiltersDocument,
     "\n    query MapItems($filter: AlbumFilter) {\n        mapItems(filter: $filter) { id latitude longitude takenAt thumbnailUrl }\n    }\n": typeof types.MapItemsDocument,
     "\n    query MyContributions {\n        myContributions { ...ItemFields }\n    }\n": typeof types.MyContributionsDocument,
-    "\n    query MySuggestions {\n        open: albumSuggestions(open: true) { id title status message createdAt handledAt album { id title } }\n        handled: albumSuggestions(open: false) { id title status message createdAt handledAt album { id title } }\n        albumKinds { id nameSv nameEn }\n    }\n": typeof types.MySuggestionsDocument,
-    "\n    fragment MyReport on Report {\n        id reason message status outcome outcomeMessage createdAt handledAt\n        item { id caption type media { thumbnailUrl expiresAt } album { id title } }\n    }\n": typeof types.MyReportFragmentDoc,
-    "\n    query MyReports {\n        open: reports(open: true, mine: true) { ...MyReport }\n        handled: reports(open: false, mine: true) { ...MyReport }\n    }\n": typeof types.MyReportsDocument,
+    "\n    query MySuggestions {\n        albumSuggestions(mine: true) { id title status message createdAt handledAt album { id title } }\n        albumKinds { id nameSv nameEn }\n    }\n": typeof types.MySuggestionsDocument,
+    "\n    query MyReports {\n        reports(mine: true) {\n            id reason message status outcome outcomeMessage createdAt handledAt\n            item { id caption type media { thumbnailUrl expiresAt } album { id title } }\n        }\n    }\n": typeof types.MyReportsDocument,
     "\n    query Contribute($id: ID!) {\n        album(id: $id) { id title visibility suggested }\n        limits { maxUploadBytes maxVideoMinutes contributionMaxItems contributionMaxGb }\n    }\n": typeof types.ContributeDocument,
     "\n    mutation ReportCreate($input: ReportInput!) {\n        reportCreate(input: $input) { id status }\n    }\n": typeof types.ReportCreateDocument,
     "\n    mutation ContributionsAdd($albumId: ID!, $uploadIds: [String!]!) {\n        contributionsAdd(albumId: $albumId, uploadIds: $uploadIds) {\n            uploadId fileName outcome message existingAlbumTitle\n            item { id }\n            existingItem { id album { id title } }\n        }\n    }\n": typeof types.ContributionsAddDocument,
@@ -99,16 +98,15 @@ const documents: Documents = {
     "\n    query AlbumMeta($id: ID!) {\n        album(id: $id) {\n            id\n            title\n            description\n            visibility\n            dateFrom\n            cover { id caption effectiveVisibility media { previewUrl expiresAt } }\n        }\n    }\n": types.AlbumMetaDocument,
     "\n    query AlbumItems($id: ID!, $page: Int, $size: Int) {\n        album(id: $id) {\n            id\n            items(page: $page, size: $size) { items { ...ItemFields } totalCount page size }\n        }\n    }\n": types.AlbumItemsDocument,
     "\n    query Item($id: ID!) {\n        item(id: $id) { ...ItemFields }\n        limits { canDownloadOriginals }\n    }\n": types.ItemDocument,
-    "\n    query ItemsById($ids: [ID!]!) {\n        publicItems(ids: $ids) { ...ItemFields }\n    }\n": types.ItemsByIdDocument,
+    "\n    query ItemMedia($ids: [ID!]!) {\n        itemMedia(ids: $ids) { ...ItemFields }\n    }\n": types.ItemMediaDocument,
     "\n    query SpexAlbums($spexId: ID!) {\n        spexAlbums(spexId: $spexId) { ...AlbumCardFields description }\n    }\n": types.SpexAlbumsDocument,
     "\n    query Search($q: String!) {\n        search(q: $q, limit: 60) {\n            albums { ...AlbumCardFields }\n            items { ...ItemFields }\n        }\n    }\n": types.SearchDocument,
     "\n    query SmartSearch($q: String!, $filter: AlbumFilter) {\n        smartSearch(q: $q, filter: $filter, limit: 60) { ...ItemFields }\n    }\n": types.SmartSearchDocument,
     "\n    query SearchFilters {\n        categories { id name albumCount }\n        years\n        albumKinds { id nameSv nameEn albumCount }\n    }\n": types.SearchFiltersDocument,
     "\n    query MapItems($filter: AlbumFilter) {\n        mapItems(filter: $filter) { id latitude longitude takenAt thumbnailUrl }\n    }\n": types.MapItemsDocument,
     "\n    query MyContributions {\n        myContributions { ...ItemFields }\n    }\n": types.MyContributionsDocument,
-    "\n    query MySuggestions {\n        open: albumSuggestions(open: true) { id title status message createdAt handledAt album { id title } }\n        handled: albumSuggestions(open: false) { id title status message createdAt handledAt album { id title } }\n        albumKinds { id nameSv nameEn }\n    }\n": types.MySuggestionsDocument,
-    "\n    fragment MyReport on Report {\n        id reason message status outcome outcomeMessage createdAt handledAt\n        item { id caption type media { thumbnailUrl expiresAt } album { id title } }\n    }\n": types.MyReportFragmentDoc,
-    "\n    query MyReports {\n        open: reports(open: true, mine: true) { ...MyReport }\n        handled: reports(open: false, mine: true) { ...MyReport }\n    }\n": types.MyReportsDocument,
+    "\n    query MySuggestions {\n        albumSuggestions(mine: true) { id title status message createdAt handledAt album { id title } }\n        albumKinds { id nameSv nameEn }\n    }\n": types.MySuggestionsDocument,
+    "\n    query MyReports {\n        reports(mine: true) {\n            id reason message status outcome outcomeMessage createdAt handledAt\n            item { id caption type media { thumbnailUrl expiresAt } album { id title } }\n        }\n    }\n": types.MyReportsDocument,
     "\n    query Contribute($id: ID!) {\n        album(id: $id) { id title visibility suggested }\n        limits { maxUploadBytes maxVideoMinutes contributionMaxItems contributionMaxGb }\n    }\n": types.ContributeDocument,
     "\n    mutation ReportCreate($input: ReportInput!) {\n        reportCreate(input: $input) { id status }\n    }\n": types.ReportCreateDocument,
     "\n    mutation ContributionsAdd($albumId: ID!, $uploadIds: [String!]!) {\n        contributionsAdd(albumId: $albumId, uploadIds: $uploadIds) {\n            uploadId fileName outcome message existingAlbumTitle\n            item { id }\n            existingItem { id album { id title } }\n        }\n    }\n": types.ContributionsAddDocument,
@@ -243,7 +241,7 @@ export function graphql(source: "\n    query Item($id: ID!) {\n        item(id: 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query ItemsById($ids: [ID!]!) {\n        publicItems(ids: $ids) { ...ItemFields }\n    }\n"): (typeof documents)["\n    query ItemsById($ids: [ID!]!) {\n        publicItems(ids: $ids) { ...ItemFields }\n    }\n"];
+export function graphql(source: "\n    query ItemMedia($ids: [ID!]!) {\n        itemMedia(ids: $ids) { ...ItemFields }\n    }\n"): (typeof documents)["\n    query ItemMedia($ids: [ID!]!) {\n        itemMedia(ids: $ids) { ...ItemFields }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -271,15 +269,11 @@ export function graphql(source: "\n    query MyContributions {\n        myContri
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query MySuggestions {\n        open: albumSuggestions(open: true) { id title status message createdAt handledAt album { id title } }\n        handled: albumSuggestions(open: false) { id title status message createdAt handledAt album { id title } }\n        albumKinds { id nameSv nameEn }\n    }\n"): (typeof documents)["\n    query MySuggestions {\n        open: albumSuggestions(open: true) { id title status message createdAt handledAt album { id title } }\n        handled: albumSuggestions(open: false) { id title status message createdAt handledAt album { id title } }\n        albumKinds { id nameSv nameEn }\n    }\n"];
+export function graphql(source: "\n    query MySuggestions {\n        albumSuggestions(mine: true) { id title status message createdAt handledAt album { id title } }\n        albumKinds { id nameSv nameEn }\n    }\n"): (typeof documents)["\n    query MySuggestions {\n        albumSuggestions(mine: true) { id title status message createdAt handledAt album { id title } }\n        albumKinds { id nameSv nameEn }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    fragment MyReport on Report {\n        id reason message status outcome outcomeMessage createdAt handledAt\n        item { id caption type media { thumbnailUrl expiresAt } album { id title } }\n    }\n"): (typeof documents)["\n    fragment MyReport on Report {\n        id reason message status outcome outcomeMessage createdAt handledAt\n        item { id caption type media { thumbnailUrl expiresAt } album { id title } }\n    }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n    query MyReports {\n        open: reports(open: true, mine: true) { ...MyReport }\n        handled: reports(open: false, mine: true) { ...MyReport }\n    }\n"): (typeof documents)["\n    query MyReports {\n        open: reports(open: true, mine: true) { ...MyReport }\n        handled: reports(open: false, mine: true) { ...MyReport }\n    }\n"];
+export function graphql(source: "\n    query MyReports {\n        reports(mine: true) {\n            id reason message status outcome outcomeMessage createdAt handledAt\n            item { id caption type media { thumbnailUrl expiresAt } album { id title } }\n        }\n    }\n"): (typeof documents)["\n    query MyReports {\n        reports(mine: true) {\n            id reason message status outcome outcomeMessage createdAt handledAt\n            item { id caption type media { thumbnailUrl expiresAt } album { id title } }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

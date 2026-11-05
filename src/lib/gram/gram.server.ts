@@ -124,9 +124,9 @@ const ItemQuery = graphql(`
     }
 `);
 
-const ItemsByIdQuery = graphql(`
-    query ItemsById($ids: [ID!]!) {
-        publicItems(ids: $ids) { ...ItemFields }
+const ItemMediaQuery = graphql(`
+    query ItemMedia($ids: [ID!]!) {
+        itemMedia(ids: $ids) { ...ItemFields }
     }
 `);
 
@@ -173,23 +173,17 @@ const MyContributionsQuery = graphql(`
 
 const MySuggestionsQuery = graphql(`
     query MySuggestions {
-        open: albumSuggestions(open: true) { id title status message createdAt handledAt album { id title } }
-        handled: albumSuggestions(open: false) { id title status message createdAt handledAt album { id title } }
+        albumSuggestions(mine: true) { id title status message createdAt handledAt album { id title } }
         albumKinds { id nameSv nameEn }
-    }
-`);
-
-graphql(`
-    fragment MyReport on Report {
-        id reason message status outcome outcomeMessage createdAt handledAt
-        item { id caption type media { thumbnailUrl expiresAt } album { id title } }
     }
 `);
 
 const MyReportsQuery = graphql(`
     query MyReports {
-        open: reports(open: true, mine: true) { ...MyReport }
-        handled: reports(open: false, mine: true) { ...MyReport }
+        reports(mine: true) {
+            id reason message status outcome outcomeMessage createdAt handledAt
+            item { id caption type media { thumbnailUrl expiresAt } album { id title } }
+        }
     }
 `);
 
@@ -235,7 +229,7 @@ export const getAlbumMeta = async (id: string) => (await runQuery(AlbumMetaQuery
 export const getAlbumItems = async (id: string, page: number, size: number) =>
   (await runQuery(AlbumItemsQuery, { id, page, size }))?.album?.items ?? null;
 export const getItem = async (id: string) => runQuery(ItemQuery, { id });
-export const getItemsById = async (ids: string[]) => (await runQuery(ItemsByIdQuery, { ids }))?.publicItems ?? [];
+export const getItemMedia = async (ids: string[]) => (await runQuery(ItemMediaQuery, { ids }))?.itemMedia ?? [];
 export const getSpexAlbums = async (spexId: string) => (await runQuery(SpexAlbumsQuery, { spexId }))?.spexAlbums ?? [];
 export const search = async (q: string) => (await runQuery(SearchQuery, { q }))?.search;
 export const smartSearch = async (q: string, filter: AlbumFilter) =>
@@ -246,13 +240,9 @@ export const getMyContributions = async () => (await runQuery(MyContributionsQue
 export const getMySuggestions = async () => {
   const data = await runQuery(MySuggestionsQuery, {});
 
-  return { suggestions: [...data?.open ?? [], ...data?.handled ?? []], kinds: data?.albumKinds ?? [] };
+  return { suggestions: data?.albumSuggestions ?? [], kinds: data?.albumKinds ?? [] };
 };
-export const getMyReports = async () => {
-  const data = await runQuery(MyReportsQuery, {});
-
-  return [...data?.open ?? [], ...data?.handled ?? []];
-};
+export const getMyReports = async () => (await runQuery(MyReportsQuery, {}))?.reports ?? [];
 export const getContribute = async (id: string) => runQuery(ContributeQuery, { id });
 export const reportCreate = (input: ReportInput) => runMutation(ReportCreateMutation, { input });
 export const contributionsAdd = async (albumId: string, uploadIds: string[]) =>

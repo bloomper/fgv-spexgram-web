@@ -6,8 +6,7 @@ import {
   contributionsAdd,
   contributionWithdraw,
   getAlbumItems,
-  getItem,
-  getItemsById,
+  getItemMedia,
   reportCreate,
 } from "@/lib/gram/gram.server";
 import { itemsAdd } from "@/lib/gram/manage.server";
@@ -53,14 +52,7 @@ export async function renewItemsAction(ids: string[]): Promise<ActionResult<Gall
   const wanted = [...new Set(ids)].slice(0, 200);
 
   wanted.forEach(requireId);
-  return toActionResult(async () => {
-    if (wanted.length === 1) {
-      const result = await getItem(wanted[0]);
-
-      return result?.item ? [result.item] : [];
-    }
-    return getItemsById(wanted);
-  });
+  return toActionResult(async () => getItemMedia(wanted));
 }
 
 /**

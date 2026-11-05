@@ -81,8 +81,8 @@ reach it, and GraphQL is called without a token.
   (`src/components/gram/item-image.client.tsx`) shows placeholders for `PROCESSING` and `FAILED` items and when an image
   cannot load (e.g. Immich is down). Text alternatives come from `altText()` (`src/utils/gram.ts`): the caption, else the
   album's title and the date.
-- **Renewal**: `Gallery` asks `renewItemsAction` for new addresses (in chunks of 200, through `publicItems(ids)`, which
-  returns what the viewer may see) when the page is looked at again or the viewer opens and an address runs out within
+- **Renewal**: `Gallery` asks `renewItemsAction` for new addresses (in chunks of 200, through `itemMedia(ids)`, which
+  returns what the viewer may see; `publicItems` is for other applications and answers as for a visitor) when the page is looked at again or the viewer opens and an address runs out within
   15 minutes; `ItemView` renews once when its photo or video fails to load. Neither renders the page again.
 - **The grid** (`Gallery`, `src/components/gram/gallery.client.tsx`) is react-photo-album's justified `RowsPhotoAlbum`;
   an album loads 60 items per page as the viewer scrolls (`albumItemsAction`, IntersectionObserver). Contributions
