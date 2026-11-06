@@ -151,7 +151,8 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options }: {
           Carousel: t("carousel"),
           Slide: t("slide"),
           "Photo gallery": t("gallery"),
-          "{index} of {total}": t("indexOfTotal"),
+          // The lightbox substitutes {index} and {total} itself, so the template must not be formatted here.
+          "{index} of {total}": t.raw("indexOfTotal") as string,
           "Zoom in": t("zoomIn"),
           "Zoom out": t("zoomOut"),
           Play: t("play"),

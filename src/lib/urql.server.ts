@@ -52,9 +52,12 @@ const makeClient = () => {
       const client = clientIp(await requestHeaders());
 
       headers.set("Accept-Language", locale);
-      // The visitor's address, which the server uses only to limit visitors' reports
-      if (client) {
+      // The visitor's address, which the server uses only to limit visitors' reports. The API is public, so it
+      // trusts the address only together with the secret it shares with the web
+      const secret = process.env.API_CLIENT_IP_SECRET;
+      if (client && secret) {
         headers.set("X-Client-IP", client);
+        headers.set("X-Client-IP-Secret", secret);
       }
 
       return fetch(input, {

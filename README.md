@@ -75,6 +75,7 @@ The look (logo, favicon and colours) is FGV's, shared with Spexregister, Nyupps√
    | `API_ENDPOINT`                   | Spexgram Server's origin for tus uploads and albums as zips; defaults to the GraphQL endpoint's |
    | `MEDIA_ORIGIN`                   | The media server's origin, allowed by the pages' Content Security Policy; `http://localhost:8086` when Spexgram Server runs with `bootRun` |
    | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile's site key for visitors' reports (read at runtime despite its prefix); `1x00000000000000000000AA` is Cloudflare's test key, which always passes |
+   | `API_CLIENT_IP_SECRET`           | Optional: the secret shared with Spexgram Server's `API_CLIENT_IP_SECRET`, sent with the visitor's address so that visitors' reports are limited per visitor; without it they are limited per web |
    | `SPEXFLIX_WEB_URL`               | Spexflix, where uploaders of long videos are pointed; also the application switcher |
    | `SPEXREGISTER_WEB_URL`, `FGV_REVIVAL_WEB_URL`, `SPEXIFY_WEB_URL`, `ARCHIVE_WEB_URL` | The other applications, for the application switcher in the header |
    | `SUPPORT_EMAIL`, `FEEDBACK_EMAIL`| The addresses on the support and about pages (in `.env`)                 |
@@ -127,9 +128,9 @@ already on Docker Hub.
 
 The image contains no environment-specific values. All configuration is read at runtime: `BETTER_AUTH_URL`,
 `AUTH_SECRET`, `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_CLIENT_SECRET`, `KEYCLOAK_ISSUER`, `API_GRAPHQL_ENDPOINT`,
-`API_ENDPOINT`, `MEDIA_ORIGIN`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `SPEXREGISTER_WEB_URL`, `FGV_REVIVAL_WEB_URL`,
-`SPEXIFY_WEB_URL`, `SPEXFLIX_WEB_URL`, `ARCHIVE_WEB_URL`, `SUPPORT_EMAIL`, `FEEDBACK_EMAIL`, `SUPPORTED_LOCALES`,
-`DEFAULT_LOCALE`, `UMAMI_URL` and `UMAMI_WEBSITE_ID`. Visitor statistics go to Umami only when both Umami variables
+`API_ENDPOINT`, `API_CLIENT_IP_SECRET`, `MEDIA_ORIGIN`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `SPEXREGISTER_WEB_URL`,
+`FGV_REVIVAL_WEB_URL`, `SPEXIFY_WEB_URL`, `SPEXFLIX_WEB_URL`, `ARCHIVE_WEB_URL`, `SUPPORT_EMAIL`, `FEEDBACK_EMAIL`,
+`SUPPORTED_LOCALES`, `DEFAULT_LOCALE`, `UMAMI_URL` and `UMAMI_WEBSITE_ID`. Visitor statistics go to Umami only when both Umami variables
 are set. [fgv-spexgram-deploy][8] runs it.
 
 ## Building and Deployment
