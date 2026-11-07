@@ -4,7 +4,7 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Gallery } from "@/components/gram/gallery.client";
 import { item } from "@/components/manage/__tests__/fixtures";
-import { MockIntersectionObserver } from "../../../../vitest.setup";
+import { MockIntersectionObserver } from "./mock-intersection-observer";
 
 const mocks = vi.hoisted(() => ({
   albumItemsAction: vi.fn(),
