@@ -60,6 +60,9 @@ export const test = base.extend<{
       process: async () => {
         await request.post(`${MOCK_URL}/__process`);
       },
+      fill: async (albumId: string, count: number) => {
+        await request.post(`${MOCK_URL}/__fill`, { data: { albumId, count } });
+      },
       settings: async (settings: Record<string, unknown>) => {
         await request.post(`${MOCK_URL}/__settings`, { data: settings });
       },
@@ -95,6 +98,8 @@ type Mock = {
   failNext: (operation: string, classification: string) => Promise<void>;
   /** Immich finishes every item it is processing. */
   process: () => Promise<void>;
+  /** Adds this many items to an album, taken after those it has. */
+  fill: (albumId: string, count: number) => Promise<void>;
   /** Changes the server's settings, e.g. whether members download originals. */
   settings: (settings: Record<string, unknown>) => Promise<void>;
   /** What the backend holds, for checking what the web sent. */

@@ -106,7 +106,8 @@ reach it, and GraphQL is called without a token.
   `SpexflixHint` points long videos to Spexflix. Only the album's own page is refreshed when an upload lands, and
   `Gallery` merges the new render into what it shows (`mergeShown`): items keep their addresses while they last and the
   viewer stays on its item, so a video playing there goes on.
-- **Editing** (`/manage/albums/[id]`): drop zone, `ItemsManager` (check boxes; caption, photographer, visibility, move,
+- **Editing** (`/manage/albums/[id]`, 200 items a page with `?page=`; `?item=` opens an item, also one on another page):
+  drop zone, `ItemsManager` (check boxes; caption, photographer, visibility, move,
   trash for the selection; an item's fields, position and *make cover* in `ItemEditor`), `VisibilityControl` (the
   confirmation says how many items visitors will see: `publicAfter()`), `AlbumForm` with the shared `SpexPicker`, the
   trash and `RecordHistory`. Making items public in bulk is confirmed with their count.
@@ -154,7 +155,8 @@ id passed in `applications.server.ts` (`"spexgram"`) differs. Visitors see the p
 - E2E specs per area: `public` (visitors), `viewing` (members), `editing`, `contributions` (and reports), `shell`,
   `admin`, `mobile` (360, 390 and 768 px: no sideways scrolling, header and viewer controls in sight) and `language`. The mock backend keeps state per test (reset automatically), filters by
   viewer like the server, implements tus and serves a small PNG as every photo; the `mock` fixture has
-  `failNext(operation, classification)`, `process()` (Immich finishes processing), `settings(…)` and `state()`.
+  `failNext(operation, classification)`, `process()` (Immich finishes processing), `fill(albumId, count)` (more items),
+  `settings(…)` and `state()`.
 - `mockTurnstile(page)` stands in for Turnstile's script; `acceptCookies(page)` dismisses the notice for visitors, who
   never log in; `ids` names the sample albums and items.
 - Call `hydrated(page, selector)` before `setInputFiles`. Pages stream: an element can be in the DOM twice for a moment

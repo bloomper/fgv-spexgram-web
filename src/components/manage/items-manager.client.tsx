@@ -36,14 +36,14 @@ type ManagedItem = GalleryItem & { fileSize?: number | null; trashedAt?: string 
  * to another album or the trash. Clicking an item opens its fields. Items Immich is processing or failed with are shown
  * with their status; a video that was too long points to Spexflix.
  */
-export function ItemsManager({ albumId, albumTitle, items, coverId, spexflixUrl, openItemId }: {
+export function ItemsManager({ albumId, albumTitle, items, coverId, spexflixUrl, openItem }: {
   albumId: string | null;
   albumTitle?: string;
   items: ManagedItem[];
   coverId?: string | null;
   spexflixUrl?: string | null;
-  /** An item to open at once, e.g. from its page's *Edit*. */
-  openItemId?: string | null
+  /** An item to open at once, e.g. from its page's *Edit*; it may be on another page of the album. */
+  openItem?: ManagedItem | null
 }) {
   const t = useTranslations("Items");
   const v = useTranslations("Visibility");
@@ -51,7 +51,7 @@ export function ItemsManager({ albumId, albumTitle, items, coverId, spexflixUrl,
   const router = useRouter();
   const dialogs = useDialogs();
   const [selected, setSelected] = useServerState<Set<string>>(new Set(), () => items.map(item => item.id).join());
-  const [editing, setEditing] = useState<ManagedItem | null>(() => items.find(item => item.id === openItemId) ?? null);
+  const [editing, setEditing] = useState<ManagedItem | null>(openItem ?? null);
   const [pending, start] = useTransition();
   const ids = [...selected];
 

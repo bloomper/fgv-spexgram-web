@@ -518,13 +518,18 @@ const resolvers = {
     return { albumSuggest: { id: suggestion.id, album: { id: created.id } } };
   },
   // --- editing ---
-  ManageAlbum: (persona, { id }) => {
+  ManageAlbum: (persona, { id, page = 0, size = 100 }) => {
     requireEditor(persona);
 
     const a = albumById(id);
+    const all = a ? state.items.filter(i => i.albumId === a.id && !i.trashedAt)
+      .sort((x, y) => (x.takenAt ?? "").localeCompare(y.takenAt ?? "")) : [];
 
     return {
-      album: a ? { ...albumOut(persona, a), items: { ...albumOut(persona, a).items, items: state.items.filter(i => i.albumId === a.id && !i.trashedAt).map(i => itemOut(persona, i)) } } : null,
+      album: a ? {
+        ...albumOut(persona, a),
+        items: { items: all.slice(page * size, (page + 1) * size).map(i => itemOut(persona, i)), totalCount: all.length, page, size },
+      } : null,
       albumKinds: sortedKinds().map(kind => kindOut(kind.id)),
       limits: limitsOut(persona),
     };
@@ -1076,6 +1081,16 @@ async function handle(req, res, chunks) {
     state.items.filter(i => i.status === "PROCESSING").forEach(i => {
       i.status = "READY";
     });
+    res.writeHead(204).end();
+  } else if (req.method === "POST" && path === "/__fill") {
+    // More items in an album, taken after those it has, e.g. for the editor's pages
+    const { albumId, count } = JSON.parse(body);
+
+    for (let i = 0; i < count; i++) {
+      const n = state.nextId++;
+
+      state.items.push(item(n, null, { albumId, takenAt: `2030-01-01T00:${String(Math.floor(i / 60)).padStart(2, "0")}:${String(i % 60).padStart(2, "0")}`, caption: `Fyllnad ${i + 1}` }));
+    }
     res.writeHead(204).end();
   } else if (req.method === "POST" && path === "/__settings") {
     Object.assign(state.settings, JSON.parse(body));

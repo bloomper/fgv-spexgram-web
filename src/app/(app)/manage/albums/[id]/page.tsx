@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,31 +13,51 @@ import { UploadDropZone, UploadList } from "@/components/upload/uploads.client";
 import { RecordHistory } from "@/components/audit/change-log";
 import { auditLink } from "@/app/(app)/manage/audit/links";
 import { getManageAlbum } from "@/lib/gram/manage.server";
+import { getItem } from "@/lib/gram/gram.server";
+import { Pager } from "@/components/gram/pager";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { ID } from "@/utils/ids";
+import { toPage } from "@/utils/filters";
+
+/** Items a page of the editor shows; an album can hold thousands. */
+const ITEMS_PAGE = 200;
 
 /**
- * An album's edit page: upload by dragging files onto it, its items with bulk changes, its visibility, its fields, the
- * trash and its latest changes.
+ * An album's edit page: upload by dragging files onto it, its items with bulk changes (a page of them at a time,
+ * `?page=`), its visibility, its fields, the trash and its latest changes. `?item=` opens an item of the album, also one
+ * on another page.
  */
 export default async function ManageAlbumPage({ params, searchParams }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ item?: string }>
+  searchParams: Promise<{ item?: string; page?: string }>
 }) {
   return withPolicyPage(Policies.editor.requireEditor, async () => {
     const { id } = await params;
-    const { item: openItem } = await searchParams;
-    const data = ID.test(id) ? await getManageAlbum(id) : null;
+    const { item: openItemId, page: pageParam } = await searchParams;
+    const page = toPage(pageParam);
+    const data = ID.test(id) ? await getManageAlbum(id, page, ITEMS_PAGE) : null;
     const album = data?.album;
 
     if (!album || !data) {
       notFound();
     }
 
+    const pages = Math.max(1, Math.ceil(album.items.totalCount / ITEMS_PAGE));
+
+    // Items moved or trashed can leave a page past the last one
+    if (page >= pages) {
+      redirect(`/manage/albums/${album.id}${pages > 1 ? `?page=${pages - 1}` : ""}`);
+    }
+
     const t = await getTranslations("ManageAlbum");
     const spexflixUrl = process.env.SPEXFLIX_WEB_URL?.trim().replace(/\/+$/, "") || null;
     const items = album.items.items;
+    const wanted = openItemId && ID.test(openItemId) ? openItemId : null;
+    const onPage = wanted ? items.find(item => item.id === wanted) : undefined;
+    const fetched = wanted && !onPage ? (await getItem(wanted))?.item : null;
+    const openItem = onPage ?? (fetched?.album?.id === album.id ? fetched : null);
+    const pageHref = (next: number) => `/manage/albums/${album.id}${next > 0 ? `?page=${next}` : ""}`;
 
     return (
       <div className="space-y-8 p-4 sm:p-6">
@@ -68,7 +88,8 @@ export default async function ManageAlbumPage({ params, searchParams }: {
         <section aria-labelledby="items" className="space-y-3">
           <h2 id="items" className="text-lg font-semibold">{t("items", { count: album.items.totalCount })}</h2>
           <ItemsManager albumId={album.id} albumTitle={album.title} items={items} coverId={album.cover?.id}
-                        spexflixUrl={spexflixUrl} openItemId={openItem && ID.test(openItem) ? openItem : null} />
+                        spexflixUrl={spexflixUrl} openItem={openItem} />
+          <Pager page={page} pages={pages} hrefOf={pageHref} />
         </section>
 
         <VisibilityControl albumId={album.id} visibility={album.visibility} counts={album.visibilityCounts} />

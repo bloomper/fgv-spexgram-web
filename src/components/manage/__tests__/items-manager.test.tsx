@@ -140,7 +140,7 @@ describe("ItemsManager", () => {
   });
 
   it("edits one item's fields and position, and makes it the cover", async () => {
-    manager({ openItemId: "i1" });
+    manager({ openItem: items[0] });
     expect(screen.getByRole("heading", { name: "editTitle" })).toBeInTheDocument();
 
     await userEvent.clear(screen.getByLabelText("caption"));
@@ -170,7 +170,7 @@ describe("ItemsManager", () => {
   });
 
   it("offers no cover button for the cover itself", async () => {
-    manager({ openItemId: "i2" });
+    manager({ openItem: items[1] });
     expect(screen.getAllByText("IMG_2.jpg").length).toBeGreaterThan(0);
     expect(screen.queryByRole("button", { name: "makeCover" })).not.toBeInTheDocument();
   });
