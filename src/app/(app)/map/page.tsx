@@ -6,7 +6,7 @@ import { getMapItems, getMe, getSearchFilters } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
-import { type FilterSearch, toAlbumFilter } from "@/utils/filters";
+import { type FilterSearch, firstValues, toAlbumFilter } from "@/utils/filters";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
 export default async function MapPage({ searchParams }: { searchParams: Promise<FilterSearch> }) {
   return withPolicyPage(Policies.app.requireAccess, async () => {
     const t = await getTranslations("Map");
-    const search = await searchParams;
+    const search = firstValues(await searchParams);
     const [items, filters, me, viewer] = await Promise.all([
       getMapItems(toAlbumFilter(search)), getSearchFilters(), getMe(), getViewer(),
     ]);

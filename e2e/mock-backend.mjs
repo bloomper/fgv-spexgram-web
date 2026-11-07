@@ -7,7 +7,7 @@ import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
 import { exportJWK, generateKeyPair, SignJWT } from "jose";
 
-const PORT = Number(process.env.MOCK_PORT || 4101);
+const PORT = Number(process.env.MOCK_PORT || 4104);
 const ISSUER = `http://localhost:${PORT}/realms/fgv`;
 const MEDIA = `http://localhost:${PORT}`;
 const CLIENT_ID = "fgv-spexgram";
@@ -1059,7 +1059,13 @@ async function handle(req, res, chunks) {
     currentPersona = "admin";
     res.writeHead(204).end();
   } else if (req.method === "POST" && path === "/__persona") {
-    currentPersona = JSON.parse(body).persona;
+    const { persona } = JSON.parse(body);
+    // Another web's tests reaching this mock would otherwise log in as nobody
+    if (!Object.hasOwn(PERSONAS, persona)) {
+      res.writeHead(400).end(`unknown persona ${persona}`);
+      return;
+    }
+    currentPersona = persona;
     res.writeHead(204).end();
   } else if (req.method === "POST" && path === "/__fail") {
     const { operation, classification } = JSON.parse(body);

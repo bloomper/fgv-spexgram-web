@@ -57,7 +57,7 @@ export default async function ItemPage({ params }: Props) {
   const duration = formatDurationMs(item.durationMs);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4 p-4 sm:p-6">
+    <div className="mx-auto w-full max-w-5xl space-y-4 p-4 sm:p-6">
       {item.album && (
         <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
           <Link href={`/albums/${item.album.id}`} className="hover:underline" data-testid="item-album-link">

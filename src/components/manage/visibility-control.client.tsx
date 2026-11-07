@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useDialogs } from "@/components/dialogs.client";
 import { setAlbumVisibilityAction } from "@/app/(app)/manage/actions.server";
 import type { Visibility } from "@/gql/graphql";
@@ -78,7 +79,7 @@ export function VisibilityControl({ albumId, visibility, counts }: {
         ))}
       </div>
       <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" checked={items} onChange={event => setItems(event.target.checked)} className="accent-primary" />
+        <Checkbox className="relative after:absolute after:-inset-2" checked={items} onCheckedChange={checked => setItems(checked)} />
         {t("items", { count: total })}
       </label>
       <p className="text-xs text-muted-foreground">

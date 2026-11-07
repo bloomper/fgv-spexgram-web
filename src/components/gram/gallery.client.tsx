@@ -9,11 +9,12 @@ import { Hourglass } from "lucide-react";
 import { ItemImage } from "@/components/gram/item-image.client";
 import { ItemViewer, type ViewerOptions } from "@/components/gram/viewer.client";
 import { albumItemsAction, renewItemsAction } from "@/app/(app)/actions.server";
-import { useServerState } from "@/hooks/use-server-state.client";
-import { altText, type GalleryItem, isShowable, mergeRenewed, needsRenewal } from "@/utils/gram";
+import { altText, type GalleryItem, isShowable, mergeRenewed, mergeShown, needsRenewal } from "@/utils/gram";
 import { Button } from "@/components/ui/button";
 
 type GalleryPhoto = Photo & { item: GalleryItem };
+
+const serverKey = (items: readonly GalleryItem[]) => items.map(item => item.id + (item.media?.expiresAt ?? "")).join();
 
 const RENEW_CHUNK = 200;
 
@@ -32,12 +33,28 @@ export function Gallery({ items: initialItems, albumId, totalCount, pageSize = 6
 }) {
   const t = useTranslations("Gallery");
   const locale = useLocale();
-  const [items, setItems] = useServerState(initialItems, list => list.map(item => item.id + (item.media?.expiresAt ?? "")).join());
+  const [items, setItems] = useState(initialItems);
   const [open, setOpen] = useState<number | null>(null);
+  // A page rendered again (an upload landed, or Next kept it alive) is merged into what is shown, not put in its place:
+  // the addresses would all be new, and a video playing in the viewer would start over. The viewer stays on its item.
+  const [seen, setSeen] = useState(() => serverKey(initialItems));
+
+  if (serverKey(initialItems) !== seen) {
+    const merged = mergeShown(items, initialItems);
+    const openId = open === null ? null : items[open]?.id;
+    const openAt = openId ? merged.findIndex(item => item.id === openId) : -1;
+
+    setSeen(serverKey(initialItems));
+    setItems(merged);
+    setOpen(openAt < 0 ? null : openAt);
+  }
   const [loading, startLoading] = useTransition();
   const [failed, setFailed] = useState(false);
+  // A page that brings nothing new ends the loading, even if the count says more: otherwise the observer, which
+  // fires again for every new loadMore, would ask for the same page forever
+  const [exhausted, setExhausted] = useState(false);
   const sentinel = useRef<HTMLDivElement>(null);
-  const hasMore = albumId !== undefined && totalCount !== undefined && items.length < totalCount;
+  const hasMore = albumId !== undefined && totalCount !== undefined && items.length < totalCount && !exhausted;
 
   const loadMore = useCallback(() => {
     if (!albumId || loading || !hasMore) {
@@ -48,16 +65,23 @@ export function Gallery({ items: initialItems, albumId, totalCount, pageSize = 6
 
       if (result.ok) {
         setFailed(false);
-        setItems(current => {
-          const known = new Set(current.map(item => item.id));
 
-          return [...current, ...result.data.items.filter(item => !known.has(item.id))];
+        const known = new Set(items.map(item => item.id));
+        const added = result.data.items.filter(item => !known.has(item.id));
+
+        if (added.length === 0) {
+          setExhausted(true);
+        }
+        setItems(current => {
+          const present = new Set(current.map(item => item.id));
+
+          return [...current, ...added.filter(item => !present.has(item.id))];
         });
       } else {
         setFailed(true);
       }
     });
-  }, [albumId, hasMore, items.length, loading, pageSize, setItems]);
+  }, [albumId, hasMore, items, loading, pageSize, setItems]);
 
   useEffect(() => {
     const element = sentinel.current;

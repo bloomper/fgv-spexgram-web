@@ -50,6 +50,8 @@ async function forward(request: NextRequest, { params }: Params): Promise<Respon
     }
   }
   out.set("Access-Control-Expose-Headers", TUS_RESPONSE_HEADERS.join(", "));
+  out.set("X-Content-Type-Options", "nosniff");
+  out.set("Content-Security-Policy", "default-src 'none'; sandbox");
   return new Response(request.method === "HEAD" ? null : upstream.body, { status: upstream.status, headers: out });
 }
 

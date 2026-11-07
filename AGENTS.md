@@ -25,7 +25,7 @@ endpoints for tus uploads and albums as zips; the files themselves come from the
 
 - `npm run dev` (port 3004) / `build` / `start`
 - `npm run lint`, `npm run typecheck` (covers `src/**` only)
-- `npm run test` (Vitest), `npm run test:e2e` (Playwright, `e2e/mock-backend.mjs` stands in for the server, the media
+- `npm run test` (Vitest), `npm run test:e2e` (Playwright on ports 3104/4104, `e2e/mock-backend.mjs` stands in for the server, the media
   server and Keycloak)
 - `npm run gql-codegen` — regenerate `src/gql/` from the sibling `../fgv-spexgram-server` checkout. Commit the result.
 
@@ -103,7 +103,9 @@ reach it, and GraphQL is called without a token.
   then to `addUploadsAction`: `itemsAdd` for editors on `/manage/albums/[id]`, `contributionsAdd` for members on
   `/albums/[id]/contribute`. The result per file is CREATED, DUPLICATE (with a link to the existing item and the album's title when
   the uploader may see them, else only "already in the archive") or REJECTED (Immich's message). Files over `limits.maxUploadBytes` are refused before they are sent;
-  `SpexflixHint` points long videos to Spexflix. Only the album's own page is refreshed when an upload lands.
+  `SpexflixHint` points long videos to Spexflix. Only the album's own page is refreshed when an upload lands, and
+  `Gallery` merges the new render into what it shows (`mergeShown`): items keep their addresses while they last and the
+  viewer stays on its item, so a video playing there goes on.
 - **Editing** (`/manage/albums/[id]`): drop zone, `ItemsManager` (check boxes; caption, photographer, visibility, move,
   trash for the selection; an item's fields, position and *make cover* in `ItemEditor`), `VisibilityControl` (the
   confirmation says how many items visitors will see: `publicAfter()`), `AlbumForm` with the shared `SpexPicker`, the
@@ -150,7 +152,7 @@ id passed in `applications.server.ts` (`"spexgram"`) differs. Visitors see the p
 ## Testing
 
 - E2E specs per area: `public` (visitors), `viewing` (members), `editing`, `contributions` (and reports), `shell`,
-  `admin`, `mobile` (375 px) and `language`. The mock backend keeps state per test (reset automatically), filters by
+  `admin`, `mobile` (360, 390 and 768 px: no sideways scrolling, header and viewer controls in sight) and `language`. The mock backend keeps state per test (reset automatically), filters by
   viewer like the server, implements tus and serves a small PNG as every photo; the `mock` fixture has
   `failNext(operation, classification)`, `process()` (Immich finishes processing), `settings(…)` and `state()`.
 - `mockTurnstile(page)` stands in for Turnstile's script; `acceptCookies(page)` dismisses the notice for visitors, who

@@ -36,7 +36,7 @@ export default async function ImmichPage() {
             <section aria-labelledby="queues" className="space-y-2">
               <h2 id="queues" className="text-lg font-semibold">{t("queues")}</h2>
               <div className="overflow-x-auto rounded-lg border">
-                <Table>
+                <Table className="max-sm:text-xs">
                   <TableHeader>
                     <TableRow>
                       <TableHead>{t("queue")}</TableHead>
@@ -48,7 +48,7 @@ export default async function ImmichPage() {
                   <TableBody>
                     {status.queues.map(queue => (
                       <TableRow key={queue.name}>
-                        <TableCell>
+                        <TableCell className="whitespace-normal">
                           {t.has(`queueNames.${queue.name}`) ? t(`queueNames.${queue.name}`) : queue.name}
                           {queue.paused && <Badge variant="outline" className="ml-2">{t("paused")}</Badge>}
                         </TableCell>

@@ -14,7 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t("title"),
     description: t("description"),
     robots: { index: true, follow: true },
-    openGraph: { title: t("title"), description: t("description"), type: "website", images: ["/icon-512.png"] },
+    // No image: the application has no picture of its own (only the FGV logo, for the manifest)
+    openGraph: { title: t("title"), description: t("description"), type: "website", siteName: "Spexgram" },
   };
 }
 

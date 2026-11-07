@@ -59,6 +59,34 @@ export function mergeRenewed<T extends { id: string }>(items: readonly T[], rene
   return items.map(item => byId.get(item.id) ?? item);
 }
 
+/** The server signs addresses for at least this long. */
+export const MIN_VALIDITY_MS = 4 * 60 * 60 * 1000;
+
+/**
+ * The items the server sent, merged into those already shown, for a page rendered again (e.g. after an upload): items
+ * already shown keep their addresses while those last, so that a video playing in the viewer is not loaded again;
+ * new items and changed fields come from the server; items loaded by scrolling beyond the server's page stay. An
+ * address is kept if it lasts the renewal margin beyond when the server signed its own, at the latest
+ * {@link MIN_VALIDITY_MS} before they run out (no clock is read, so this can run while rendering).
+ */
+export function mergeShown<T extends { id: string; media?: { expiresAt: string } | null }>(shown: readonly T[], server: readonly T[]): T[] {
+  const byId = new Map(shown.map(item => [item.id, item]));
+  const merged = server.map(item => {
+    const mine = byId.get(item.id);
+
+    if (!mine?.media || !item.media) {
+      return item;
+    }
+
+    const signed = Date.parse(item.media.expiresAt) - MIN_VALIDITY_MS;
+
+    return Date.parse(mine.media.expiresAt) - signed >= RENEW_MARGIN_MS ? { ...item, media: mine.media } : item;
+  });
+  const present = new Set(merged.map(item => item.id));
+
+  return [...merged, ...shown.slice(server.length).filter(item => !present.has(item.id))];
+}
+
 /**
  * Whether the item can be shown as a picture: it has addresses and Immich has finished with it.
  */

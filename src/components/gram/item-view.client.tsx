@@ -53,7 +53,8 @@ export function ItemView({ item: initial, canDownloadOriginals, report }: {
           </video>
         ) : isShowable(item) && item.media ? (
           // eslint-disable-next-line @next/next/no-img-element -- signed addresses on the media server, never next/image
-          <img src={item.media.previewUrl} alt={alt} className="max-h-[80vh] w-auto object-contain"
+          <img src={item.media.previewUrl} alt={alt} width={item.width ?? undefined} height={item.height ?? undefined}
+               className="h-auto max-h-[80vh] w-full object-contain"
                onError={() => void renew()} data-testid="item-photo" />
         ) : (
           <ItemImage src={null} alt={alt} status={item.status} className="aspect-[4/3] w-full max-w-xl" />

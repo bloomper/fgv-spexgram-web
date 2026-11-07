@@ -4,12 +4,13 @@ import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { isAdmin } from "@/utils/auth";
 import type { AuditSearch } from "@/utils/audit";
+import { firstValues } from "@/utils/filters";
 import { auditLink, ENTITY_TYPES } from "./links";
 
 export default async function AuditPage({ searchParams }: { searchParams: Promise<AuditSearch> }) {
   return withPolicyPage(Policies.editor.requireEditor, async (authz) => {
     const t = await getTranslations("Audit");
-    const search = await searchParams;
+    const search = firstValues(await searchParams);
 
     return (
       <div className="space-y-6 p-4 sm:p-6">

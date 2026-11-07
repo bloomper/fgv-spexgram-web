@@ -1,17 +1,19 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FolderInput, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ItemImage } from "@/components/gram/item-image.client";
 import { useDialogs } from "@/components/dialogs.client";
 import { albumFromItemsAction, albumTitlesAction, updateItemsAction } from "@/app/(app)/manage/actions.server";
 import { altText, type GalleryItem } from "@/utils/gram";
 import { formatDay, formatPeriod, formatTaken } from "@/utils/format";
 import { track } from "@/utils/umami";
+import { useServerState } from "@/hooks/use-server-state.client";
 
 type Day = { date?: string | null; items: GalleryItem[] };
 
@@ -24,7 +26,9 @@ export function UnsortedSorter({ days }: { days: Day[] }) {
   const locale = useLocale();
   const router = useRouter();
   const dialogs = useDialogs();
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  // Starts over when the server sends other items, e.g. after they were sorted on another page
+  const [selected, setSelected] = useServerState<Set<string>>(new Set(),
+    () => days.flatMap(day => day.items.map(item => item.id)).join());
   const [pending, start] = useTransition();
   const ids = [...selected];
 
@@ -103,7 +107,7 @@ export function UnsortedSorter({ days }: { days: Day[] }) {
         return (
           <section key={day.date ?? "none"} aria-label={label} className="space-y-2">
             <label className="flex items-center gap-2 font-semibold">
-              <input type="checkbox" className="accent-primary" checked={all} onChange={event => setMany(dayIds, event.target.checked)} />
+              <Checkbox className="relative after:absolute after:-inset-2" checked={all} onCheckedChange={checked => setMany(dayIds, checked)} />
               {label} <span className="text-sm font-normal text-muted-foreground">({day.items.length})</span>
             </label>
             <ul className="grid grid-cols-3 gap-2 sm:grid-cols-6 lg:grid-cols-8">
@@ -113,9 +117,10 @@ export function UnsortedSorter({ days }: { days: Day[] }) {
                     <span className="block aspect-square">
                       <ItemImage src={item.media?.thumbnailUrl} alt="" status={item.status} type={item.type} fill />
                     </span>
-                    <input type="checkbox" className="absolute top-1 left-1 size-4 accent-primary" checked={selected.has(item.id)}
-                           onChange={event => setMany([item.id], event.target.checked)}
-                           aria-label={t("select", { name: [altText(item, locale), formatTaken(item.takenAt)].filter(Boolean).join(" ") })} />
+                    <span className="absolute top-1 left-1 flex rounded bg-background/85 p-1.5">
+                      <Checkbox className="size-5" checked={selected.has(item.id)} onCheckedChange={checked => setMany([item.id], checked)}
+                                aria-label={t("select", { name: [altText(item, locale), formatTaken(item.takenAt)].filter(Boolean).join(" ") })} />
+                    </span>
                   </label>
                 </li>
               ))}

@@ -19,6 +19,7 @@ import { altText, downloadName, type GalleryItem, isShowable } from "@/utils/gra
 import { formatDay } from "@/utils/format";
 import { track } from "@/utils/umami";
 import { downloadFile } from "@/components/gram/download.client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export type ViewerOptions = {
   canDownloadOriginals: boolean;
@@ -52,6 +53,8 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options }: {
   const t = useTranslations("Viewer");
   const locale = useLocale();
   const [reportItem, setReportItem] = useState<string | null>(null);
+  // A phone's toolbar has no room for every button: zoom is a pinch or a double tap there
+  const narrow = useIsMobile();
   const shown = useMemo(() => items.filter(isShowable), [items]);
   const current = index === null ? null : items[index] ?? null;
   const slideIndex = current ? Math.max(0, shown.findIndex(item => item.id === current.id)) : 0;
@@ -130,6 +133,8 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options }: {
         slides={slides}
         plugins={[Captions, Counter, Fullscreen, Slideshow, Video, Zoom]}
         toolbar={{ buttons }}
+        // The plugin adds its buttons to the toolbar itself, so they are left out by rendering nothing
+        render={narrow ? { buttonZoom: () => null } : undefined}
         on={{ view: ({ index: viewed }) => {
           const next = toItemsIndex(viewed);
 
@@ -140,6 +145,8 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options }: {
         carousel={{ finite: false, preload: 2 }}
         captions={{ descriptionTextAlign: "center", descriptionMaxLines: 3 }}
         counter={{ container: { style: { top: "unset", bottom: 0 } } }}
+        // The counter sits in the bottom left corner, where a long description would run under it
+        styles={{ captionsDescriptionContainer: { paddingInline: "4.5rem" } }}
         zoom={{ maxZoomPixelRatio: 3, scrollToZoom: true }}
         slideshow={{ delay: 4000 }}
         video={{ autoPlay: false }}

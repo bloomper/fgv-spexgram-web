@@ -1,3 +1,4 @@
+import { MOCK_URL } from "./constants";
 import { expect, test } from "./fixtures";
 
 test.describe("The application shell", () => {
@@ -28,9 +29,9 @@ test.describe("The application shell", () => {
   });
 
   test("a visitor logs in from an album and comes back to it", async ({ page, request }) => {
-    await request.post("http://localhost:4101/__persona", { data: { persona: "viewer" } });
+    await request.post(`${MOCK_URL}/__persona`, { data: { persona: "viewer" } });
     await page.goto("/albums/00000000-0000-7000-8000-000000000020");
-    await page.getByTestId("login-prompt").getByRole("link", { name: "Logga in" }).click();
+    await page.getByRole("main").getByTestId("login-prompt").getByRole("link", { name: "Logga in" }).click();
 
     await expect(page.getByRole("heading", { level: 1, name: "Sittning efter premiären" })).toBeVisible();
   });

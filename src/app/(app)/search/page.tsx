@@ -10,7 +10,8 @@ import { Gallery } from "@/components/gram/gallery.client";
 import { getMe, getSearchFilters, search, smartSearch } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
 import { GraphQLRequestError } from "@/lib/graphql.server";
-import { filterHref, type FilterSearch, toAlbumFilter } from "@/utils/filters";
+import { loginHref } from "@/utils/auth";
+import { filterHref, type FilterSearch, firstValues, toAlbumFilter } from "@/utils/filters";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Search");
@@ -24,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function SearchPage({ searchParams }: { searchParams: Promise<FilterSearch> }) {
   const t = await getTranslations("Search");
-  const params = await searchParams;
+  const params = firstValues(await searchParams);
   const q = (params.q ?? "").trim().slice(0, 200);
   const viewer = await getViewer();
   const smart = viewer.member && params.smart === "1";
@@ -61,7 +62,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       {viewer.member
         ? <p className="text-sm text-muted-foreground">{smart ? t("smartHint") : t("textHint")}</p>
         : <p className="text-sm text-muted-foreground">{t("visitorHint")}{" "}
-          <Link href="/api/auth/login?returnTo=%2Fsearch" className="text-primary underline">{t("loginForMore")}</Link>
+          <a href={loginHref(q ? `/search?q=${encodeURIComponent(q)}` : "/search")} className="text-primary underline">{t("loginForMore")}</a>
         </p>}
 
       {smart && filters && (

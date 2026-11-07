@@ -7,6 +7,8 @@ const appEnv: Record<string, string> = {
   KEYCLOAK_CLIENT_SECRET: "e2e",
   KEYCLOAK_ISSUER: `http://localhost:${MOCK_PORT}/realms/fgv`,
   API_GRAPHQL_ENDPOINT: `http://localhost:${MOCK_PORT}/api/graphql`,
+  // Set here too, or a developer's .env.local (which points it at the local stack) would win over the mock
+  API_ENDPOINT: `http://localhost:${MOCK_PORT}`,
   BETTER_AUTH_URL: BASE_URL,
   SUPPORT_EMAIL: "support.spexgram@example.org",
   FEEDBACK_EMAIL: "feedback.spexgram@example.org",
@@ -16,6 +18,16 @@ const appEnv: Record<string, string> = {
   MEDIA_ORIGIN: `http://localhost:${MOCK_PORT}`,
   UMAMI_URL: "",
   UMAMI_WEBSITE_ID: "",
+  TURNSTILE_SITE_KEY: "",
+  API_CLIENT_IP_SECRET: "",
+  SUPPORTED_LOCALES: "sv,en",
+  DEFAULT_LOCALE: "sv",
+  // No other application in the switcher but Spexflix, which the hint for long videos links to
+  SPEXREGISTER_WEB_URL: "",
+  FGV_REVIVAL_WEB_URL: "",
+  SPEXIFY_WEB_URL: "",
+  SPEXGRAM_WEB_URL: "",
+  ARCHIVE_WEB_URL: "",
 };
 
 export default defineConfig({

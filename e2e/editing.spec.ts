@@ -58,7 +58,7 @@ test.describe("Editing", () => {
     await expect(page.getByRole("dialog")).toContainText("med 1 bild eller film");
     await page.getByRole("dialog").getByRole("button", { name: "Avbryt" }).click();
 
-    await page.getByLabel(/Sätt också albumets 3 bilder och filmer/).check();
+    await page.getByRole("checkbox", { name: /Sätt också albumets 3 bilder och filmer/ }).check();
     await page.getByRole("button", { name: "Ändra synligheten" }).click();
     await expect(page.getByRole("dialog")).toContainText("med 3 bilder och filmer");
     await answerDialog(page, "Ändra synligheten");
@@ -134,7 +134,7 @@ test.describe("Editing", () => {
     await loginAs("editor");
     await page.goto(`/manage/albums/${ids.membersAlbum}`);
     await page.getByRole("radio", { name: /Publik/ }).check();
-    await page.getByLabel(/Sätt också albumets/).check();
+    await page.getByRole("checkbox", { name: /Sätt också albumets/ }).check();
     await page.getByRole("button", { name: "Ändra synligheten" }).click();
     await answerDialog(page, "Ändra synligheten");
 

@@ -8,7 +8,7 @@ import { Pager } from "@/components/gram/pager";
 import { getBrowse } from "@/lib/gram/gram.server";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
-import { filterHref, type FilterSearch, toAlbumFilter, toPage } from "@/utils/filters";
+import { filterHref, type FilterSearch, firstValues, toAlbumFilter, toPage } from "@/utils/filters";
 
 const SIZE = 48;
 
@@ -18,7 +18,7 @@ const SIZE = 48;
 export default async function ManageAlbumsPage({ searchParams }: { searchParams: Promise<FilterSearch> }) {
   return withPolicyPage(Policies.editor.requireEditor, async () => {
     const t = await getTranslations("ManageAlbums");
-    const search = await searchParams;
+    const search = firstValues(await searchParams);
     const page = toPage(search.page);
     const data = await getBrowse(toAlbumFilter(search, true), page, SIZE);
     const pages = Math.max(1, Math.ceil((data?.albums.totalCount ?? 0) / SIZE));

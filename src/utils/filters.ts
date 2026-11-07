@@ -13,6 +13,14 @@ export type FilterSearch = {
   smart?: string;
 };
 
+/**
+ * The address's parameters with one value each: `?q=a&q=b` arrives as an array, which a page reading a string would
+ * stumble over. The first value counts.
+ */
+export function firstValues<T extends Record<string, string | undefined>>(search: T | Record<string, string | string[] | undefined>): T {
+  return Object.fromEntries(Object.entries(search).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value])) as T;
+}
+
 const VISIBILITY: ReadonlySet<string> = new Set(["UNPUBLISHED", "MEMBERS", "PUBLIC"]);
 
 /**

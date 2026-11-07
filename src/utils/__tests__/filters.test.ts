@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterHref, toAlbumFilter, toPage } from "@/utils/filters";
+import { filterHref, firstValues, toAlbumFilter, toPage } from "@/utils/filters";
 
 const id = "00000000-0000-7000-8000-000000000001";
 
@@ -17,5 +17,11 @@ describe("filters", () => {
     expect(toPage("-1")).toBe(0);
     expect(filterHref("/albums", { year: "1975", page: "1" }, { page: "0" })).toBe("/albums?year=1975");
     expect(filterHref("/albums", {}, {})).toBe("/albums");
+  });
+});
+
+describe("firstValues", () => {
+  it("keeps the first of a repeated parameter", () => {
+    expect(firstValues({ q: ["a", "b"], year: "1975", kind: undefined })).toEqual({ q: "a", year: "1975", kind: undefined });
   });
 });

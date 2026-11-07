@@ -49,7 +49,7 @@ export function SiteHeader({ applications, loggedIn }: { applications: Applicati
               <HeaderSearch />
               <LanguageToggle />
               <ModeToggle />
-              {!loggedIn && <LoginButton />}
+              {!loggedIn && <LoginButton compact />}
             </>
           ) : (
             <div className="bg-muted h-8 w-8 animate-pulse rounded" />
