@@ -6,7 +6,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 /**
- * Search across albums, tracks, performers, melodies and lyrics; opens the search page.
+ * Text search across albums and items; opens the search page.
  */
 export function HeaderSearch() {
   const t = useTranslations("Search");
@@ -23,7 +23,7 @@ export function HeaderSearch() {
     }}>
       <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input name="q" type="search" defaultValue={params.get("q") ?? ""} placeholder={t("placeholder")}
-             aria-label={t("placeholder")} className="h-8 w-36 pl-8 sm:w-64" />
+             aria-label={t("placeholder")} className="h-8 w-32 pl-8 sm:w-64" />
     </form>
   );
 }

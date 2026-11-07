@@ -59,7 +59,20 @@ export function normalizeTheme(value?: string): "light" | "dark" | "system" | un
  * Where to come back to after logging in: a path in this application, never another site.
  */
 export function returnPath(value: string | null): string {
-  return value && /^\/(?![/\\])/.test(value) && !value.startsWith("/api/") ? value : "/";
+  // Browsers drop tabs and newlines from addresses, so "/\t/evil.example" would become "//evil.example": refuse
+  // whitespace, control characters and backslashes anywhere, not only after the first slash
+  if (!value || !/^\/(?!\/)/.test(value) || /[\s\\\u0000-\u001f\u007f]/.test(value)) {
+    return "/";
+  }
+  try {
+    const url = new URL(value, "http://return.invalid");
+
+    return url.origin === "http://return.invalid" && !url.pathname.startsWith("/api/")
+      ? `${url.pathname}${url.search}${url.hash}`
+      : "/";
+  } catch {
+    return "/";
+  }
 }
 
 /**

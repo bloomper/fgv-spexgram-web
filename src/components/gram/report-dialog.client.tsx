@@ -39,6 +39,8 @@ export function ReportDialog({ itemId, open, onOpenChange, viewer }: {
   const [email, setEmail] = useState("");
   const [token, setToken] = useState<string | null>(null);
   const [turnstileFailed, setTurnstileFailed] = useState(false);
+  // A token is good for one try: after a refused report the widget starts over for a new one
+  const [attempt, setAttempt] = useState(0);
   const [pending, start] = useTransition();
   const emailValid = EMAIL.test(email.trim());
   const ready = reason !== null && (!viewer.visitor || (emailValid && token !== null));
@@ -73,6 +75,7 @@ export function ReportDialog({ itemId, open, onOpenChange, viewer }: {
       } else {
         toast.error(result.message);
         setToken(null);
+        setAttempt(current => current + 1);
       }
     });
   };
@@ -115,7 +118,7 @@ export function ReportDialog({ itemId, open, onOpenChange, viewer }: {
                 <p className="text-xs text-muted-foreground">{t("emailHint")}</p>
               </div>
               {viewer.turnstileSiteKey ? (
-                <Turnstile siteKey={viewer.turnstileSiteKey} onToken={setToken} onError={() => setTurnstileFailed(true)} />
+                <Turnstile key={attempt} siteKey={viewer.turnstileSiteKey} onToken={setToken} onError={() => setTurnstileFailed(true)} />
               ) : <p className="text-sm text-destructive">{t("turnstileMissing")}</p>}
               {turnstileFailed && <p className="text-sm text-destructive" role="alert">{t("turnstileFailed")}</p>}
             </>

@@ -7,7 +7,7 @@ import { Pager } from "@/components/gram/pager";
 import { DataEmpty } from "@/components/data-empty";
 import { getBrowse } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
-import { filterHref, type FilterSearch, toAlbumFilter, toPage } from "@/utils/filters";
+import { filterHref, type FilterSearch, firstValues, toAlbumFilter, toPage } from "@/utils/filters";
 
 const SIZE = 48;
 
@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function AlbumsPage({ searchParams }: { searchParams: Promise<FilterSearch> }) {
   const t = await getTranslations("Albums");
-  const search = await searchParams;
+  const search = firstValues(await searchParams);
   const viewer = await getViewer();
   const page = toPage(search.page);
   const data = await getBrowse(toAlbumFilter(search, viewer.editor), page, SIZE);

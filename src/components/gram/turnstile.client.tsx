@@ -69,6 +69,8 @@ export function Turnstile({ siteKey, onToken, onError }: {
       widgetId = api.render(container.current, {
         sitekey: siteKey,
         language: locale,
+        // The normal widget is 300 px wide, more than a dialog has on a narrow phone
+        size: container.current.clientWidth < 300 ? "compact" : "normal",
         callback: (token: string) => onTokenRef.current(token),
         "expired-callback": () => onTokenRef.current(null),
         "error-callback": () => {
@@ -86,5 +88,5 @@ export function Turnstile({ siteKey, onToken, onError }: {
     };
   }, [siteKey, locale]);
 
-  return <div ref={container} data-testid="turnstile" className="min-h-[65px]" />;
+  return <div ref={container} data-testid="turnstile" className="min-h-[65px] w-full" />;
 }

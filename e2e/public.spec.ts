@@ -34,11 +34,11 @@ test.describe("The public side, for visitors who are not logged in", () => {
   test("a members' album, an unpublished one and one that does not exist all ask to log in, alike", async ({ page }) => {
     for (const id of [ids.membersAlbum, ids.unpublishedAlbum, uuidOf(999)]) {
       await page.goto(`/albums/${id}`);
-      await expect(page.getByTestId("login-prompt")).toBeVisible();
+      await expect(page.getByRole("main").getByTestId("login-prompt")).toBeVisible();
       await expect(page.getByRole("heading", { level: 1, name: "Logga in för att se det här" })).toBeVisible();
       await expect(page.locator("meta[name='robots']")).toHaveAttribute("content", /noindex/);
       await expect(page.locator("meta[property='og:title']")).toHaveCount(0);
-      await expect(page.getByTestId("login-prompt").getByRole("link", { name: "Logga in" }))
+      await expect(page.getByRole("main").getByTestId("login-prompt").getByRole("link", { name: "Logga in" }))
         .toHaveAttribute("href", `/api/auth/login?returnTo=${encodeURIComponent(`/albums/${id}`)}`);
     }
     await expect(page.getByText("Sittning efter premiären")).toHaveCount(0);
@@ -55,13 +55,13 @@ test.describe("The public side, for visitors who are not logged in", () => {
     await expect(page.locator("meta[property='og:image']")).toHaveAttribute("content", /\/preview\//);
 
     await page.goto(`/items/${uuidOf(201)}`);
-    await expect(page.getByTestId("login-prompt")).toBeVisible();
+    await expect(page.getByRole("main").getByTestId("login-prompt")).toBeVisible();
   });
 
   test("members' pages ask visitors to log in", async ({ page }) => {
     for (const path of ["/map", "/contributions", "/suggestions", "/reports", "/manage/albums", "/admin/settings"]) {
       await page.goto(path);
-      await expect(page.getByTestId("login-prompt"), path).toBeVisible();
+      await expect(page.getByRole("main").getByTestId("login-prompt"), path).toBeVisible();
     }
   });
 

@@ -39,6 +39,11 @@ describe("logging in", () => {
     expect(returnPath("https://evil.example")).toBe("/");
     expect(returnPath("/api/auth/login")).toBe("/");
     expect(returnPath(null)).toBe("/");
+    expect(returnPath("/\t/evil.example")).toBe("/");
+    expect(returnPath("/\n/evil.example")).toBe("/");
+    expect(returnPath("/a\\..\\/evil.example")).toBe("/");
+    expect(returnPath("/x/../api/auth/login")).toBe("/");
+    expect(returnPath("/search?q=a%20b#top")).toBe("/search?q=a%20b#top");
   });
 
   it("fails loudly when Keycloak gives no address", async () => {

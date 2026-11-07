@@ -26,7 +26,7 @@ export default async function ContributePage({ params }: { params: Promise<{ id:
     const open = album.visibility !== "UNPUBLISHED" || album.suggested;
 
     return (
-      <div className="mx-auto max-w-3xl space-y-6 p-4 sm:p-6">
+      <div className="mx-auto w-full max-w-3xl space-y-6 p-4 sm:p-6">
         <nav className="text-sm text-muted-foreground">
           <Link href={`/albums/${album.id}`} className="hover:underline">{album.title}</Link>
         </nav>

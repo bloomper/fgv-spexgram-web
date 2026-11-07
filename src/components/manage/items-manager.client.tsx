@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useDialogs } from "@/components/dialogs.client";
 import { ItemImage } from "@/components/gram/item-image.client";
 import { VisibilityBadge } from "@/components/gram/visibility-badge";
@@ -165,8 +166,8 @@ export function ItemsManager({ albumId, albumTitle, items, coverId, spexflixUrl,
       <div className="sticky top-(--header-height) z-10 flex flex-wrap items-center gap-2 rounded-lg border bg-background/95 p-2 backdrop-blur"
            role="toolbar" aria-label={t("toolbar")}>
         <label className="flex items-center gap-2 px-1 text-sm">
-          <input type="checkbox" className="accent-primary" checked={selected.size === items.length && items.length > 0}
-                 onChange={event => setSelected(event.target.checked ? new Set(items.map(item => item.id)) : new Set())} />
+          <Checkbox className="relative after:absolute after:-inset-2" checked={selected.size === items.length && items.length > 0}
+                    onCheckedChange={checked => setSelected(checked ? new Set(items.map(item => item.id)) : new Set())} />
           {selected.size ? t("selected", { count: selected.size }) : t("selectAll")}
         </label>
         <Button size="sm" variant="outline" disabled={!selected.size || pending} onClick={caption}><PenLine /> {t("caption")}</Button>
@@ -186,10 +187,10 @@ export function ItemsManager({ albumId, albumTitle, items, coverId, spexflixUrl,
                       aria-label={t("editOf", { name })}>
                 <ItemImage src={item.media?.thumbnailUrl} alt="" status={item.status} type={item.type} fill />
               </button>
-              <label className="absolute top-1 left-1 rounded bg-background/85 p-1">
-                <input type="checkbox" className="block size-4 accent-primary" checked={selected.has(item.id)}
-                       onChange={() => toggle(item.id)} aria-label={t("select", { name })} />
-              </label>
+              <span className="absolute top-1 left-1 flex rounded bg-background/85 p-1.5">
+                <Checkbox className="size-5 relative after:absolute after:-inset-2" checked={selected.has(item.id)}
+                          onCheckedChange={() => toggle(item.id)} aria-label={t("select", { name })} />
+              </span>
               <div className="space-y-1 p-1.5 text-xs">
                 <p className="truncate" title={name}>{item.caption || item.originalFileName || name}</p>
                 <div className="flex flex-wrap gap-1">
@@ -297,8 +298,7 @@ function ItemEditor({ item, albumId, isCover, onClose }: {
                      defaultValue={item.longitude ?? ""} disabled={removePosition} />
             </div>
             <label className="flex items-center gap-2 pb-2 text-sm">
-              <input type="checkbox" className="accent-primary" checked={removePosition}
-                     onChange={event => setRemovePosition(event.target.checked)} />
+              <Checkbox className="relative after:absolute after:-inset-2" checked={removePosition} onCheckedChange={checked => setRemovePosition(checked)} />
               {t("removePosition")}
             </label>
           </fieldset>

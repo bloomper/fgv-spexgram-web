@@ -35,11 +35,11 @@ export function ItemImage({ src, alt, status = "READY", type = "PHOTO", classNam
 
     return (
       <div role="img" aria-label={`${alt} (${text})`}
-           className={cn("flex flex-col items-center justify-center gap-1 bg-muted p-2 text-center text-xs text-muted-foreground",
+           className={cn("flex flex-col items-center justify-center gap-1 overflow-hidden bg-muted p-2 text-center text-xs text-muted-foreground",
              fill && "h-full w-full", className)}
            data-status={status}>
         <Icon className={cn("size-6", status === "PROCESSING" && "animate-spin")} aria-hidden />
-        <span>{text}</span>
+        <span className="max-w-full truncate">{text}</span>
       </div>
     );
   }

@@ -99,7 +99,7 @@ export function KindsEditor({ kinds }: { kinds: EditableKind[] }) {
               ) : (
                 <div className="flex flex-wrap items-center gap-2">
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="font-medium">{kind.nameSv}</span>
                       <span className="text-sm text-muted-foreground">/ {kind.nameEn}</span>
                       {kind.isDefault && <Badge variant="secondary">{t("default")}</Badge>}

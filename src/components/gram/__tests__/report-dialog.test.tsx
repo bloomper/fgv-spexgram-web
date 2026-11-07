@@ -4,13 +4,22 @@ import userEvent from "@testing-library/user-event";
 import { ReportDialog } from "@/components/gram/report-dialog.client";
 
 const reportAction = vi.hoisted(() => vi.fn());
+const turnstileMounts = vi.hoisted(() => ({ count: 0 }));
 
 vi.mock("@/app/(app)/actions.server", () => ({ reportAction }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
-vi.mock("@/components/gram/turnstile.client", () => ({
-  Turnstile: ({ onToken }: { onToken: (token: string) => void }) =>
-    <button type="button" onClick={() => onToken("token-1")}>pass turnstile</button>,
-}));
+vi.mock("@/components/gram/turnstile.client", async () => {
+  const { useEffect } = await vi.importActual<typeof import("react")>("react");
+
+  return {
+    Turnstile: ({ onToken }: { onToken: (token: string) => void }) => {
+      useEffect(() => {
+        turnstileMounts.count++;
+      }, []);
+      return <button type="button" onClick={() => onToken("token-1")}>pass turnstile</button>;
+    },
+  };
+});
 
 describe("ReportDialog", () => {
   beforeEach(() => {
@@ -47,5 +56,18 @@ describe("ReportDialog", () => {
     await waitFor(() => expect(reportAction).toHaveBeenCalledWith(expect.objectContaining({
       reason: "I_AM_IN_IT", email: "besok@example.org", turnstileToken: "token-1",
     })));
+  });
+
+  it("starts Turnstile over when the server refuses the report, since a token is good for one try", async () => {
+    reportAction.mockResolvedValue({ ok: false, code: "BAD_REQUEST", message: "Turnstile" });
+    turnstileMounts.count = 0;
+    render(<ReportDialog itemId="i1" open onOpenChange={vi.fn()} viewer={{ visitor: true, turnstileSiteKey: "key" }} />);
+    await userEvent.click(screen.getByLabelText("reasons.OTHER"));
+    await userEvent.type(screen.getByLabelText("email"), "besok@example.org");
+    await userEvent.click(screen.getByRole("button", { name: "pass turnstile" }));
+    await userEvent.click(screen.getByRole("button", { name: "send" }));
+
+    await waitFor(() => expect(turnstileMounts.count).toBe(2));
+    expect(screen.getByRole("button", { name: "send" })).toBeDisabled();
   });
 });
