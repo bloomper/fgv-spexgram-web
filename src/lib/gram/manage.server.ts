@@ -16,7 +16,7 @@ const ManageAlbumsQuery = graphql(`
 `);
 
 const ManageAlbumQuery = graphql(`
-    query ManageAlbum($id: ID!) {
+    query ManageAlbum($id: ID!, $page: Int, $size: Int) {
         album(id: $id) {
             ...AlbumCardFields
             description
@@ -25,7 +25,7 @@ const ManageAlbumQuery = graphql(`
             createdAt
             lastModifiedAt
             visibilityCounts { visibility count }
-            items(page: 0, size: 500) { items { ...ItemFields fileSize trashedAt } totalCount page size }
+            items(page: $page, size: $size) { items { ...ItemFields fileSize trashedAt } totalCount page size }
         }
         albumKinds { id nameSv nameEn isDefault }
         limits { maxUploadBytes maxVideoMinutes }
@@ -148,7 +148,7 @@ const TrashEmptyMutation = graphql(`
 
 export const getManageAlbums = async (filter: AlbumFilter, page: number, size: number) =>
   (await runQuery(ManageAlbumsQuery, { filter, page, size }))?.albums;
-export const getManageAlbum = async (id: string) => runQuery(ManageAlbumQuery, { id });
+export const getManageAlbum = async (id: string, page: number, size: number) => runQuery(ManageAlbumQuery, { id, page, size });
 export const getAlbumKinds = async () => (await runQuery(AlbumKindsQuery, {}))?.albumKinds ?? [];
 export const getAlbumTitles = async () => (await runQuery(AlbumTitlesQuery, {}))?.albums.albums ?? [];
 export const searchSpex = async (q: string) => (await runQuery(SpexSearchQuery, { q }))?.spexSearch ?? [];

@@ -48,6 +48,29 @@ test.describe("Editing", () => {
     await expect(page.getByTestId("managed-item").filter({ hasText: "ny-bild.jpg" })).not.toContainText("Bearbetas");
   });
 
+  test("a large album is edited a page at a time, and an item on another page opens from its link", async ({ page, loginAs, mock }) => {
+    await loginAs("editor");
+    await mock.fill(ids.membersAlbum, 201);
+    const last = (await mock.state()).items.find(item => item.caption === "Fyllnad 201")!;
+
+    await page.goto(`/manage/albums/${ids.membersAlbum}`);
+    await expect(page.getByRole("heading", { name: "204 bilder och filmer" })).toBeVisible();
+    await expect(page.getByTestId("managed-item")).toHaveCount(200);
+    await expect(page.getByText("Sida 1 av 2")).toBeVisible();
+
+    await page.getByRole("link", { name: "Nästa sida" }).click();
+    await expect(page).toHaveURL(/\?page=1$/);
+    await expect(page.getByTestId("managed-item")).toHaveCount(4);
+
+    await page.goto(`/manage/albums/${ids.membersAlbum}?item=${last.id}`);
+    await expect(page.getByText("Sida 1 av 2")).toBeVisible();
+    await expect(page.getByRole("dialog").getByLabel("Bildtext")).toHaveValue("Fyllnad 201");
+
+    // A page past the last goes to the last
+    await page.goto(`/manage/albums/${ids.membersAlbum}?page=9`);
+    await expect(page).toHaveURL(/\?page=1$/);
+  });
+
   test("making an album public is confirmed with how many items visitors will see", async ({ page, loginAs, mock }) => {
     await loginAs("editor");
     await page.goto(`/manage/albums/${ids.membersAlbum}`);
