@@ -17,11 +17,7 @@ import { loginHref } from "@/utils/auth";
 import { filterHref, type FilterSearch, firstValues, toAlbumFilter } from "@/utils/filters";
 import { DataEmpty } from "@/components/data-empty";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Search");
-
-  return { title: t("title"), robots: { index: false, follow: true } };
-}
+export const metadata: Metadata = { robots: { index: false, follow: true } };
 
 /**
  * Search by text across album titles, places, descriptions, captions and photographers, for everyone; members can

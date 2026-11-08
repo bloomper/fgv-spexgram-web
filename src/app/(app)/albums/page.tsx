@@ -11,11 +11,7 @@ import { filterHref, type FilterSearch, firstValues, toAlbumFilter, toPage } fro
 
 const SIZE = 48;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Albums");
-
-  return { title: t("title"), robots: { index: true, follow: true } };
-}
+export const metadata: Metadata = { robots: { index: true, follow: true } };
 
 /**
  * Every album the viewer may see, newest first, filtered by category, year, kind and spex.
