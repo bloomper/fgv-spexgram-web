@@ -21,8 +21,8 @@ export default async function ReportsPage() {
     const reports = await getMyReports();
 
     return (
-      <div className="space-y-6 p-4 sm:p-6">
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="max-w-4xl text-pretty text-muted-foreground">{t("text")}</p>
         {reports.length === 0 ? <DataEmpty title={t("none")} description={t("noneText")} /> : (
           <ul className="divide-y overflow-hidden rounded-lg border">

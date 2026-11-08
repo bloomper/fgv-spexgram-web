@@ -28,6 +28,7 @@ import { useServerState } from "@/hooks/use-server-state.client";
 import { altText, type GalleryItem, VISIBILITIES } from "@/utils/gram";
 import { formatPeriod } from "@/utils/format";
 import { track } from "@/utils/umami";
+import { DataEmpty } from "@/components/data-empty";
 
 type ManagedItem = GalleryItem & { fileSize?: number | null; trashedAt?: string | null };
 
@@ -158,7 +159,7 @@ export function ItemsManager({ albumId, albumTitle, items, coverId, spexflixUrl,
   };
 
   if (items.length === 0) {
-    return <p className="text-muted-foreground">{t("none")}</p>;
+    return <DataEmpty title={t("none")} description={null} />;
   }
 
   return (

@@ -14,6 +14,7 @@ import { altText, type GalleryItem } from "@/utils/gram";
 import { formatDay, formatPeriod, formatTaken } from "@/utils/format";
 import { track } from "@/utils/umami";
 import { useServerState } from "@/hooks/use-server-state.client";
+import { DataEmpty } from "@/components/data-empty";
 
 type Day = { date?: string | null; items: GalleryItem[] };
 
@@ -88,7 +89,7 @@ export function UnsortedSorter({ days }: { days: Day[] }) {
   };
 
   if (days.length === 0) {
-    return <p className="text-muted-foreground">{t("none")}</p>;
+    return <DataEmpty title={t("none")} description={null} />;
   }
 
   return (

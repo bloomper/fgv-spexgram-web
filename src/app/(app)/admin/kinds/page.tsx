@@ -13,8 +13,8 @@ export default async function KindsPage() {
     const kinds = await getAlbumKinds();
 
     return (
-      <div className="max-w-3xl space-y-6 p-4 sm:p-6">
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <div className="max-w-3xl flex flex-1 flex-col gap-6 p-4 md:p-8">
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="max-w-prose text-sm text-muted-foreground">{t("text")}</p>
         <KindsEditor kinds={kinds} />
       </div>

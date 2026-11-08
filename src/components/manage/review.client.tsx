@@ -13,6 +13,7 @@ import { reviewContributionsAction, reviewSuggestionAction, updateItemsAction } 
 import { altText, type GalleryItem } from "@/utils/gram";
 import { formatInstant, formatPeriod } from "@/utils/format";
 import { track } from "@/utils/umami";
+import { DataEmpty } from "@/components/data-empty";
 
 type Suggestion = {
   id: string;
@@ -86,7 +87,7 @@ export function ContributionReview({ items }: { items: (GalleryItem & { fileSize
   };
 
   if (items.length === 0) {
-    return <p className="text-muted-foreground">{t("none")}</p>;
+    return <DataEmpty title={t("none")} description={null} />;
   }
 
   return (
@@ -173,7 +174,7 @@ export function SuggestionReview({ suggestions }: { suggestions: Suggestion[] })
   };
 
   if (suggestions.length === 0) {
-    return <p className="text-muted-foreground">{t("noSuggestions")}</p>;
+    return <DataEmpty title={t("noSuggestions")} description={null} />;
   }
   return (
     <ul className="divide-y overflow-hidden rounded-lg border">

@@ -60,14 +60,14 @@ export default async function AlbumPage({ params }: Props) {
   const canZip = data?.limits.canDownloadOriginals && album.itemCount > 0;
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
+    <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
       <header className="space-y-3">
         <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
           <Link href="/albums" className="hover:text-primary">{t("albums")}</Link>
         </nav>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{album.title}</h1>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{album.title}</h1>
             <p className="text-sm text-muted-foreground">
               {[period, album.place, kindName(album.kind, locale), t("itemCount", { count: album.itemCount })].filter(Boolean).join(" · ")}
             </p>

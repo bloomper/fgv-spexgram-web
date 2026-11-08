@@ -15,6 +15,7 @@ import { getViewer } from "@/lib/gram/viewer.server";
 import { GraphQLRequestError } from "@/lib/graphql.server";
 import { loginHref } from "@/utils/auth";
 import { filterHref, type FilterSearch, firstValues, toAlbumFilter } from "@/utils/filters";
+import { DataEmpty } from "@/components/data-empty";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Search");
@@ -48,8 +49,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const options = { canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report };
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
-      <h1 className="text-2xl font-semibold tracking-tight">{ready ? t("resultsFor", { q }) : t("title")}</h1>
+    <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
+      <h1 className="text-2xl font-bold tracking-tight">{ready ? t("resultsFor", { q }) : t("title")}</h1>
       <Form action="/search" role="search" className="flex flex-wrap items-end gap-3" key={`${q}-${smart}`}>
         <div className="flex min-w-60 flex-1 flex-col gap-1.5">
           <Label htmlFor="search-q">{t("words")}</Label>
@@ -103,14 +104,14 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
               <Gallery items={result.items} options={options} rowHeight={180} />
             </section>
           )}
-          {result.albums.length === 0 && result.items.length === 0 && <p className="text-muted-foreground">{t("none")}</p>}
+          {result.albums.length === 0 && result.items.length === 0 && <DataEmpty title={t("none")} description={null} />}
         </>
       )}
 
       {smartItems instanceof GraphQLRequestError && <p className="text-destructive" role="alert">{smartItems.message}</p>}
       {Array.isArray(smartItems) && (smartItems.length > 0
         ? <Gallery items={smartItems} options={options} rowHeight={180} />
-        : <p className="text-muted-foreground">{t("none")}</p>)}
+        : <DataEmpty title={t("none")} description={null} />)}
       {smart && ready && (
         <p className="text-sm">
           <Link href={filterHref("/search", { q })} className="text-primary hover:text-primary/80">{t("textInstead")}</Link>

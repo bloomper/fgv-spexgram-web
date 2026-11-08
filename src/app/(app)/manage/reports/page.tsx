@@ -15,8 +15,8 @@ export default async function ManageReportsPage({ searchParams }: { searchParams
     const reports = await getReports(!handled);
 
     return (
-      <div className="space-y-6 p-4 sm:p-6">
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="max-w-4xl text-sm text-muted-foreground">{t("text")}</p>
         <LinkTabs label={t("tabs")} items={[
           { href: "/manage/reports", label: t("open"), active: !handled },

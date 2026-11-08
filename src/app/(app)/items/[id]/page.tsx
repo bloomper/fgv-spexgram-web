@@ -57,7 +57,7 @@ export default async function ItemPage({ params }: Props) {
   const duration = formatDurationMs(item.durationMs);
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-4 p-4 sm:p-6">
+    <div className="mx-auto w-full max-w-5xl flex flex-1 flex-col gap-4 p-4 md:p-8">
       {item.album && (
         <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
           <Link href={`/albums/${item.album.id}`} className="hover:text-primary" data-testid="item-album-link">
@@ -65,7 +65,7 @@ export default async function ItemPage({ params }: Props) {
           </Link>
         </nav>
       )}
-      <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">{altText(item, locale)}</h1>
+      <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{altText(item, locale)}</h1>
       <ItemView item={item} canDownloadOriginals={data?.limits.canDownloadOriginals ?? false} report={viewer.report} />
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
         {item.photographer && <><dt className="text-muted-foreground">{t("photographer")}</dt><dd>{item.photographer}</dd></>}

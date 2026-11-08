@@ -60,9 +60,9 @@ export default async function SpexPage({ params }: Props) {
   const spex = spexOf(albums, id);
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
+    <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{nameOf(spex) || t("title")}</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{nameOf(spex) || t("title")}</h1>
         <p className="text-sm text-muted-foreground">
           {[spex?.categoryName, spex?.revival ? t("revival") : null, t("albumCount", { count: albums.length })].filter(Boolean).join(" · ")}
         </p>

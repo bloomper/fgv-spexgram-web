@@ -22,8 +22,8 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
     ]);
 
     return (
-      <div className="space-y-4 p-4 sm:p-6">
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <div className="flex flex-1 flex-col gap-4 p-4 md:p-8">
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{t("text")}</p>
         {filters && <AlbumFilters path="/map" search={search} categories={filters.categories} years={filters.years}
                                   kinds={filters.albumKinds} />}

@@ -8,6 +8,7 @@ import { formatBytes } from "@/utils/format";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { ImmichJobs } from "./immich-jobs.client";
+import { DataEmpty } from "@/components/data-empty";
 
 /**
  * Immich's status: whether the API reaches it, its version, job queues and disk, and the items that failed, which can
@@ -20,8 +21,8 @@ export default async function ImmichPage() {
     const status = await getImmichStatus();
 
     return (
-      <div className="space-y-6 p-4 sm:p-6">
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="max-w-3xl text-sm text-muted-foreground">{t("text")}</p>
         {!status?.available ? (
           <p className="text-destructive" role="alert">{t("unavailable")}</p>
@@ -85,7 +86,7 @@ export default async function ImmichPage() {
                 ))}
               </ul>
             </>
-          ) : <p className="text-muted-foreground">{t("noFailed")}</p>}
+          ) : <DataEmpty title={t("noFailed")} description={null} />}
         </section>
       </div>
     );

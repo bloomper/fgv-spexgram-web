@@ -26,11 +26,11 @@ export default async function ContributePage({ params }: { params: Promise<{ id:
     const open = album.visibility !== "UNPUBLISHED" || album.suggested;
 
     return (
-      <div className="mx-auto w-full max-w-3xl space-y-6 p-4 sm:p-6">
+      <div className="mx-auto w-full max-w-3xl flex flex-1 flex-col gap-6 p-4 md:p-8">
         <nav className="text-sm text-muted-foreground">
           <Link href={`/albums/${album.id}`} className="hover:text-primary">{album.title}</Link>
         </nav>
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title", { album: album.title })}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title", { album: album.title })}</h1>
         <p className="text-pretty text-muted-foreground">{t("text")}</p>
         <p className="text-sm text-muted-foreground">
           {t("limits", { items: data.limits.contributionMaxItems, gb: data.limits.contributionMaxGb })}

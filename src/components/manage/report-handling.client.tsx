@@ -13,6 +13,7 @@ import { useDialogs } from "@/components/dialogs.client";
 import { handleReportAction } from "@/app/(app)/manage/actions.server";
 import type { ReportOutcome, ReportReason, ReportStatus, Visibility } from "@/gql/graphql";
 import { formatInstant } from "@/utils/format";
+import { DataEmpty } from "@/components/data-empty";
 
 type Report = {
   id: string;
@@ -74,7 +75,7 @@ export function ReportHandling({ reports }: { reports: Report[] }) {
   };
 
   if (reports.length === 0) {
-    return <p className="text-muted-foreground">{t("none")}</p>;
+    return <DataEmpty title={t("none")} description={null} />;
   }
   return (
     <ul className="divide-y rounded-lg border">

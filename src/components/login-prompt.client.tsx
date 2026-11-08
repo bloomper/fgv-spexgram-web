@@ -20,7 +20,7 @@ export function LoginPrompt({ noAccess = false }: { noAccess?: boolean }) {
     <div className="flex flex-1 items-center justify-center p-6" data-testid="login-prompt">
       <div className="mx-auto max-w-md space-y-4 text-center">
         <Lock className="mx-auto size-10 text-muted-foreground" aria-hidden />
-        <h1 className="text-2xl font-semibold tracking-tight">{noAccess ? t("noAccessTitle") : t("title")}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{noAccess ? t("noAccessTitle") : t("title")}</h1>
         <p className="text-sm text-muted-foreground">{noAccess ? t("noAccessText") : t("text")}</p>
         {!noAccess && (
           <div className="flex justify-center pt-2">

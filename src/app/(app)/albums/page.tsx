@@ -30,8 +30,8 @@ export default async function AlbumsPage({ searchParams }: { searchParams: Promi
   const pages = Math.max(1, Math.ceil((data?.albums.totalCount ?? 0) / SIZE));
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
-      <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+    <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
+      <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
       {data && (
         <AlbumFilters path="/albums" search={search} categories={data.categories} years={data.years} kinds={data.albumKinds}
                       spex={data.spexWithAlbums} editor={viewer.editor} />

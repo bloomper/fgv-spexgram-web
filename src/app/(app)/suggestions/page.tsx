@@ -7,6 +7,7 @@ import { getMySuggestions } from "@/lib/gram/gram.server";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { formatInstant } from "@/utils/format";
+import { DataEmpty } from "@/components/data-empty";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -20,13 +21,13 @@ export default async function SuggestionsPage() {
     const suggestions = data.suggestions;
 
     return (
-      <div className="space-y-6 p-4 sm:p-6">
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="max-w-4xl text-pretty text-muted-foreground">{t("text")}</p>
         <SuggestForm kinds={data.kinds} />
         <section aria-labelledby="my-suggestions" className="space-y-2">
           <h2 id="my-suggestions" className="text-lg font-semibold">{t("mine")}</h2>
-          {suggestions.length === 0 ? <p className="text-muted-foreground">{t("none")}</p> : (
+          {suggestions.length === 0 ? <DataEmpty title={t("none")} description={null} /> : (
             <ul className="divide-y overflow-hidden rounded-lg border">
               {suggestions.map(suggestion => (
                 <li key={suggestion.id} className="link-row flex flex-wrap items-center gap-3 p-3">

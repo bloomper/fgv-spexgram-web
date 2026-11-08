@@ -17,6 +17,7 @@ import {
   trashItemsAction,
 } from "@/app/(app)/manage/actions.server";
 import { useDialogs } from "@/components/dialogs.client";
+import { DataEmpty } from "@/components/data-empty";
 
 type Album = { id: string; title: string; trashedAt?: string | null; itemCount: number };
 
@@ -41,7 +42,7 @@ export function TrashList({ albums, items, admin }: { albums: Album[]; items: (G
   });
 
   if (albums.length === 0 && items.length === 0) {
-    return <p className="text-muted-foreground">{t("empty")}</p>;
+    return <DataEmpty title={t("empty")} description={null} />;
   }
   return (
     <div className="space-y-6">

@@ -9,6 +9,7 @@ import { getBrowse } from "@/lib/gram/gram.server";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { filterHref, type FilterSearch, firstValues, toAlbumFilter, toPage } from "@/utils/filters";
+import { DataEmpty } from "@/components/data-empty";
 
 const SIZE = 48;
 
@@ -24,9 +25,9 @@ export default async function ManageAlbumsPage({ searchParams }: { searchParams:
     const pages = Math.max(1, Math.ceil((data?.albums.totalCount ?? 0) / SIZE));
 
     return (
-      <div className="space-y-6 p-4 sm:p-6">
+      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
           <Button nativeButton={false} render={<Link href="/manage/albums/new" />}><Plus /> {t("new")}</Button>
         </div>
         {data && <AlbumFilters path="/manage/albums" search={search} categories={data.categories} years={data.years}
@@ -34,7 +35,7 @@ export default async function ManageAlbumsPage({ searchParams }: { searchParams:
         <p className="text-sm text-muted-foreground">{t("count", { count: data?.albums.totalCount ?? 0 })}</p>
         {data && data.albums.albums.length > 0
           ? <AlbumGrid albums={data.albums.albums} showVisibility hrefOf={album => `/manage/albums/${album.id}`} />
-          : <p className="text-muted-foreground">{t("none")}</p>}
+          : <DataEmpty title={t("none")} description={null} />}
         <Pager page={page} pages={pages} hrefOf={next => filterHref("/manage/albums", search, { page: String(next) })} />
       </div>
     );

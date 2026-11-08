@@ -60,11 +60,11 @@ export default async function ManageAlbumPage({ params, searchParams }: {
     const pageHref = (next: number) => `/manage/albums/${album.id}${next > 0 ? `?page=${next}` : ""}`;
 
     return (
-      <div className="space-y-8 p-4 sm:p-6">
+      <div className="flex flex-1 flex-col gap-8 p-4 md:p-8">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
             <nav className="text-sm text-muted-foreground"><Link href="/manage/albums" className="hover:text-primary">{t("albums")}</Link></nav>
-            <h1 className="text-2xl font-semibold tracking-tight">{album.title}</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{album.title}</h1>
             <div className="flex flex-wrap gap-2">
               <VisibilityBadge visibility={album.visibility} />
               {album.suggested && <span className="text-sm text-muted-foreground">{t("suggested")}</span>}

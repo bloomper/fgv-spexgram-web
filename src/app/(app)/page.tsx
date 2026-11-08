@@ -6,6 +6,7 @@ import { BrowseChips } from "@/components/gram/browse-chips";
 import { Gallery } from "@/components/gram/gallery.client";
 import { getHome, getMe } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
+import { DataEmpty } from "@/components/data-empty";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Meta");
@@ -29,10 +30,10 @@ export default async function HomePage() {
   const me = viewer.member ? await getMe() : undefined;
 
   return (
-    <div className="space-y-8 p-4 sm:p-6">
+    <div className="flex flex-1 flex-col gap-8 p-4 md:p-8">
       <section className="flex items-start gap-4">
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             {me?.me ? t("greeting", { name: me.me.displayName ?? me.me.username }) : t("title")}
           </h1>
           <p className="max-w-4xl whitespace-pre-line text-pretty text-muted-foreground">
@@ -53,7 +54,7 @@ export default async function HomePage() {
       <HomeSection id="recent" title={t("recent")} more={{ href: "/albums", label: t("allAlbums") }}>
         {home && home.recentAlbums.length > 0
           ? <AlbumGrid albums={home.recentAlbums} showVisibility={viewer.editor} />
-          : <p className="text-muted-foreground">{t("empty")}</p>}
+          : <DataEmpty title={t("empty")} description={null} />}
       </HomeSection>
 
       {home && home.thisDayInHistory.length > 0 && (

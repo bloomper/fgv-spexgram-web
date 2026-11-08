@@ -10,8 +10,8 @@ export default async function NewAlbumPage() {
     const kinds = await getAlbumKinds();
 
     return (
-      <div className="space-y-6 p-4 sm:p-6">
-        <h1 className="text-2xl font-semibold tracking-tight">{t("newTitle")}</h1>
+      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
+        <h1 className="text-2xl font-bold tracking-tight">{t("newTitle")}</h1>
         <p className="max-w-3xl text-sm text-muted-foreground">{t("newText")}</p>
         <AlbumForm kinds={kinds} />
       </div>
