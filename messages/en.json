@@ -162,8 +162,7 @@
     "adminSettings": "Settings",
     "adminKinds": "Album kinds",
     "adminImmich": "Photo store (Immich)",
-    "adminMaintenance": "Maintenance",
-    "adminAudit": "Audit log"
+    "adminMaintenance": "Maintenance"
   },
   "Home": {
     "title": "Welcome to Spexgram",

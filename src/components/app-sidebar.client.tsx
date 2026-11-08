@@ -115,7 +115,6 @@ export function AppSidebar({ roles, accountUrl, user, ...props }: AppSidebarProp
           { title: t("Nav.adminKinds"), url: "/admin/kinds" },
           { title: t("Nav.adminImmich"), url: "/admin/immich" },
           { title: t("Nav.adminMaintenance"), url: "/admin/maintenance" },
-          { title: t("Nav.adminAudit"), url: "/manage/audit" },
         ],
       });
     }

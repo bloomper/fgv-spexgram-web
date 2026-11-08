@@ -162,8 +162,7 @@
     "adminSettings": "Inställningar",
     "adminKinds": "Albumsorter",
     "adminImmich": "Bildlagret (Immich)",
-    "adminMaintenance": "Underhåll",
-    "adminAudit": "Granskningslogg"
+    "adminMaintenance": "Underhåll"
   },
   "Home": {
     "title": "Välkommen till Spexgram",
