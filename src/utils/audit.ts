@@ -6,7 +6,6 @@
 export const AUDIT_ACTIONS = ["CREATE", "UPDATE", "VISIBILITY", "UPLOAD", "REVIEW", "REPORT", "TRASH", "RESTORE", "DELETE"] as const;
 
 export type AuditSearch = {
-  page?: string;
   type?: string;
   action?: string;
   actor?: string;
@@ -46,14 +45,14 @@ export function startOfDay(day: string | undefined, plusDays = 0): string | null
 }
 
 /**
- * The address of the change log with this filter and page; empty parts are left out.
+ * The address of the change log with this filter; empty parts are left out.
  */
 export function auditHref(path: string, search: AuditSearch, changes: Partial<AuditSearch> = {}): string {
   const merged = { ...search, ...changes };
   const params = new URLSearchParams();
 
   for (const [key, value] of Object.entries(merged)) {
-    if (value && !(key === "page" && value === "0")) {
+    if (value) {
       params.set(key, value);
     }
   }
@@ -61,4 +60,66 @@ export function auditHref(path: string, search: AuditSearch, changes: Partial<Au
   const query = params.toString();
 
   return query ? `${path}?${query}` : path;
+}
+
+/** The filter for the server from the address; the person only for admins. */
+export function toAuditFilter(search: AuditSearch, isAdmin: boolean) {
+  return {
+    entityType: search.type || null,
+    action: search.action || null,
+    actorId: isAdmin ? search.actor || null : null,
+    from: startOfDay(search.from),
+    to: startOfDay(search.to, 1),
+    q: search.q?.trim().slice(0, 100) || null,
+    entityId: search.entity || null,
+  };
+}
+
+/** One change as the change log shows it, with its links worked out on the server. */
+export type AuditRow = {
+  id: string;
+  at: string;
+  actorName: string | null;
+  action: string;
+  entityType: string;
+  summary: string;
+  /** Where the record can be seen, while it exists. */
+  link: string | null;
+  /** The change log narrowed to this record. */
+  historyHref: string | null;
+};
+
+/** A page of the change log: its rows and how many changes match in all. */
+export type AuditPage = { rows: AuditRow[]; totalCount: number };
+
+type Entry = {
+  id: string;
+  at: string;
+  actorName?: string | null;
+  action: string;
+  entityType: string;
+  entityId?: string | null;
+  summary: string;
+};
+
+/**
+ * The rows for these changes: a record is linked while it exists, and its history when the log is not already narrowed
+ * to it.
+ */
+export function toAuditRows(
+  entries: Entry[],
+  path: string,
+  linkOf: (entityType: string, entityId: string) => string | null,
+  withHistory: boolean
+): AuditRow[] {
+  return entries.map(entry => ({
+    id: entry.id,
+    at: entry.at,
+    actorName: entry.actorName ?? null,
+    action: entry.action,
+    entityType: entry.entityType,
+    summary: entry.summary,
+    link: entry.entityId && entry.action !== "DELETE" ? linkOf(entry.entityType, entry.entityId) : null,
+    historyHref: withHistory && entry.entityId ? auditHref(path, {}, { entity: entry.entityId }) : null,
+  }));
 }
