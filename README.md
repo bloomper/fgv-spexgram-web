@@ -91,7 +91,7 @@ The look (logo, favicon and colours) is FGV's, shared with Spexregister, Nyupps�
    npm run dev
    ```
    Open [http://localhost:3004](http://localhost:3004) with your browser to see the result. Port 3004 keeps it clear of
-   the other FGV webs (Spexregister on 3000, Nyuppsättning on 3001, Spexify on 3002, Spexflix on 3003, Spexarkivet on
+   the other FGV webs (Spexregister on 3000, Nyuppsättning on 3001, Spexify on 3002, Spexflix on 3003, Spexarkiv on
    3005). Without logging in you see the public side; the sample users are listed in Spexgram Server's getting started
    guide (`admin@fgv.nu`, `editor@fgv.nu`, `user@fgv.nu`, `no-access@fgv.nu`).
 
