@@ -77,7 +77,7 @@ export default async function ImmichPage() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{item.originalFileName ?? item.caption ?? item.id}</p>
                       <p className="text-xs text-muted-foreground">
-                        {item.album ? <Link href={`/manage/albums/${item.album.id}`} className="hover:underline">{item.album.title}</Link> : t("unsorted")}
+                        {item.album ? <Link href={`/manage/albums/${item.album.id}`} className="hover:text-primary">{item.album.title}</Link> : t("unsorted")}
                         {item.failure && <> · {t(`failure.${item.failure}`)}</>}
                       </p>
                     </div>

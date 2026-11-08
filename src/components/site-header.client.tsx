@@ -1,9 +1,8 @@
 "use client";
 
-import { SidebarIcon } from "lucide-react";
+import { MenuIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { useSidebar } from "@/components/ui/sidebar";
 import { AppSwitcher } from "@/components/app-switcher.client";
 import type { Application } from "@/utils/applications";
@@ -15,7 +14,6 @@ import { LoginButton } from "@/components/login-button.client";
 import { UploadIndicator } from "@/components/upload/uploads.client";
 
 export function SiteHeader({ applications, loggedIn }: { applications: Application[]; loggedIn: boolean }) {
-  const { toggleSidebar } = useSidebar();
   const isClient = useIsClient();
   const t = useTranslations();
 
@@ -23,19 +21,7 @@ export function SiteHeader({ applications, loggedIn }: { applications: Applicati
     <header className="bg-background sticky top-0 z-50 flex w-full items-center border-b print:hidden">
       <div className="flex min-h-(--header-height) w-full items-center gap-2 px-4">
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          <Button
-            className="h-8 w-8"
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            aria-label={t("Header.toggleSidebar")}
-          >
-            <SidebarIcon />
-          </Button>
-          <Separator
-            orientation="vertical"
-            className="mr-2 h-4"
-          />
+          <MenuToggle />
           <AppSwitcher
             title={t("Meta.title")}
             applications={applications}
@@ -57,5 +43,23 @@ export function SiteHeader({ applications, loggedIn }: { applications: Applicati
         </div>
       </div>
     </header>
+  );
+}
+
+function MenuToggle() {
+  const { toggleSidebar, openMobile } = useSidebar();
+  const t = useTranslations("Header");
+
+  return (
+    <Button
+      className="h-8 w-8 md:hidden"
+      variant="ghost"
+      size="icon"
+      aria-label={t("showMenu")}
+      aria-expanded={openMobile}
+      onClick={toggleSidebar}
+    >
+      <MenuIcon />
+    </Button>
   );
 }

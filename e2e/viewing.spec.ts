@@ -81,6 +81,18 @@ test.describe("Viewing, for members", () => {
     await expect(page.getByRole("link", { name: "Fel bildtext eller fel album" })).toBeVisible();
   });
 
+  test("an empty search explains itself, and a too short word is pointed out at the field", async ({ page, loginAs }) => {
+    await loginAs("viewer");
+    await page.goto("/search");
+    await expect(page.getByText("Vad letar du efter?")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Eller bläddra bland alla album" })).toHaveAttribute("href", "/albums");
+
+    await page.goto("/search?q=a");
+    await expect(page.getByLabel("Sökord")).toHaveAttribute("aria-invalid", "true");
+    await expect(page.getByText("Skriv minst två tecken.")).toBeVisible();
+    await expect(page.getByText("Vad letar du efter?")).toHaveCount(0);
+  });
+
   test("smart search and the map are for members", async ({ page, loginAs, mock }) => {
     await loginAs("viewer");
     await page.goto("/search");

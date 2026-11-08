@@ -88,7 +88,7 @@ describe("the shell", () => {
 
   it("has a header with the menu button, search and login", async () => {
     render(<TooltipProvider><SidebarProvider><SiteHeader applications={[]} loggedIn={false} /></SidebarProvider></TooltipProvider>);
-    await userEvent.click(screen.getByRole("button", { name: "Header.toggleSidebar" }));
+    await userEvent.click(screen.getByRole("button", { name: "showMenu" }));
     expect(screen.getAllByRole("link", { name: /login/i }).length).toBeGreaterThan(0);
   });
 

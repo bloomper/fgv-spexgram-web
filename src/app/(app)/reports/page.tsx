@@ -25,15 +25,15 @@ export default async function ReportsPage() {
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="max-w-4xl text-pretty text-muted-foreground">{t("text")}</p>
         {reports.length === 0 ? <DataEmpty title={t("none")} description={t("noneText")} /> : (
-          <ul className="divide-y rounded-lg border">
+          <ul className="divide-y overflow-hidden rounded-lg border">
             {reports.map(report => (
-              <li key={report.id} className="flex flex-wrap items-start gap-3 p-3">
+              <li key={report.id} className="link-row flex flex-wrap items-start gap-3 p-3">
                 <div className="size-14 shrink-0 overflow-hidden rounded">
                   <ItemImage src={report.item?.media?.thumbnailUrl} alt={report.item?.caption ?? ""} type={report.item?.type} fill />
                 </div>
                 <div className="min-w-0 flex-1 space-y-1">
                   <p className="font-medium">
-                    {report.item ? <Link href={`/items/${report.item.id}`} className="hover:underline">{r(`reasons.${report.reason}`)}</Link>
+                    {report.item ? <Link href={`/items/${report.item.id}`} className="row-link">{r(`reasons.${report.reason}`)}</Link>
                       : r(`reasons.${report.reason}`)}
                   </p>
                   <p className="text-xs text-muted-foreground">{formatInstant(report.createdAt)}</p>

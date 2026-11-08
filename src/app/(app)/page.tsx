@@ -40,7 +40,7 @@ export default async function HomePage() {
           </p>
           {!viewer.member && home?.startPage.contactEmail && (
             <p className="text-sm text-muted-foreground">
-              {t("contact")} <a className="text-primary underline" href={`mailto:${home.startPage.contactEmail}`}>{home.startPage.contactEmail}</a>
+              {t("contact")} <a className="text-primary hover:text-primary/80" href={`mailto:${home.startPage.contactEmail}`}>{home.startPage.contactEmail}</a>
             </p>
           )}
         </div>

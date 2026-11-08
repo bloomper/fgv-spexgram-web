@@ -58,11 +58,11 @@ export function TrashList({ albums, items, admin }: { albums: Album[]; items: (G
       {albums.length > 0 && (
         <section aria-labelledby="trash-albums" className="space-y-2">
           <h2 id="trash-albums" className="text-lg font-semibold">{t("albums")}</h2>
-          <ul className="divide-y rounded-lg border">
+          <ul className="divide-y overflow-hidden rounded-lg border">
             {albums.map(album => (
-              <li key={album.id} className="flex flex-wrap items-center gap-3 px-3 py-2">
+              <li key={album.id} className="link-row flex flex-wrap items-center gap-3 px-3 py-2">
                 <div className="min-w-0 flex-1">
-                  <Link href={`/manage/albums/${album.id}`} className="font-medium hover:underline">{album.title}</Link>
+                  <Link href={`/manage/albums/${album.id}`} className="row-link font-medium">{album.title}</Link>
                   <div className="text-xs text-muted-foreground">
                     {[t("itemCount", { count: album.itemCount }), album.trashedAt ? t("trashedAt", { date: formatInstant(album.trashedAt) ?? "" }) : null].filter(Boolean).join(" · ")}
                   </div>

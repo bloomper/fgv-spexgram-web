@@ -47,7 +47,7 @@ export default async function AlbumsPage({ searchParams }: { searchParams: Promi
           <ul className="columns-2 gap-6 text-sm sm:columns-3 lg:columns-4">
             {data.spexWithAlbums.map(spex => (
               <li key={spex.id} className="break-inside-avoid py-0.5">
-                <Link href={`/spex/${spex.id}`} className="hover:underline">
+                <Link href={`/spex/${spex.id}`} className="hover:text-primary">
                   {[spex.title, spex.year].filter(Boolean).join(" ")}
                 </Link>
                 {spex.revival && <span className="text-muted-foreground"> ({t("revival")})</span>}

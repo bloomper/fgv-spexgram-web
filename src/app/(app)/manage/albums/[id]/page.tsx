@@ -63,7 +63,7 @@ export default async function ManageAlbumPage({ params, searchParams }: {
       <div className="space-y-8 p-4 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
-            <nav className="text-sm text-muted-foreground"><Link href="/manage/albums" className="hover:underline">{t("albums")}</Link></nav>
+            <nav className="text-sm text-muted-foreground"><Link href="/manage/albums" className="hover:text-primary">{t("albums")}</Link></nav>
             <h1 className="text-2xl font-semibold tracking-tight">{album.title}</h1>
             <div className="flex flex-wrap gap-2">
               <VisibilityBadge visibility={album.visibility} />

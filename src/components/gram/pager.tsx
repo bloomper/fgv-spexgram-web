@@ -12,9 +12,9 @@ export async function Pager({ page, pages, hrefOf }: { page: number; pages: numb
   }
   return (
     <nav className="flex items-center gap-3 text-sm" aria-label={t("pages")}>
-      {page > 0 && <Link href={hrefOf(page - 1)} className="text-primary hover:underline">{t("previousPage")}</Link>}
+      {page > 0 && <Link href={hrefOf(page - 1)} className="text-primary hover:text-primary/80">{t("previousPage")}</Link>}
       <span className="text-muted-foreground">{t("pageOf", { page: page + 1, pages })}</span>
-      {page + 1 < pages && <Link href={hrefOf(page + 1)} className="text-primary hover:underline">{t("nextPage")}</Link>}
+      {page + 1 < pages && <Link href={hrefOf(page + 1)} className="text-primary hover:text-primary/80">{t("nextPage")}</Link>}
     </nav>
   );
 }

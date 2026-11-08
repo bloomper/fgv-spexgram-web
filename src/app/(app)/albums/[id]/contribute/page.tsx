@@ -28,7 +28,7 @@ export default async function ContributePage({ params }: { params: Promise<{ id:
     return (
       <div className="mx-auto w-full max-w-3xl space-y-6 p-4 sm:p-6">
         <nav className="text-sm text-muted-foreground">
-          <Link href={`/albums/${album.id}`} className="hover:underline">{album.title}</Link>
+          <Link href={`/albums/${album.id}`} className="hover:text-primary">{album.title}</Link>
         </nav>
         <h1 className="text-2xl font-semibold tracking-tight">{t("title", { album: album.title })}</h1>
         <p className="text-pretty text-muted-foreground">{t("text")}</p>
@@ -41,7 +41,7 @@ export default async function ContributePage({ params }: { params: Promise<{ id:
         ) : <p className="text-destructive">{t("closed")}</p>}
         <UploadList albumId={album.id} />
         <p className="text-sm">
-          <Link href="/contributions" className="text-primary hover:underline">{t("mine")}</Link>
+          <Link href="/contributions" className="text-primary hover:text-primary/80">{t("mine")}</Link>
         </p>
       </div>
     );

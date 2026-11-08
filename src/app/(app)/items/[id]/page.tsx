@@ -60,7 +60,7 @@ export default async function ItemPage({ params }: Props) {
     <div className="mx-auto w-full max-w-5xl space-y-4 p-4 sm:p-6">
       {item.album && (
         <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
-          <Link href={`/albums/${item.album.id}`} className="hover:underline" data-testid="item-album-link">
+          <Link href={`/albums/${item.album.id}`} className="hover:text-primary" data-testid="item-album-link">
             {t("inAlbum", { album: item.album.title })}
           </Link>
         </nav>
@@ -75,7 +75,7 @@ export default async function ItemPage({ params }: Props) {
         {viewer.editor && item.uploadedBy && <><dt className="text-muted-foreground">{t("uploadedBy")}</dt><dd>{item.uploadedBy}</dd></>}
         {item.latitude !== null && item.longitude !== null && viewer.member && (
           <><dt className="text-muted-foreground">{t("position")}</dt><dd>
-            <Link href={`/map?item=${item.id}`} className="text-primary hover:underline">
+            <Link href={`/map?item=${item.id}`} className="text-primary hover:text-primary/80">
               {item.latitude.toFixed(5)}, {item.longitude.toFixed(5)}
             </Link>
           </dd></>

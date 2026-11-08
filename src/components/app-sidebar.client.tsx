@@ -20,6 +20,7 @@ import {
 import { NavMain } from "@/components/nav-main.client";
 import { NavSecondary } from "@/components/nav-secondary.client";
 import { NavUser, type SessionUser } from "@/components/nav-user.client";
+import { SidebarToggle } from "@/components/sidebar-toggle.client";
 import { LoginButton } from "@/components/login-button.client";
 import {
   Sidebar,
@@ -141,8 +142,8 @@ export function AppSidebar({ roles, accountUrl, user, ...props }: AppSidebarProp
              className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
              {...props}
     >
-      <SidebarHeader>
-        <SidebarMenu>
+      <SidebarHeader className="flex-row items-center group-data-[collapsible=icon]:flex-col">
+        <SidebarMenu className="min-w-0 flex-1">
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
@@ -159,12 +160,13 @@ export function AppSidebar({ roles, accountUrl, user, ...props }: AppSidebarProp
                 className="flex aspect-square size-10 shrink-0 items-center justify-center rounded-lg group-data-[collapsible=icon]:size-8">
                 <Logo />
               </div>
-              <div className="min-w-0 flex-1 overflow-hidden pl-4">
+              <div className="min-w-0 flex-1 overflow-hidden pl-1">
                 <LogoText className="h-10 w-auto text-foreground" />
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <SidebarToggle />
       </SidebarHeader>
       <SidebarContent onClickCapture={closeOnNavigate}>
         {isClient ? (

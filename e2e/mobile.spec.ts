@@ -71,7 +71,9 @@ for (const screen of SCREENS) {
         await fits(page, path);
       }
       await controlsInSight(page, "header button, header a, header input", "header control");
-      await page.getByRole("button", { name: "Visa eller dölj menyn" }).click();
+      if (screen.width < 768) {
+        await page.getByRole("button", { name: "Visa menyn" }).click();
+      }
       await expect(page.getByRole("link", { name: "Album", exact: true }).last()).toBeVisible();
     });
 
@@ -81,7 +83,9 @@ for (const screen of SCREENS) {
         await fits(page, path);
       }
       await controlsInSight(page, "header button, header a, header input", "header control");
-      await page.getByRole("button", { name: "Visa eller dölj menyn" }).click();
+      if (screen.width < 768) {
+        await page.getByRole("button", { name: "Visa menyn" }).click();
+      }
       await expect(page.getByRole("link", { name: "Mina bidrag" })).toBeVisible();
     });
 

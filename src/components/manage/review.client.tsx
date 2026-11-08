@@ -95,7 +95,7 @@ export function ContributionReview({ items }: { items: (GalleryItem & { fileSize
         <section key={albumId} className="space-y-2" aria-label={group.title}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="font-semibold">
-              {albumId ? <Link href={`/manage/albums/${albumId}`} className="hover:underline">{group.title}</Link> : group.title}
+              {albumId ? <Link href={`/manage/albums/${albumId}`} className="hover:text-primary">{group.title}</Link> : group.title}
             </h3>
             <Button size="sm" variant="outline" disabled={pending} onClick={() => review(group.items.map(item => item.id), true)}>
               <Check /> {t("acceptAll", { count: group.items.length })}
@@ -112,7 +112,7 @@ export function ContributionReview({ items }: { items: (GalleryItem & { fileSize
                   <p className="text-xs text-muted-foreground">{[item.uploadedBy, formatInstant(item.createdAt)].filter(Boolean).join(" · ")}</p>
                   <p className="text-xs">
                     {t("photographer")}: {item.photographer ?? "–"}{" "}
-                    <button type="button" className="text-primary underline" disabled={pending}
+                    <button type="button" className="text-primary hover:text-primary/80" disabled={pending}
                             aria-label={t("editPhotographerOf", { name: item.originalFileName ?? altText(item, locale) })}
                             onClick={() => editPhotographer(item.id, item.photographer)}>
                       <User className="inline size-3" aria-hidden /> {t("editPhotographer")}
@@ -176,12 +176,12 @@ export function SuggestionReview({ suggestions }: { suggestions: Suggestion[] })
     return <p className="text-muted-foreground">{t("noSuggestions")}</p>;
   }
   return (
-    <ul className="divide-y rounded-lg border">
+    <ul className="divide-y overflow-hidden rounded-lg border">
       {suggestions.map(suggestion => (
-        <li key={suggestion.id} className="flex flex-wrap items-start gap-3 p-3">
+        <li key={suggestion.id} className="link-row flex flex-wrap items-start gap-3 p-3">
           <div className="min-w-0 flex-1 space-y-1 text-sm">
             <p className="font-medium">
-              {suggestion.album ? <Link href={`/manage/albums/${suggestion.album.id}`} className="hover:underline">{suggestion.title}</Link> : suggestion.title}
+              {suggestion.album ? <Link href={`/manage/albums/${suggestion.album.id}`} className="row-link">{suggestion.title}</Link> : suggestion.title}
             </p>
             <p className="text-xs text-muted-foreground">
               {[suggestion.suggestedBy, formatPeriod(suggestion.album?.dateFrom, suggestion.album?.dateTo, locale), suggestion.album?.place, formatInstant(suggestion.createdAt)].filter(Boolean).join(" · ")}

@@ -63,7 +63,7 @@ export default async function AlbumPage({ params }: Props) {
     <div className="space-y-6 p-4 sm:p-6">
       <header className="space-y-3">
         <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
-          <Link href="/albums" className="hover:underline">{t("albums")}</Link>
+          <Link href="/albums" className="hover:text-primary">{t("albums")}</Link>
         </nav>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
@@ -76,7 +76,7 @@ export default async function AlbumPage({ params }: Props) {
                 {album.spex.map((spex, index) => (
                   <span key={spex.id}>
                     {index > 0 && ", "}
-                    <Link href={`/spex/${spex.familyId}`} className="text-primary hover:underline">
+                    <Link href={`/spex/${spex.familyId}`} className="text-primary hover:text-primary/80">
                       {[spex.title, spex.year].filter(Boolean).join(" ")}
                     </Link>
                     {spex.revival && <span className="text-muted-foreground"> ({t("revival")})</span>}

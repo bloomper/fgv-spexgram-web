@@ -10,7 +10,7 @@ export async function SpexflixHint({ maxMinutes }: { maxMinutes: number }) {
   return (
     <span>
       {t("longVideos", { minutes: maxMinutes })}{" "}
-      {url && <a href={url} className="text-primary underline" target="_blank" rel="noopener noreferrer">Spexflix</a>}
+      {url && <a href={url} className="text-primary hover:text-primary/80" target="_blank" rel="noopener noreferrer">Spexflix</a>}
     </span>
   );
 }

@@ -51,7 +51,11 @@
   "Header": {
     "toggleLanguage": "Byt språk",
     "toggleTheme": "Byt tema",
-    "toggleSidebar": "Visa eller dölj menyn"
+    "showMenu": "Visa menyn"
+  },
+  "Sidebar": {
+    "hideMenu": "Dölj menyn",
+    "showMenu": "Visa menyn"
   },
   "AppSwitcher": {
     "heading": "Byt applikation",
@@ -355,7 +359,10 @@
     "words": "Sökord",
     "smart": "Sök på innehåll",
     "search": "Sök",
-    "hint": "Minst två tecken.",
+    "emptyTitle": "Vad letar du efter?",
+    "emptyText": "Skriv ett sökord på minst två tecken och tryck Sök.",
+    "browse": "Eller bläddra bland alla album",
+    "tooShort": "Skriv minst två tecken.",
     "textHint": "Söker i albumens titlar, platser och beskrivningar och i bildtexter och fotografer.",
     "smartHint": "Söker på vad bilderna föreställer, t.ex. ”scen med rök”, och kan begränsas med filtren.",
     "visitorHint": "Söker bland publika album och bilder.",
@@ -779,5 +786,9 @@
     },
     "runFor": "Kör för {count, plural, one {# bild} other {# bilder}}",
     "started": "Jobbet har startat i Immich"
+  },
+  "YearBrowser": {
+    "decade": "{decade}-talet",
+    "yearsOf": "År på {decade}-talet"
   }
 }

@@ -202,7 +202,7 @@ export function ItemsManager({ albumId, albumTitle, items, coverId, spexflixUrl,
                   <p className="text-destructive">
                     {t(`failure.${item.failure ?? "NOT_PROCESSED"}`)}
                     {item.failure === "TOO_LONG" && spexflixUrl && (
-                      <> <a href={spexflixUrl} className="underline" target="_blank" rel="noopener noreferrer">Spexflix</a></>
+                      <> <a href={spexflixUrl} className="font-medium text-primary hover:text-primary/80" target="_blank" rel="noopener noreferrer">Spexflix</a></>
                     )}
                   </p>
                 )}

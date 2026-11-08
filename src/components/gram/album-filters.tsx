@@ -1,6 +1,7 @@
+import Form from "next/form";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/submit-button.client";
 import { Label } from "@/components/ui/label";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { kindName } from "@/utils/format";
@@ -29,7 +30,7 @@ export async function AlbumFilters({ path, search, categories, years, kinds, spe
   const filtered = Boolean(search.category || search.year || search.kind || search.spex || search.visibility);
 
   return (
-    <form method="get" action={path} role="search" aria-label={t("filters")} key={JSON.stringify(search)}
+    <Form action={path} role="search" aria-label={t("filters")} key={JSON.stringify(search)}
           className="grid grid-cols-2 gap-3 rounded-lg border p-3 md:grid-cols-[repeat(auto-fit,minmax(10rem,1fr))]">
       {Object.entries(keep ?? {}).map(([key, value]) => value ? <input key={key} type="hidden" name={key} value={value} /> : null)}
       <div className="flex flex-col gap-1.5">
@@ -77,9 +78,9 @@ export async function AlbumFilters({ path, search, categories, years, kinds, spe
         </div>
       )}
       <div className="col-span-2 flex items-end gap-2 md:col-span-1">
-        <Button type="submit">{t("filter")}</Button>
-        {filtered && <Link href={path} className="px-2 py-2 text-sm text-primary hover:underline">{t("reset")}</Link>}
+        <SubmitButton>{t("filter")}</SubmitButton>
+        {filtered && <Link href={path} className="px-2 py-2 text-sm text-primary hover:text-primary/80">{t("reset")}</Link>}
       </div>
-    </form>
+    </Form>
   );
 }

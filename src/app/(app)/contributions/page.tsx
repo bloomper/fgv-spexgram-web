@@ -39,7 +39,7 @@ export default async function ContributionsPage() {
                   <div className="min-w-0 flex-1 space-y-1">
                     <p className="truncate font-medium">{item.originalFileName ?? name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {item.album && <Link href={`/albums/${item.album.id}`} className="hover:underline">{item.album.title}</Link>}
+                      {item.album && <Link href={`/albums/${item.album.id}`} className="hover:text-primary">{item.album.title}</Link>}
                       {" · "}{formatInstant(item.createdAt)}
                     </p>
                   </div>

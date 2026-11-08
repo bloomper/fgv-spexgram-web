@@ -51,7 +51,11 @@
   "Header": {
     "toggleLanguage": "Change language",
     "toggleTheme": "Change theme",
-    "toggleSidebar": "Show or hide the menu"
+    "showMenu": "Show menu"
+  },
+  "Sidebar": {
+    "hideMenu": "Hide menu",
+    "showMenu": "Show menu"
   },
   "AppSwitcher": {
     "heading": "Switch application",
@@ -355,7 +359,10 @@
     "words": "Search words",
     "smart": "Search by content",
     "search": "Search",
-    "hint": "At least two characters.",
+    "emptyTitle": "What are you looking for?",
+    "emptyText": "Type a word of at least two characters and press Search.",
+    "browse": "Or browse all albums",
+    "tooShort": "Type at least two characters.",
     "textHint": "Searches album titles, places and descriptions, captions and photographers.",
     "smartHint": "Searches what the photos show, e.g. “stage with smoke”, and can be narrowed with the filters.",
     "visitorHint": "Searches public albums and photos.",
@@ -779,5 +786,9 @@
     },
     "runFor": "Run for {count, plural, one {# item} other {# items}}",
     "started": "The job has started in Immich"
+  },
+  "YearBrowser": {
+    "decade": "{decade}s",
+    "yearsOf": "Years in the {decade}s"
   }
 }

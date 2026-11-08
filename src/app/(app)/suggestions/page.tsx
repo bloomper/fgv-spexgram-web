@@ -27,13 +27,13 @@ export default async function SuggestionsPage() {
         <section aria-labelledby="my-suggestions" className="space-y-2">
           <h2 id="my-suggestions" className="text-lg font-semibold">{t("mine")}</h2>
           {suggestions.length === 0 ? <p className="text-muted-foreground">{t("none")}</p> : (
-            <ul className="divide-y rounded-lg border">
+            <ul className="divide-y overflow-hidden rounded-lg border">
               {suggestions.map(suggestion => (
-                <li key={suggestion.id} className="flex flex-wrap items-center gap-3 p-3">
+                <li key={suggestion.id} className="link-row flex flex-wrap items-center gap-3 p-3">
                   <div className="min-w-0 flex-1">
                     <p className="font-medium">
                       {suggestion.album
-                        ? <Link href={`/albums/${suggestion.album.id}`} className="hover:underline">{suggestion.title}</Link>
+                        ? <Link href={`/albums/${suggestion.album.id}`} className="row-link">{suggestion.title}</Link>
                         : suggestion.title}
                     </p>
                     <p className="text-xs text-muted-foreground">{formatInstant(suggestion.createdAt)}</p>
@@ -43,7 +43,7 @@ export default async function SuggestionsPage() {
                     {t(`status.${suggestion.status}`)}
                   </Badge>
                   {suggestion.status === "OPEN" && suggestion.album && (
-                    <Link href={`/albums/${suggestion.album.id}/contribute`} className="text-sm text-primary hover:underline">{t("contribute")}</Link>
+                    <Link href={`/albums/${suggestion.album.id}/contribute`} className="text-sm text-primary hover:text-primary/80">{t("contribute")}</Link>
                   )}
                 </li>
               ))}

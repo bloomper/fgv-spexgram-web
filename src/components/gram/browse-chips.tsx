@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
+import { YearBrowser } from "@/components/year-browser.client";
 import { kindName } from "@/utils/format";
 
 type Props = {
@@ -11,10 +12,13 @@ type Props = {
   spexLimit?: number;
 };
 
+// Each kind of browsing is a row with its label beside it (above it on narrow screens), to keep the start page short.
+const row = "flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-3";
+const label = "text-sm font-medium text-muted-foreground sm:w-24 sm:shrink-0 sm:pt-1.5";
 const chip = "inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring";
 
 /**
- * Browsing by category, year, kind and spex, as rows of links to the filtered album list.
+ * Browsing by category, kind, year and spex, as rows of links to the filtered album list; years fold into decades.
  */
 export async function BrowseChips({ categories, years, kinds, spex, spexLimit = 12 }: Props) {
   const t = await getTranslations("Browse");
@@ -22,10 +26,10 @@ export async function BrowseChips({ categories, years, kinds, spex, spexLimit = 
   const usedKinds = kinds.filter(kind => kind.albumCount > 0);
 
   return (
-    <nav aria-label={t("label")} className="space-y-3">
+    <nav aria-label={t("label")} className="space-y-3 sm:space-y-2">
       {categories.length > 0 && (
-        <div className="space-y-1.5">
-          <h2 className="text-sm font-medium text-muted-foreground">{t("categories")}</h2>
+        <div className={row}>
+          <h2 className={label}>{t("categories")}</h2>
           <ul className="flex flex-wrap gap-2">
             {categories.map(category => (
               <li key={category.id}>
@@ -38,8 +42,8 @@ export async function BrowseChips({ categories, years, kinds, spex, spexLimit = 
         </div>
       )}
       {usedKinds.length > 0 && (
-        <div className="space-y-1.5">
-          <h2 className="text-sm font-medium text-muted-foreground">{t("kinds")}</h2>
+        <div className={row}>
+          <h2 className={label}>{t("kinds")}</h2>
           <ul className="flex flex-wrap gap-2">
             {usedKinds.map(kind => (
               <li key={kind.id}><Link href={`/albums?kind=${kind.id}`} className={chip}>{kindName(kind, locale)}</Link></li>
@@ -48,20 +52,14 @@ export async function BrowseChips({ categories, years, kinds, spex, spexLimit = 
         </div>
       )}
       {years.length > 0 && (
-        <div className="space-y-1.5">
-          <h2 className="text-sm font-medium text-muted-foreground">{t("years")}</h2>
-          <ul className="flex flex-wrap gap-1.5">
-            {years.map(year => (
-              <li key={year}>
-                <Link href={`/albums?year=${year}`} className="rounded-md border px-2.5 py-1 text-sm tabular-nums hover:bg-accent">{year}</Link>
-              </li>
-            ))}
-          </ul>
+        <div className={row}>
+          <h2 className={label}>{t("years")}</h2>
+          <YearBrowser years={years} hrefPrefix="/albums?year=" />
         </div>
       )}
       {spex.length > 0 && (
-        <div className="space-y-1.5">
-          <h2 className="text-sm font-medium text-muted-foreground">{t("spex")}</h2>
+        <div className={row}>
+          <h2 className={label}>{t("spex")}</h2>
           <ul className="flex flex-wrap gap-2">
             {spex.slice(0, spexLimit).map(item => (
               <li key={item.id}>

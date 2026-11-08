@@ -191,7 +191,7 @@ function UploadRow({ entry }: { entry: UploadEntry }) {
             <>
               {entry.result?.existingAlbumTitle ? t("duplicateIn", { album: entry.result.existingAlbumTitle }) : t("duplicate")}
               {entry.result?.existingItemId && (
-                <>{" "}<Link href={`/items/${entry.result.existingItemId}`} className="text-primary underline">{t("showExisting")}</Link></>
+                <>{" "}<Link href={`/items/${entry.result.existingItemId}`} className="text-primary hover:text-primary/80">{t("showExisting")}</Link></>
               )}
             </>
           )}
