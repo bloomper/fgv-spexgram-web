@@ -15,6 +15,26 @@ export type AuditSearch = {
   entity?: string
 };
 
+const SEARCH_KEYS = ["type", "action", "actor", "from", "to", "q", "entity"] as const;
+
+/**
+ * The filter from the address: only its own parameters, one value each (`?q=a&q=b` arrives as an array; the first
+ * counts).
+ */
+export function auditSearchOf(params: Record<string, string | string[] | undefined> | null | undefined): AuditSearch {
+  const search: AuditSearch = {};
+
+  for (const key of SEARCH_KEYS) {
+    const value = params?.[key];
+    const first = Array.isArray(value) ? value[0] : value;
+
+    if (typeof first === "string" && first) {
+      search[key] = first;
+    }
+  }
+  return search;
+}
+
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 /**

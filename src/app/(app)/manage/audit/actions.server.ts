@@ -4,8 +4,7 @@ import { getAuditLog } from "@/lib/admin/admin.server";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyAction } from "@/utils/route.server";
 import { isAdmin } from "@/utils/auth";
-import { type AuditPage, type AuditSearch, toAuditFilter, toAuditRows } from "@/utils/audit";
-import { firstValues } from "@/utils/filters";
+import { type AuditPage, type AuditSearch, auditSearchOf, toAuditFilter, toAuditRows } from "@/utils/audit";
 import { auditLink } from "./links";
 
 const PATH = "/manage/audit";
@@ -20,7 +19,7 @@ export async function loadAuditPage(search: AuditSearch, page: number, size: num
       throw new Error("Invalid page");
     }
 
-    const filter = firstValues<AuditSearch>(search ?? {});
+    const filter = auditSearchOf(search);
     const log = await getAuditLog(page, size, toAuditFilter(filter, isAdmin(authz.roles)));
 
     return {
