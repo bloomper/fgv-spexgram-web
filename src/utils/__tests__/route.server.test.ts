@@ -36,6 +36,7 @@ describe("route.server", () => {
     const result = await withPolicyPage(unauthenticated, handler);
 
     expect(isValidElement(result) && (result as ReactElement).type).toBe(LoginPrompt);
+    expect((result as ReactElement<{ kind?: string }>).props.kind).toBe("page");
     expect(handler).not.toHaveBeenCalled();
   });
 
@@ -45,9 +46,10 @@ describe("route.server", () => {
 
   it("shows the no-access notice to someone logged in without access", async () => {
     requireUserMock.mockResolvedValueOnce({ session: {}, roles: [] });
-    const result = await withPolicyPage(forbidden, async () => "x") as ReactElement<{ noAccess?: boolean }>;
+    const result = await withPolicyPage(forbidden, async () => "x") as ReactElement<{ kind?: string; noAccess?: boolean }>;
 
     expect(result.type).toBe(LoginPrompt);
+    expect(result.props.kind).toBe("page");
     expect(result.props.noAccess).toBe(true);
   });
 });

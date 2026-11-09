@@ -142,11 +142,19 @@
     "revival": "Nyuppsättning"
   },
   "LoginPrompt": {
-    "title": "Logga in för att se det här",
-    "text": "Det här kan vara för medlemmar. Logga in med ditt FGV-konto för att fortsätta.",
     "login": "Logga in",
-    "noAccessTitle": "Det här kan inte visas",
-    "noAccessText": "Det finns inte, eller så har ditt FGV-konto inte åtkomst till det. Be en administratör om åtkomst till Spexgram."
+    "content": {
+      "title": "Logga in för att se det här",
+      "text": "Om det finns är det bara för medlemmar. Logga in med ditt FGV-konto för att se det.",
+      "noAccessTitle": "Det här kan inte visas",
+      "noAccessText": "Det finns inte, eller så har ditt FGV-konto inte åtkomst till det. Be en administratör om åtkomst till Spexgram."
+    },
+    "page": {
+      "title": "Bara för medlemmar",
+      "text": "Den här sidan är för medlemmar. Logga in med ditt FGV-konto för att fortsätta.",
+      "noAccessTitle": "Du har inte åtkomst till Spexgram",
+      "noAccessText": "Den här sidan är för medlemmar, och ditt FGV-konto har inte åtkomst till Spexgram. Be en administratör om åtkomst."
+    }
   },
   "Nav": {
     "home": "Hem",

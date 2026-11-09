@@ -58,7 +58,8 @@ endpoints for tus uploads and albums as zips; the files themselves come from the
 
 Login is **not** required at the root. The `(app)` layout works with and without a session: visitors get *Logga in*
 (`LoginButton`, back to the page they were on through `/api/auth/login?returnTo=`), members their menu, and the sidebar
-shows the pages each role opens. Nothing a visitor sees calls Keycloak: without a session cookie Better Auth does not
+shows only the pages each role opens (visitors: home, albums, search; a members' page typed in shows `LoginPrompt`
+with `kind="page"`). Nothing a visitor sees calls Keycloak: without a session cookie Better Auth does not
 reach it, and GraphQL is called without a token.
 
 - **Who is looking**: `getViewer()` (`src/lib/gram/viewer.server.ts`) says `loggedIn`, `member` (has `USER`), `editor`,

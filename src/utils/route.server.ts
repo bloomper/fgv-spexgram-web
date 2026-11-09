@@ -25,7 +25,7 @@ export async function withPolicyAction<T>(
 
 /**
  * Guards a page that is not for visitors. Spexgram has a public side, so nobody is sent away: a visitor gets the login
- * prompt in place of the page, and so does someone logged in without access to Spexgram (with a notice instead of the
+ * prompt for members' pages in place of the page, and so does someone logged in without access to Spexgram (with a notice instead of the
  * button). A member who lacks the page's role gets the forbidden page.
  */
 export async function withPolicyPage(
@@ -38,10 +38,10 @@ export async function withPolicyPage(
     return handler(authz);
   }
   if (authz.status === 401) {
-    return createElement(LoginPrompt);
+    return createElement(LoginPrompt, { kind: "page" });
   }
   if (!hasAccess((await requireUser()).roles)) {
-    return createElement(LoginPrompt, { noAccess: true });
+    return createElement(LoginPrompt, { kind: "page", noAccess: true });
   }
   forbidden();
 }

@@ -78,8 +78,8 @@ export function AppSidebar({ roles, accountUrl, user, ...props }: AppSidebarProp
       { title: t("Nav.search"), url: "/search", icon: Search, isActive: pathname.startsWith("/search") },
     ];
 
-    // Visitors see the members' pages too, which ask them to log in
-    if (hasAccess(roles) || !user) {
+    // Members' pages are left out for visitors; typed in, they ask them to log in
+    if (hasAccess(roles)) {
       mainItems.push(
         { title: t("Nav.map"), url: "/map", icon: Map, isActive: pathname.startsWith("/map") },
         { title: t("Nav.contributions"), url: "/contributions", icon: Upload, isActive: pathname.startsWith("/contributions") },
@@ -135,7 +135,7 @@ export function AppSidebar({ roles, accountUrl, user, ...props }: AppSidebarProp
         },
       ],
     };
-  }, [roles, pathname, t, user]);
+  }, [roles, pathname, t]);
 
   return (
     <Sidebar collapsible="icon"

@@ -142,11 +142,19 @@
     "revival": "Revival"
   },
   "LoginPrompt": {
-    "title": "Log in to see this",
-    "text": "This may be for members. Log in with your FGV account to continue.",
     "login": "Log in",
-    "noAccessTitle": "This cannot be shown",
-    "noAccessText": "It does not exist, or your FGV account has no access to it. Ask an administrator for access to Spexgram."
+    "content": {
+      "title": "Log in to see this",
+      "text": "If it exists, it is for members only. Log in with your FGV account to see it.",
+      "noAccessTitle": "This cannot be shown",
+      "noAccessText": "It does not exist, or your FGV account has no access to it. Ask an administrator for access to Spexgram."
+    },
+    "page": {
+      "title": "Members only",
+      "text": "This page is for members. Log in with your FGV account to continue.",
+      "noAccessTitle": "You have no access to Spexgram",
+      "noAccessText": "This page is for members, and your FGV account has no access to Spexgram. Ask an administrator for access."
+    }
   },
   "Nav": {
     "home": "Home",

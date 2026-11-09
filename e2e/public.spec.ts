@@ -12,6 +12,13 @@ test.describe("The public side, for visitors who are not logged in", () => {
     await expect(page.getByText("Sittning efter premiären")).toHaveCount(0);
     await expect(page.getByText("Opublicerat album")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "spexgram@example.org" })).toBeVisible();
+
+    // The sidebar leaves out the members' pages
+    const sidebar = page.locator("[data-slot=\"sidebar\"]:visible");
+    await expect(sidebar.getByRole("link", { name: "Album" }).first()).toBeVisible();
+    for (const name of ["Karta", "Mina bidrag", "Föreslå album", "Mina anmälningar"]) {
+      await expect(sidebar.getByRole("link", { name }), name).toHaveCount(0);
+    }
   });
 
   test("a public album shows its public items, indexable and with Open Graph tags", async ({ page }) => {
@@ -58,10 +65,11 @@ test.describe("The public side, for visitors who are not logged in", () => {
     await expect(page.getByRole("main").getByTestId("login-prompt")).toBeVisible();
   });
 
-  test("members' pages ask visitors to log in", async ({ page }) => {
+  test("members' pages, typed in, ask visitors to log in", async ({ page }) => {
     for (const path of ["/map", "/contributions", "/suggestions", "/reports", "/manage/albums", "/admin/settings"]) {
       await page.goto(path);
       await expect(page.getByRole("main").getByTestId("login-prompt"), path).toBeVisible();
+      await expect(page.getByRole("heading", { level: 1, name: "Bara för medlemmar" }), path).toBeVisible();
     }
   });
 
