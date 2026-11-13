@@ -22,7 +22,7 @@ export type PickedSpex = {
 };
 
 /**
- * Picks the spex something is about from Spexregister, the main one first, or none at all. Search results show each
+ * Picks the spex something is about from Spexipedia, the main one first, or none at all. Search results show each
  * original with its revivals indented under it.
  */
 export function SpexPicker({ value, onChange, none, onNoneChange }: {
