@@ -56,7 +56,7 @@ The look (logo, favicon and colours) is FGV's, shared with Spexregister, Nyupps√
    API_ENDPOINT=https://api.spexgram.fgv.local.nu:8443
    MEDIA_ORIGIN=https://media.spexgram.fgv.local.nu:8443
    NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA
-   SPEXREGISTER_WEB_URL=https://register.fgv.local.nu:8443
+   SPEXREGISTER_WEB_URL=http://localhost:3000
    REVIVAL_WEB_URL=http://localhost:3001
    SPEXIFY_WEB_URL=http://localhost:3002
    SPEXFLIX_WEB_URL=http://localhost:3003
