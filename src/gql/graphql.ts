@@ -25,7 +25,7 @@ export type AlbumInput = {
   /** A kind; defaults to the first one for a new album and to the current one for an existing album. */
   kindId?: string | null | undefined;
   place?: string | null | undefined;
-  /** Spex in Spexregister, the main one first. Empty when the album is about no one spex. */
+  /** Spex in Spexipedia, the main one first. Empty when the album is about no one spex. */
   spexIds?: Array<string>;
   /** Defaults to the main spex's title and year and the kind; required without a spex. */
   title?: string | null | undefined;
@@ -112,7 +112,7 @@ export type ItemsInput = {
 };
 
 /**
- * A scheduled maintenance job: copying the current spex data from Spexregister (SPEX_REFRESH), listing items in Immich
+ * A scheduled maintenance job: copying the current spex data from Spexipedia in full (SPEX_REFRESH; changes also arrive from its change feed within minutes), listing items in Immich
  * that Spexgram does not know as unsorted (UNSORTED_SCAN), following items Immich is processing (PROCESSING_POLL),
  * checking that every item still exists in Immich (ITEM_CHECK), removing uploads that were never used (UPLOAD_CLEANUP),
  * deleting people, reports and reviews past their retention (RETENTION) and telling contributors of reviews

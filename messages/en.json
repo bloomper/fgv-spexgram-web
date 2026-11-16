@@ -65,6 +65,7 @@
     "spexflix": "Spexflix",
     "spexify": "Spexify",
     "spexgram": "Spexgram",
+    "spexipedia": "Spexipedia",
     "archive": "Spexarkiv"
   },
   "NoAccess": {
@@ -98,7 +99,7 @@
     "FORBIDDEN": "You are not allowed to do that.",
     "NOT_FOUND": "It does not exist, or you do not have access to it.",
     "BAD_REQUEST": "The details are not valid.",
-    "SPEXREGISTER_UNAVAILABLE": "Spexregister is temporarily unavailable. Try again in a moment.",
+    "SPEXIPEDIA_UNAVAILABLE": "Spexipedia is temporarily unavailable. Try again in a moment.",
     "UNAUTHORIZED": "You are not logged in.",
     "INTERNAL_ERROR": "Something went wrong. Please try again.",
     "MAIL_UNAVAILABLE": "Email cannot be sent at the moment. Try again later.",
@@ -733,7 +734,7 @@
     "jobs": {
       "SPEX_REFRESH": {
         "title": "Spex refresh",
-        "description": "Copies the current titles, years and categories of the spex from Spexregister."
+        "description": "Copies the current titles, years and categories of the spex from Spexipedia; changes also arrive from its change feed within minutes."
       },
       "UNSORTED_SCAN": {
         "title": "Unsorted scan",

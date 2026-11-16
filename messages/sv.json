@@ -65,6 +65,7 @@
     "spexflix": "Spexflix",
     "spexify": "Spexify",
     "spexgram": "Spexgram",
+    "spexipedia": "Spexipedia",
     "archive": "Spexarkiv"
   },
   "NoAccess": {
@@ -98,7 +99,7 @@
     "FORBIDDEN": "Du har inte behörighet att göra det.",
     "NOT_FOUND": "Det finns inte, eller så har du inte tillgång till det.",
     "BAD_REQUEST": "Uppgifterna är inte giltiga.",
-    "SPEXREGISTER_UNAVAILABLE": "Spexregistret är tillfälligt otillgängligt. Försök igen om en stund.",
+    "SPEXIPEDIA_UNAVAILABLE": "Spexipedia är tillfälligt otillgängligt. Försök igen om en stund.",
     "UNAUTHORIZED": "Du är inte inloggad.",
     "INTERNAL_ERROR": "Något gick fel. Försök igen.",
     "MAIL_UNAVAILABLE": "E-post kan inte skickas just nu. Försök igen senare.",
@@ -733,7 +734,7 @@
     "jobs": {
       "SPEX_REFRESH": {
         "title": "Uppdatering av spex",
-        "description": "Kopierar spexens aktuella titlar, år och kategorier från Spexregistret."
+        "description": "Kopierar spexens aktuella titlar, år och kategorier från Spexipedia; ändringar kommer också från dess ändringsflöde inom några minuter."
       },
       "UNSORTED_SCAN": {
         "title": "Sökning efter osorterat",
