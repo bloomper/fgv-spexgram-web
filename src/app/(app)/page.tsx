@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { HomeSection } from "@/components/home-section";
-import { AlbumGrid } from "@/components/gram/album-card";
-import { BrowseChips } from "@/components/gram/browse-chips";
-import { Gallery } from "@/components/gram/gallery.client";
-import { getHome, getMe } from "@/lib/gram/gram.server";
-import { getViewer } from "@/lib/gram/viewer.server";
+import { Memories } from "@/components/gram/memories.client";
+import { Timeline } from "@/components/gram/timeline.client";
 import { DataEmpty } from "@/components/data-empty";
+import { getMe, getMemories, getTimeline } from "@/lib/gram/gram.server";
+import { getViewer } from "@/lib/gram/viewer.server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Meta");
@@ -21,49 +19,38 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * The start page, for visitors and members alike: the welcome text (the public one for visitors), browsing, the most
- * recently added albums and what was photographed on this day in earlier years.
+ * The start page, Photos: memories at the top (this day in earlier years, albums of spex whose premiere is near
+ * today), then the timeline of every item the viewer may see across albums, newest first. Visitors see the same of
+ * what is public, under the public welcome text.
  */
-export default async function HomePage() {
+export default async function PhotosPage() {
   const t = await getTranslations("Home");
-  const [home, viewer] = await Promise.all([getHome(), getViewer()]);
+  const [memories, months, viewer] = await Promise.all([getMemories(), getTimeline(false), getViewer()]);
   const me = viewer.member ? await getMe() : undefined;
+  const options = { canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report, editor: viewer.editor };
+  const welcome = memories?.startPage.welcome;
 
   return (
-    <div className="flex flex-1 flex-col gap-8 p-4 md:p-8">
-      <section className="flex items-start gap-4">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            {me?.me ? t("greeting", { name: me.me.displayName ?? me.me.username }) : t("title")}
-          </h1>
-          <p className="max-w-4xl whitespace-pre-line text-pretty text-muted-foreground">
-            {home?.startPage.welcome || (viewer.member ? t("intro") : t("introVisitor"))}
-          </p>
-          {!viewer.member && home?.startPage.contactEmail && (
+    <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+      <h1 className="sr-only">{t("photos")}</h1>
+      {!viewer.member && (
+        <section className="space-y-2">
+          <p className="max-w-4xl whitespace-pre-line text-pretty text-muted-foreground">{welcome || t("introVisitor")}</p>
+          {memories?.startPage.contactEmail && (
             <p className="text-sm text-muted-foreground">
-              {t("contact")} <a className="text-primary hover:text-primary/80" href={`mailto:${home.startPage.contactEmail}`}>{home.startPage.contactEmail}</a>
+              {t("contact")} <a className="text-primary hover:text-primary/80" href={`mailto:${memories.startPage.contactEmail}`}>{memories.startPage.contactEmail}</a>
             </p>
           )}
-        </div>
-      </section>
-
-      {home && (
-        <BrowseChips categories={home.categories} years={home.years} kinds={home.albumKinds} spex={home.spexWithAlbums} />
+        </section>
       )}
-
-      <HomeSection id="recent" title={t("recent")} more={{ href: "/albums", label: t("allAlbums") }}>
-        {home && home.recentAlbums.length > 0
-          ? <AlbumGrid albums={home.recentAlbums} showVisibility={viewer.editor} />
-          : <DataEmpty title={t("empty")} description={null} />}
-      </HomeSection>
-
-      {home && home.thisDayInHistory.length > 0 && (
-        <HomeSection id="this-day" title={t("thisDay")}>
-          <p className="-mt-2 text-sm text-muted-foreground">{t("thisDayText")}</p>
-          <Gallery items={home.thisDayInHistory} rowHeight={160}
-                   options={{ canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report }} />
-        </HomeSection>
+      {viewer.member && welcome && <p className="max-w-4xl whitespace-pre-line text-pretty text-muted-foreground">{welcome}</p>}
+      {memories && (
+        <Memories thisDay={memories.thisDayInHistory} premiereAlbums={memories.premiereAlbums} options={options}
+                  now={new Date().toISOString()} />
       )}
+      {months && months.length > 0
+        ? <Timeline months={months} options={options} member={viewer.member} editor={viewer.editor} />
+        : <DataEmpty title={t("empty")} description={viewer.member ? t("emptyText") : t("emptyVisitor")} />}
     </div>
   );
 }

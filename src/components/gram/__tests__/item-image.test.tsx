@@ -23,4 +23,14 @@ describe("ItemImage", () => {
 
     expect(screen.getByRole("img", { name: "Finalen (unavailable)" })).toBeInTheDocument();
   });
+
+  it("shows Immich's thumbhash blurred until the image has loaded", () => {
+    const { container } = render(<ItemImage src="https://media.test/a/1/thumbnail/1/s" alt="Finalen" thumbhash="1QcSHQRnh493V4dIh4eXh1h4kJUI" />);
+    const image = screen.getByRole("img", { name: "Finalen" });
+
+    expect((container.firstChild as HTMLElement).style.backgroundImage).toMatch(/^url\("?data:image\/png/);
+    expect(image).toHaveClass("opacity-0");
+    fireEvent.load(image);
+    expect(image).not.toHaveClass("opacity-0");
+  });
 });

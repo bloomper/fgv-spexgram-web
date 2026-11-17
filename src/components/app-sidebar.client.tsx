@@ -3,10 +3,12 @@
 import * as React from "react";
 import { useMemo } from "react";
 import {
+  BookImage,
+  Compass,
   Drama,
   FolderPlus,
-  House,
-  Images,
+  Heart,
+  Image as ImageIcon,
   Map,
   type LucideIcon,
   Pencil,
@@ -73,13 +75,15 @@ export function AppSidebar({ roles, accountUrl, user, ...props }: AppSidebarProp
 
   const navigation = useMemo((): { main: NavItem[]; secondary: NavSecondaryItem[] } => {
     const mainItems: NavItem[] = [
-      { title: t("Nav.home"), url: "/", icon: House, isActive: pathname === "/" },
-      { title: t("Nav.albums"), url: "/albums", icon: Images, isActive: pathname.startsWith("/albums") || pathname.startsWith("/items") || pathname.startsWith("/spex") },
+      { title: t("Nav.photos"), url: "/", icon: ImageIcon, isActive: pathname === "/" || pathname.startsWith("/items") },
+      { title: t("Nav.explore"), url: "/explore", icon: Compass, isActive: pathname.startsWith("/explore") || pathname.startsWith("/spex") },
+      { title: t("Nav.albums"), url: "/albums", icon: BookImage, isActive: pathname.startsWith("/albums") },
       { title: t("Nav.search"), url: "/search", icon: Search, isActive: pathname.startsWith("/search") },
     ];
 
     // Members' pages are left out for visitors; typed in, they ask them to log in
     if (hasAccess(roles)) {
+      mainItems.splice(1, 0, { title: t("Nav.favourites"), url: "/favourites", icon: Heart, isActive: pathname.startsWith("/favourites") });
       mainItems.push(
         { title: t("Nav.map"), url: "/map", icon: Map, isActive: pathname.startsWith("/map") },
         { title: t("Nav.contributions"), url: "/contributions", icon: Upload, isActive: pathname.startsWith("/contributions") },

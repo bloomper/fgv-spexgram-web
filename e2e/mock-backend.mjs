@@ -111,6 +111,7 @@ function resetState() {
     audit: [],
     uploads: new Map(),
     failNext: new Map(),
+    favourites: new Set(),
     immichUp: true,
     smartSearches: [],
   };
@@ -211,7 +212,11 @@ function itemOut(persona, i) {
 
   return {
     ...i,
-    album: a && canSeeAlbum(persona, a) ? { id: a.id, title: a.title, visibility: a.visibility } : null,
+    album: a && canSeeAlbum(persona, a)
+      ? { id: a.id, title: a.title, visibility: a.visibility, spex: a.spexIds.map(id => SPEX.find(spex => spex.id === id)).filter(Boolean) }
+      : null,
+    thumbhash: null,
+    favourite: Boolean(persona && state.favourites.has(`${persona.sub}:${i.id}`)),
     effectiveVisibility: effective(i),
     mine: Boolean(persona && i.owner === persona.sub),
     uploadedBy: isEditor(persona) ? (bySub[i.owner]?.name ?? i.owner) : null,
@@ -267,6 +272,8 @@ function filterAlbums(persona, filter = {}) {
       && (!filter.year || spex.some(s => s.year === filter.year) || a.dateFrom?.startsWith(String(filter.year)))
       && (!filter.spexId || spex.some(s => s.id === filter.spexId || s.parentId === filter.spexId))
       && (!filter.kindId || a.kindId === filter.kindId)
+      && (!filter.decade || spex.some(s => Math.floor(s.year / 10) * 10 === filter.decade) || a.dateFrom?.startsWith(String(filter.decade).slice(0, 3)))
+      && (!filter.place || a.place?.toLowerCase() === filter.place.toLowerCase())
       && (!filter.visibility || a.visibility === filter.visibility);
   });
 }
@@ -350,7 +357,65 @@ function albumInput(input, existing) {
   };
 }
 
+// The timeline: every item the viewer may see in an album outside the trash, newest first
+const timelineItems = (persona, favourites) => state.items
+  .filter(i => i.albumId && !i.trashedAt && canSeeItem(persona, i) && !albumById(i.albumId)?.trashedAt)
+  .filter(i => !favourites || (persona && state.favourites.has(`${persona.sub}:${i.id}`)))
+  .sort((x, y) => (y.takenAt ?? "").localeCompare(x.takenAt ?? ""));
+
+function requireFavourites(persona, favourites) {
+  if (favourites) {
+    requireMember(persona);
+  }
+}
+
 const resolvers = {
+  Timeline: (persona, { favourites = false }) => {
+    requireFavourites(persona, favourites);
+
+    const months = new Map();
+
+    for (const i of timelineItems(persona, favourites)) {
+      const month = i.takenAt ? i.takenAt.slice(0, 7) : null;
+
+      months.set(month, (months.get(month) ?? 0) + 1);
+    }
+    return { timeline: [...months.entries()].map(([month, count]) => ({ month, count })) };
+  },
+  TimelineItems: (persona, { month = null, favourites = false, page = 0, size = 200 }) => {
+    requireFavourites(persona, favourites);
+
+    const items = timelineItems(persona, favourites).filter(i => (i.takenAt ? i.takenAt.slice(0, 7) : null) === month);
+
+    return { timelineItems: { items: items.slice(page * size, page * size + size).map(i => itemOut(persona, i)), totalCount: items.length, page, size } };
+  },
+  Memories: persona => ({
+    startPage: {
+      welcome: isMember(persona) ? state.settings.welcomeSv : state.settings.publicWelcomeSv,
+      contactEmail: state.settings.contactEmail,
+    },
+    thisDayInHistory: [],
+    premiereAlbums: [],
+  }),
+  Explore: persona => {
+    const albums = visibleAlbums(persona);
+    const places = new Map();
+
+    albums.filter(a => a.place).forEach(a => places.set(a.place, (places.get(a.place) ?? 0) + 1));
+    return {
+      recentAlbums: albums.slice(0, 10).map(a => albumOut(persona, a)),
+      places: [...places.entries()].map(([name, albumCount]) => ({ name, albumCount })),
+      ...browseExtras(persona),
+    };
+  },
+  FavouritesSet: (persona, { itemIds, favourite }) => {
+    requireMember(persona);
+
+    const items = itemIds.map(itemById).filter(i => canSeeItem(persona, i));
+
+    items.forEach(i => favourite ? state.favourites.add(`${persona.sub}:${i.id}`) : state.favourites.delete(`${persona.sub}:${i.id}`));
+    return { favouritesSet: items.map(i => itemOut(persona, i)) };
+  },
   Me: persona => ({
     me: persona ? { username: persona.email, displayName: persona.name, email: persona.email, roles: persona.roles } : null,
     limits: limitsOut(persona),

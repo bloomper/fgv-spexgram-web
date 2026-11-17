@@ -7,12 +7,14 @@ test.describe("The application shell", () => {
 
     const sidebar = page.locator("[data-slot=\"sidebar\"]:visible");
 
-    await expect(sidebar.getByRole("link", { name: "Hem" })).toHaveAttribute("href", "/");
+    await expect(sidebar.getByRole("link", { name: "Bilder" })).toHaveAttribute("href", "/");
+    await expect(sidebar.getByRole("link", { name: "Utforska" })).toHaveAttribute("href", "/explore");
+    await expect(sidebar.getByRole("link", { name: "Favoriter" })).toHaveAttribute("href", "/favourites");
     await expect(sidebar.getByRole("link", { name: "Album" }).first()).toHaveAttribute("href", "/albums");
     await expect(sidebar.getByRole("link", { name: "Karta" })).toBeVisible();
     await expect(sidebar.getByRole("link", { name: "Redigera" })).toBeVisible();
     await expect(sidebar.getByRole("link", { name: "Administration" })).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1, name: "Hej Sara Admin!" })).toBeVisible();
+    await expect(page.getByTestId("timeline")).toBeVisible();
   });
 
   test("hides editing and administration from a member", async ({ page, loginAs }) => {
