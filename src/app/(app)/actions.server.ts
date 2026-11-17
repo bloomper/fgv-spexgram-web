@@ -5,8 +5,10 @@ import {
   albumSuggest,
   contributionsAdd,
   contributionWithdraw,
+  favouritesSet,
   getAlbumItems,
   getItemMedia,
+  getTimelineItems,
   reportCreate,
 } from "@/lib/gram/gram.server";
 import { itemsAdd } from "@/lib/gram/manage.server";
@@ -42,6 +44,43 @@ export async function albumItemsAction(albumId: string, page: number): Promise<A
 
     return { items: result?.items ?? [], totalCount: result?.totalCount ?? 0 };
   });
+}
+
+const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
+const TIMELINE_PAGE = 200;
+
+/**
+ * A page of one month of the timeline (null for the items without a date), as the timeline loads months near the
+ * screen. Anyone may ask; the favourites only members.
+ */
+export async function timelineItemsAction(month: string | null, favourites: boolean, page: number): Promise<ActionResult<{
+  items: GalleryItem[];
+  totalCount: number
+}>> {
+  if (month !== null && !MONTH.test(month)) {
+    throw new Error("Invalid month");
+  }
+  return toActionResult(async () => {
+    const result = await getTimelineItems(month, favourites, Math.max(0, Math.floor(page)), TIMELINE_PAGE);
+
+    return { items: result?.items ?? [], totalCount: result?.totalCount ?? 0 };
+  });
+}
+
+/**
+ * Marks items as the member's favourites, or unmarks them. Favourites are personal; only the favourites page is
+ * rendered again.
+ */
+export async function favouriteAction(ids: string[], favourite: boolean): Promise<ActionResult<string[]>> {
+  const wanted = [...new Set(ids)].slice(0, 1000);
+
+  wanted.forEach(requireId);
+  return withPolicyAction(Policies.app.requireAccess, () => toActionResult(async () => {
+    const changed = await favouritesSet(wanted, favourite);
+
+    revalidatePath("/favourites");
+    return changed.map(item => item.id);
+  }));
 }
 
 /**

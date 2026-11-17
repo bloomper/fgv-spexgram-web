@@ -5,6 +5,8 @@ import { ID } from "@/utils/ids";
 export type FilterSearch = {
   category?: string;
   year?: string;
+  decade?: string;
+  place?: string;
   kind?: string;
   spex?: string;
   visibility?: string;
@@ -28,12 +30,15 @@ const VISIBILITY: ReadonlySet<string> = new Set(["UNPUBLISHED", "MEMBERS", "PUBL
  */
 export function toAlbumFilter(search: FilterSearch, editor = false): AlbumFilter {
   const year = Number(search.year);
+  const decade = Number(search.decade);
 
   return {
     categoryId: search.category && ID.test(search.category) ? search.category : null,
     year: Number.isInteger(year) && year > 1800 && year < 3000 ? year : null,
     kindId: search.kind && ID.test(search.kind) ? search.kind : null,
     spexId: search.spex && ID.test(search.spex) ? search.spex : null,
+    decade: Number.isInteger(decade) && decade % 10 === 0 && decade > 1800 && decade < 3000 ? decade : null,
+    place: search.place?.trim().slice(0, 255) || null,
     visibility: editor && search.visibility && VISIBILITY.has(search.visibility) ? search.visibility as Visibility : null,
   };
 }
@@ -60,4 +65,9 @@ export function filterHref(path: string, search: FilterSearch, changes: Partial<
   const query = params.toString();
 
   return query ? `${path}?${query}` : path;
+}
+
+/** The decades of the years, newest first, as their first years. */
+export function decadesOf(years: readonly number[]): number[] {
+  return [...new Set(years.map(year => Math.floor(year / 10) * 10))].sort((a, b) => b - a);
 }
