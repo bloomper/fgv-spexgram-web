@@ -6,7 +6,7 @@ const media = (expiresAt: string) => ({ thumbnailUrl: "t", previewUrl: "p", vide
 describe("gram", () => {
   it("uses the caption as text alternative, else the album and the date", () => {
     expect(altText({ caption: "Finalen", takenAt: null, album: null }, "sv")).toBe("Finalen");
-    expect(altText({ caption: " ", takenAt: "1975-02-14T20:00:00", album: { id: "a", title: "Nobel 1975", visibility: "PUBLIC" } }, "sv"))
+    expect(altText({ caption: " ", takenAt: "1975-02-14T20:00:00", album: { id: "a", title: "Nobel 1975", visibility: "PUBLIC", spex: [] } }, "sv"))
       .toBe("Nobel 1975, 14 februari 1975");
     expect(altText({ caption: null, takenAt: null, album: null }, "en", "Jubileum")).toBe("Jubileum");
   });

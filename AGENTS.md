@@ -92,10 +92,26 @@ reach it, and GraphQL is called without a token.
 - **The grid** (`Gallery`, `src/components/gram/gallery.client.tsx`) is react-photo-album's justified `RowsPhotoAlbum`;
   an album loads 60 items per page as the viewer scrolls (`albumItemsAction`, IntersectionObserver). Contributions
   waiting for review are marked on the owner's view.
+- **Photos, the start page** (`Timeline`, `src/components/gram/timeline.client.tsx`): every item the viewer may see
+  across albums, newest first. `timeline` gives the months with their counts; each month is a section with a sticky
+  header that takes its estimated height (`estimateHeight`) until it comes near the screen and loads its items
+  (`timelineItemsAction`, 200 a page), then days with sticky headers and a justified grid. The scrubber at the side
+  jumps to a year and month. Thumbnails show Immich's thumbhash (`thumbhashUrl`, `src/utils/timeline.ts`) until they
+  load. `/favourites` is the same timeline with `favourites`. **Memories** (`Memories`) above it: *this day* a card a
+  year, and `premiereAlbums`; a card opens the viewer as a slideshow.
+- **Selecting** in the timeline: a check mark on hover, a long press on touch, a tap once something is selected,
+  shift-click for a range, dragging over check marks; a day's header selects the day. `SelectionBar` downloads
+  (previews, or originals where allowed), marks favourites (`favouriteAction`), and for editors moves, makes a new
+  album, sets the visibility (public confirmed with the count) or the day (`takenDate`), or trashes.
+- **Explore** (`/explore`): suggested searches (`Explore.suggestions` in the messages; by content for members), the
+  spex as poster tiles (one per original), decades, kinds, categories, places (`places`) and recent albums. `/albums`
+  has the kinds as chips (`KindChips`, from `albumKinds`, never hardcoded) and filters by decade and place too.
 - **The viewer** (`ItemViewer`, `src/components/gram/viewer.client.tsx`) is yet-another-react-lightbox with zoom,
   slideshow, full screen, captions, a counter and video (a plain `<video>` on Immich's browser version). Its toolbar
   downloads the preview (`downloadFile` fetches it through CORS and saves it under `downloadName()`), the original when
-  allowed, reports (closes the lightbox and opens `ReportDialog`) and opens the item's page.
+  allowed, reports (closes the lightbox and opens `ReportDialog`) and opens the item's page. Members mark the item as a favourite there, and the info panel (`InfoPanel`) shows the date,
+  album, spex, caption, photographer, the place on one OpenStreetMap tile for members, and the uploader and file for
+  editors.
 - **Reports**: `ReportDialog` asks for a reason and a message; visitors also give an email address and pass Cloudflare
   Turnstile (`Turnstile`, explicit rendering, the token goes to `reportCreate`, which the server verifies).
 - **Uploads** (`src/components/upload/uploads.client.tsx`): `UploadsProvider` in the layout holds every upload, so they

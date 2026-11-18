@@ -187,6 +187,9 @@ export async function updateItemAction(id: string, albumId: string | null, input
 export async function updateItemsAction(ids: string[], input: ItemsInput, albumIds: string[] = []): Promise<ActionResult<number>> {
   requireIds(ids);
   requireVisibility(input.visibility);
+  if (input.takenDate && !DAY.test(input.takenDate)) {
+    throw new Error("Invalid date");
+  }
   if (input.albumId) {
     requireId(input.albumId);
   }
@@ -196,6 +199,7 @@ export async function updateItemsAction(ids: string[], input: ItemsInput, albumI
       photographer: input.photographer === undefined || input.photographer === null ? null : input.photographer.trim().slice(0, 200),
       visibility: input.visibility ?? null,
       albumId: input.albumId ?? null,
+      takenDate: input.takenDate ?? null,
     });
 
     changed([...albumIds, input.albumId]);

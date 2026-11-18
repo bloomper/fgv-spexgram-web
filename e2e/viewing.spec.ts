@@ -114,8 +114,8 @@ test.describe("Viewing, for members", () => {
 
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByTestId("no-access-notice")).toContainText("nils@example.org");
-    await expect(page.getByRole("link", { name: /Nobel 1975 – premiären/ })).toBeVisible();
-    await expect(page.getByText("Sittning efter premiären")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Finalen med hela ensemblen" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Bakom scenen" })).toHaveCount(0);
 
     await page.goto(`/albums/${ids.membersAlbum}`);
     await expect(page.getByRole("heading", { level: 1, name: "Det här kan inte visas" })).toBeVisible();

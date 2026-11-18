@@ -158,7 +158,9 @@
     }
   },
   "Nav": {
-    "home": "Hem",
+    "photos": "Bilder",
+    "explore": "Utforska",
+    "favourites": "Favoriter",
     "albums": "Album",
     "search": "Sök",
     "map": "Karta",
@@ -180,24 +182,12 @@
   },
   "Home": {
     "title": "Välkommen till Spexgram",
-    "greeting": "Hej {name}!",
-    "intro": "Spexens bilder och korta filmer, sorterade i album. Bläddra, sök, och lägg till dina egna bilder i ett album.",
     "introVisitor": "Bilder och korta filmer från spexen genom åren. Här visas det som är publikt; logga in med ditt FGV-konto för att se mer.",
     "contact": "Frågor om en bild?",
-    "recent": "Senast tillagda album",
-    "allAlbums": "Alla album",
-    "empty": "Inga album ännu.",
-    "thisDay": "Den här dagen i historien",
-    "thisDayText": "Bilder och filmer tagna på dagens datum tidigare år."
-  },
-  "Browse": {
-    "label": "Bläddra",
-    "categories": "Kategorier",
-    "kinds": "Sorter",
-    "years": "År",
-    "spex": "Spex",
-    "revival": "nyuppsättning",
-    "allSpex": "Alla {count} spex"
+    "empty": "Inga bilder eller filmer ännu.",
+    "photos": "Bilder",
+    "emptyText": "När album har fått bilder och filmer visas de här, nyast först.",
+    "emptyVisitor": "Inget är publikt ännu. Logga in med ditt FGV-konto för att se mer."
   },
   "Albums": {
     "title": "Album",
@@ -225,7 +215,11 @@
     "none": "Inga album",
     "noneText": "Inga album matchar filtret.",
     "noneVisitor": "Inga publika album matchar. Logga in för att se fler.",
-    "bySpex": "Album per spex"
+    "bySpex": "Album per spex",
+    "decade": "Årtionde",
+    "allDecades": "Alla årtionden",
+    "decadeName": "{decade}-talet",
+    "atPlace": "Album från {place}"
   },
   "Album": {
     "breadcrumb": "Sökväg",
@@ -279,7 +273,19 @@
     "play": "Spela bildspel",
     "pause": "Pausa bildspel",
     "fullscreen": "Helskärm",
-    "exitFullscreen": "Lämna helskärm"
+    "exitFullscreen": "Lämna helskärm",
+    "favourite": "Lägg till i favoriter",
+    "unfavourite": "Ta bort från favoriter",
+    "info": "Information",
+    "closeInfo": "Stäng informationen",
+    "taken": "Tagen",
+    "caption": "Bildtext",
+    "photographer": "Fotograf",
+    "album": "Album",
+    "spex": "Spex",
+    "uploadedBy": "Uppladdad av",
+    "file": "Fil",
+    "place": "Platsen på kartan"
   },
   "Visibility": {
     "UNPUBLISHED": "Opublicerad",
@@ -802,5 +808,83 @@
   "YearBrowser": {
     "decade": "{decade}-talet",
     "yearsOf": "År på {decade}-talet"
+  },
+  "Timeline": {
+    "undated": "Utan datum",
+    "retry": "Försök igen",
+    "count": "{count, plural, one {# bild eller film} other {# bilder och filmer}}",
+    "selectDay": "Välj alla från {day}",
+    "unselectDay": "Välj bort alla från {day}",
+    "select": "Välj {name}",
+    "unselect": "Välj bort {name}",
+    "favourite": "Favorit",
+    "waiting": "Väntar på granskning",
+    "scrubber": "Hoppa till år och månad"
+  },
+  "Memories": {
+    "title": "Minnen",
+    "yearsAgo": "{count, plural, one {För # år sedan} other {För # år sedan}}",
+    "photos": "{count, plural, one {# bild} other {# bilder}}",
+    "premiere": "{count, plural, one {Premiär för # år sedan} other {Premiär för # år sedan}}",
+    "empty": "Albumet har inga bilder att visa."
+  },
+  "Selection": {
+    "toolbar": "Valda bilder och filmer",
+    "clear": "Avmarkera alla",
+    "selected": "{count, plural, one {# vald} other {# valda}}",
+    "download": "Ladda ner",
+    "downloadOriginals": "Ladda ner original",
+    "favourite": "Lägg till i favoriter",
+    "unfavourite": "Ta bort från favoriter",
+    "favourited": "{count, plural, one {# bild eller film lades till i favoriter} other {# bilder och filmer lades till i favoriter}}",
+    "unfavourited": "{count, plural, one {# bild eller film togs bort från favoriter} other {# bilder och filmer togs bort från favoriter}}",
+    "move": "Flytta",
+    "moveTitle": "{count, plural, one {Flytta # bild eller film till album} other {Flytta # bilder och filmer till album}}",
+    "newAlbum": "Nytt album",
+    "newTitle": "{count, plural, one {Nytt album med # bild eller film} other {Nytt album med # bilder och filmer}}",
+    "albumTitle": "Albumets titel",
+    "moved": "{count, plural, one {# bild eller film flyttades} other {# bilder och filmer flyttades}}",
+    "visibility": "Synlighet",
+    "visibilityTitle": "{count, plural, one {Synlighet för # bild eller film} other {Synlighet för # bilder och filmer}}",
+    "visibilities": {
+      "UNPUBLISHED": "Opublicerad",
+      "MEMBERS": "Medlemmar",
+      "PUBLIC": "Publik"
+    },
+    "publicTitle": "Göra dem publika?",
+    "publicText": "{count, plural, one {# bild eller film blir synlig för alla, även besökare som inte är inloggade.} other {# bilder och filmer blir synliga för alla, även besökare som inte är inloggade.}}",
+    "skipped": "{count, plural, one {# behöll sin synlighet eftersom en anmälan döljer den} other {# behöll sin synlighet eftersom anmälningar döljer dem}}",
+    "visibilitySet": "Synligheten ändrades",
+    "date": "Datum",
+    "dateTitle": "{count, plural, one {Datum för # bild eller film} other {Datum för # bilder och filmer}}",
+    "dateLabel": "Dag (åååå-mm-dd); klockslaget behålls",
+    "dateInvalid": "Skriv dagen som åååå-mm-dd.",
+    "dated": "Datumet ändrades",
+    "trash": "Papperskorgen",
+    "trashTitle": "{count, plural, one {Lägga # bild eller film i papperskorgen?} other {Lägga # bilder och filmer i papperskorgen?}}",
+    "trashed": "{count, plural, one {# bild eller film lades i papperskorgen} other {# bilder och filmer lades i papperskorgen}}",
+    "failed": "Något gick fel."
+  },
+  "Favourites": {
+    "title": "Favoriter",
+    "description": "Bilder och filmer du har gjort till favoriter. De är dina egna och ändrar inget för andra.",
+    "none": "Inga favoriter ännu",
+    "noneText": "Tryck på hjärtat i visningen, eller välj bilder och lägg till dem i favoriter."
+  },
+  "Explore": {
+    "title": "Utforska",
+    "description": "Spexen, årtiondena, platserna och sorterna av album, och sökningar att börja med.",
+    "suggested": "Sök efter innehåll",
+    "suggestions": "scen, dans, fest, kostym, orkester, kör, smink, publik, scenografi, ridå",
+    "spex": "Spex",
+    "allSpex": "Alla spex",
+    "albums": "{count, plural, one {# album} other {# album}}",
+    "decades": "Årtionden",
+    "decade": "{decade}-talet",
+    "kinds": "Sorter av album",
+    "categories": "Kategorier",
+    "places": "Platser",
+    "recent": "Senast tillagda album",
+    "allAlbums": "Alla album"
   }
 }

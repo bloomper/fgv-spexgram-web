@@ -158,7 +158,9 @@
     }
   },
   "Nav": {
-    "home": "Home",
+    "photos": "Photos",
+    "explore": "Explore",
+    "favourites": "Favourites",
     "albums": "Albums",
     "search": "Search",
     "map": "Map",
@@ -180,24 +182,12 @@
   },
   "Home": {
     "title": "Welcome to Spexgram",
-    "greeting": "Hello {name}!",
-    "intro": "Photos and short videos from the spex, sorted in albums. Browse, search, and add your own photos to an album.",
     "introVisitor": "Photos and short videos from the spex through the years. What is public is shown here; log in with your FGV account to see more.",
     "contact": "Questions about a photo?",
-    "recent": "Recently added albums",
-    "allAlbums": "All albums",
-    "empty": "No albums yet.",
-    "thisDay": "This day in history",
-    "thisDayText": "Photos and videos taken on today's date in earlier years."
-  },
-  "Browse": {
-    "label": "Browse",
-    "categories": "Categories",
-    "kinds": "Kinds",
-    "years": "Years",
-    "spex": "Spex",
-    "revival": "revival",
-    "allSpex": "All {count} spex"
+    "empty": "No photos or videos yet.",
+    "photos": "Photos",
+    "emptyText": "Once albums have photos and videos, they are shown here, newest first.",
+    "emptyVisitor": "Nothing is public yet. Log in with your FGV account to see more."
   },
   "Albums": {
     "title": "Albums",
@@ -225,7 +215,11 @@
     "none": "No albums",
     "noneText": "No albums match the filter.",
     "noneVisitor": "No public albums match. Log in to see more.",
-    "bySpex": "Albums by spex"
+    "bySpex": "Albums by spex",
+    "decade": "Decade",
+    "allDecades": "All decades",
+    "decadeName": "{decade}s",
+    "atPlace": "Albums from {place}"
   },
   "Album": {
     "breadcrumb": "Breadcrumb",
@@ -279,7 +273,19 @@
     "play": "Play slideshow",
     "pause": "Pause slideshow",
     "fullscreen": "Full screen",
-    "exitFullscreen": "Exit full screen"
+    "exitFullscreen": "Exit full screen",
+    "favourite": "Add to favourites",
+    "unfavourite": "Remove from favourites",
+    "info": "Info",
+    "closeInfo": "Close the info",
+    "taken": "Taken",
+    "caption": "Caption",
+    "photographer": "Photographer",
+    "album": "Album",
+    "spex": "Spex",
+    "uploadedBy": "Uploaded by",
+    "file": "File",
+    "place": "The place on the map"
   },
   "Visibility": {
     "UNPUBLISHED": "Unpublished",
@@ -802,5 +808,83 @@
   "YearBrowser": {
     "decade": "{decade}s",
     "yearsOf": "Years in the {decade}s"
+  },
+  "Timeline": {
+    "undated": "Without a date",
+    "retry": "Try again",
+    "count": "{count, plural, one {# photo or video} other {# photos and videos}}",
+    "selectDay": "Select all from {day}",
+    "unselectDay": "Unselect all from {day}",
+    "select": "Select {name}",
+    "unselect": "Unselect {name}",
+    "favourite": "Favourite",
+    "waiting": "Waiting for review",
+    "scrubber": "Jump to a year and month"
+  },
+  "Memories": {
+    "title": "Memories",
+    "yearsAgo": "{count, plural, one {# year ago} other {# years ago}}",
+    "photos": "{count, plural, one {# photo} other {# photos}}",
+    "premiere": "{count, plural, one {Premiere # year ago} other {Premiere # years ago}}",
+    "empty": "The album has no photos to show."
+  },
+  "Selection": {
+    "toolbar": "Selected photos and videos",
+    "clear": "Clear the selection",
+    "selected": "{count, plural, one {# selected} other {# selected}}",
+    "download": "Download",
+    "downloadOriginals": "Download originals",
+    "favourite": "Add to favourites",
+    "unfavourite": "Remove from favourites",
+    "favourited": "{count, plural, one {# photo or video added to favourites} other {# photos and videos added to favourites}}",
+    "unfavourited": "{count, plural, one {# photo or video removed from favourites} other {# photos and videos removed from favourites}}",
+    "move": "Move",
+    "moveTitle": "{count, plural, one {Move # photo or video to an album} other {Move # photos and videos to an album}}",
+    "newAlbum": "New album",
+    "newTitle": "{count, plural, one {New album of # photo or video} other {New album of # photos and videos}}",
+    "albumTitle": "The album's title",
+    "moved": "{count, plural, one {# photo or video moved} other {# photos and videos moved}}",
+    "visibility": "Visibility",
+    "visibilityTitle": "{count, plural, one {Visibility of # photo or video} other {Visibility of # photos and videos}}",
+    "visibilities": {
+      "UNPUBLISHED": "Unpublished",
+      "MEMBERS": "Members",
+      "PUBLIC": "Public"
+    },
+    "publicTitle": "Make them public?",
+    "publicText": "{count, plural, one {# photo or video becomes visible to everyone, also visitors who are not logged in.} other {# photos and videos become visible to everyone, also visitors who are not logged in.}}",
+    "skipped": "{count, plural, one {# kept its visibility because a report hides it} other {# kept their visibility because reports hide them}}",
+    "visibilitySet": "The visibility was changed",
+    "date": "Date",
+    "dateTitle": "{count, plural, one {Date of # photo or video} other {Date of # photos and videos}}",
+    "dateLabel": "Day (yyyy-mm-dd); the time of day is kept",
+    "dateInvalid": "Write the day as yyyy-mm-dd.",
+    "dated": "The date was changed",
+    "trash": "Trash",
+    "trashTitle": "{count, plural, one {Move # photo or video to the trash?} other {Move # photos and videos to the trash?}}",
+    "trashed": "{count, plural, one {# photo or video moved to the trash} other {# photos and videos moved to the trash}}",
+    "failed": "Something went wrong."
+  },
+  "Favourites": {
+    "title": "Favourites",
+    "description": "Photos and videos you have made favourites. They are your own and change nothing for others.",
+    "none": "No favourites yet",
+    "noneText": "Tap the heart in the viewer, or select photos and add them to your favourites."
+  },
+  "Explore": {
+    "title": "Explore",
+    "description": "The spex, decades, places and kinds of albums, and searches to start with.",
+    "suggested": "Search by content",
+    "suggestions": "stage, dance, party, costume, orchestra, choir, make-up, audience, scenery, curtain",
+    "spex": "Spex",
+    "allSpex": "All spex",
+    "albums": "{count, plural, one {# album} other {# albums}}",
+    "decades": "Decades",
+    "decade": "{decade}s",
+    "kinds": "Kinds of albums",
+    "categories": "Categories",
+    "places": "Places",
+    "recent": "Recently added albums",
+    "allAlbums": "All albums"
   }
 }

@@ -5,7 +5,7 @@ import { SubmitButton } from "@/components/submit-button.client";
 import { Label } from "@/components/ui/label";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { kindName } from "@/utils/format";
-import type { FilterSearch } from "@/utils/filters";
+import { decadesOf, type FilterSearch } from "@/utils/filters";
 
 type Props = {
   path: string;
@@ -27,12 +27,14 @@ type Props = {
 export async function AlbumFilters({ path, search, categories, years, kinds, spex, editor, keep }: Props) {
   const t = await getTranslations("Albums");
   const locale = await getLocale();
-  const filtered = Boolean(search.category || search.year || search.kind || search.spex || search.visibility);
+  const filtered = Boolean(search.category || search.year || search.decade || search.place || search.kind || search.spex || search.visibility);
+  const decades = decadesOf(years);
 
   return (
     <Form action={path} role="search" aria-label={t("filters")} key={JSON.stringify(search)}
           className="grid grid-cols-2 gap-3 rounded-lg border p-3 md:grid-cols-[repeat(auto-fit,minmax(10rem,1fr))]">
       {Object.entries(keep ?? {}).map(([key, value]) => value ? <input key={key} type="hidden" name={key} value={value} /> : null)}
+      {search.place && <input type="hidden" name="place" value={search.place} />}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="filter-category">{t("category")}</Label>
         <NativeSelect id="filter-category" name="category" defaultValue={search.category ?? ""} className="w-full">
@@ -47,6 +49,15 @@ export async function AlbumFilters({ path, search, categories, years, kinds, spe
           {years.map(year => <NativeSelectOption key={year} value={String(year)}>{year}</NativeSelectOption>)}
         </NativeSelect>
       </div>
+      {decades.length > 1 && (
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="filter-decade">{t("decade")}</Label>
+          <NativeSelect id="filter-decade" name="decade" defaultValue={search.decade ?? ""} className="w-full">
+            <NativeSelectOption value="">{t("allDecades")}</NativeSelectOption>
+            {decades.map(decade => <NativeSelectOption key={decade} value={String(decade)}>{t("decadeName", { decade })}</NativeSelectOption>)}
+          </NativeSelect>
+        </div>
+      )}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="filter-kind">{t("kind")}</Label>
         <NativeSelect id="filter-kind" name="kind" defaultValue={search.kind ?? ""} className="w-full">

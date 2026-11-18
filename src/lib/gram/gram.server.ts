@@ -29,7 +29,9 @@ graphql(`
         uploadedBy
         originalFileName
         createdAt
-        album { id title visibility }
+        thumbhash
+        favourite
+        album { id title visibility spex { id title year } }
         media { thumbnailUrl previewUrl videoUrl originalUrl expiresAt }
     }
 `);
@@ -44,7 +46,7 @@ graphql(`
         visibility
         itemCount
         kind { id nameSv nameEn }
-        spex { id title year revival parentId familyId categoryId categoryName }
+        spex { id title year revival parentId familyId categoryId categoryName premiere posterUrl }
         cover { id caption type width height effectiveVisibility media { thumbnailUrl previewUrl expiresAt } }
     }
 `);
@@ -65,6 +67,48 @@ const HomeQuery = graphql(`
         years
         albumKinds { id nameSv nameEn albumCount }
         spexWithAlbums { id title year revival parentId familyId categoryName albumCount }
+    }
+`);
+
+const TimelineQuery = graphql(`
+    query Timeline($favourites: Boolean) {
+        timeline(favourites: $favourites) { month count }
+    }
+`);
+
+const TimelineItemsQuery = graphql(`
+    query TimelineItems($month: String, $favourites: Boolean, $page: Int, $size: Int) {
+        timelineItems(month: $month, favourites: $favourites, page: $page, size: $size) {
+            items { ...ItemFields }
+            totalCount
+            page
+            size
+        }
+    }
+`);
+
+const MemoriesQuery = graphql(`
+    query Memories {
+        startPage { welcome contactEmail }
+        thisDayInHistory(limit: 60) { ...ItemFields }
+        premiereAlbums(days: 7, limit: 12) { ...AlbumCardFields }
+    }
+`);
+
+const ExploreQuery = graphql(`
+    query Explore {
+        recentAlbums(limit: 10) { ...AlbumCardFields }
+        categories { id name albumCount }
+        years
+        places { name albumCount }
+        albumKinds { id nameSv nameEn albumCount }
+        spexWithAlbums { id title year revival parentId familyId categoryName posterUrl albumCount }
+    }
+`);
+
+const FavouritesSetMutation = graphql(`
+    mutation FavouritesSet($itemIds: [ID!]!, $favourite: Boolean!) {
+        favouritesSet(itemIds: $itemIds, favourite: $favourite) { id favourite }
     }
 `);
 
@@ -222,6 +266,13 @@ const AlbumSuggestMutation = graphql(`
 
 export const getMe = async () => runQuery(MeQuery, {});
 export const getHome = async () => runQuery(HomeQuery, {});
+export const getTimeline = async (favourites: boolean) => (await runQuery(TimelineQuery, { favourites }))?.timeline ?? null;
+export const getTimelineItems = async (month: string | null, favourites: boolean, page: number, size: number) =>
+  (await runQuery(TimelineItemsQuery, { month, favourites, page, size }))?.timelineItems ?? null;
+export const getMemories = async () => runQuery(MemoriesQuery, {});
+export const getExplore = async () => runQuery(ExploreQuery, {});
+export const favouritesSet = async (itemIds: string[], favourite: boolean) =>
+  (await runMutation(FavouritesSetMutation, { itemIds, favourite }))?.favouritesSet ?? [];
 export const getBrowse = async (filter: AlbumFilter, page: number, size: number) =>
   runQuery(BrowseQuery, { filter, page, size });
 export const getAlbum = async (id: string, size: number) => runQuery(AlbumQuery, { id, size });

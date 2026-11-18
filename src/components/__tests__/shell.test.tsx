@@ -21,7 +21,7 @@ import { LogoText } from "@/components/logo-text";
 import { Umami } from "@/components/umami";
 import { AlbumCard, AlbumGrid } from "@/components/gram/album-card";
 import { AlbumFilters } from "@/components/gram/album-filters";
-import { BrowseChips } from "@/components/gram/browse-chips";
+import { KindChips } from "@/components/gram/kind-chips";
 import { Pager } from "@/components/gram/pager";
 import { SpexflixHint } from "@/components/gram/spexflix-hint";
 import { VisibilityBadge } from "@/components/gram/visibility-badge";
@@ -157,15 +157,17 @@ describe("server components", () => {
     expect(screen.queryByLabelText("spex")).not.toBeInTheDocument();
   });
 
-  it("browse by chips, with more spex than shown", async () => {
-    render(await BrowseChips({
-      categories: [{ id: "c1", name: "Chalmersspexet", albumCount: 3 }], years: [1975, 1998],
-      kinds: [{ id: "k1", nameSv: "Fest", nameEn: "Party", albumCount: 1 }, { id: "k2", nameSv: "Tom", nameEn: "Empty", albumCount: 0 }],
-      spex: [{ id: "s1", title: "Nobel", year: 1975, revival: false, albumCount: 2 }, { id: "s2", title: "Ali Baba", year: 2028, revival: true, albumCount: 1 }],
-      spexLimit: 1,
-    }));
-    expect(screen.getByRole("link", { name: /Chalmersspexet/ })).toHaveAttribute("href", "/albums?category=c1");
+  it("pick a kind of album as a chip, keeping the rest of the filter", async () => {
+    render(await KindChips({
+      kinds: [{ id: "k1", nameSv: "Fest", nameEn: "Party", albumCount: 1 }, { id: "k2", nameSv: "Tom", nameEn: "Empty", albumCount: 0 },
+        { id: "k3", nameSv: "Föreställning", nameEn: "Show", albumCount: 4 }],
+      search: { decade: "1980", kind: "k3", page: "2" },
+    }) as React.ReactElement);
+    expect(screen.getByRole("link", { name: "Fest" })).toHaveAttribute("href", "/albums?decade=1980&kind=k1");
+    expect(screen.getByRole("link", { name: "allKinds" })).toHaveAttribute("href", "/albums?decade=1980");
+    expect(screen.getByRole("link", { name: "Föreställning" })).toHaveAttribute("aria-current", "page");
     expect(screen.queryByText("Tom")).not.toBeInTheDocument();
+    expect(await KindChips({ kinds: [{ id: "k1", nameSv: "Fest", nameEn: "Party", albumCount: 1 }], search: {} })).toBeNull();
   });
 
   it("page", async () => {

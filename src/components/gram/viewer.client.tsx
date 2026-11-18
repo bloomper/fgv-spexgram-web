@@ -13,12 +13,15 @@ import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/captions.css";
 import "yet-another-react-lightbox/plugins/counter.css";
-import { Download, ExternalLink, Flag, HardDriveDownload } from "lucide-react";
+import { Download, ExternalLink, Flag, HardDriveDownload, Heart, Info } from "lucide-react";
+import { toast } from "sonner";
 import { ReportDialog, type ReportViewer } from "@/components/gram/report-dialog.client";
 import { altText, downloadName, type GalleryItem, isShowable } from "@/utils/gram";
 import { formatDay } from "@/utils/format";
 import { track } from "@/utils/umami";
 import { downloadFile } from "@/components/gram/download.client";
+import { InfoPanel } from "@/components/gram/info-panel.client";
+import { favouriteAction } from "@/app/(app)/actions.server";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export type ViewerOptions = {
@@ -26,13 +29,21 @@ export type ViewerOptions = {
   report: ReportViewer;
   /** The album's title, for items without a caption. */
   albumTitle?: string | null;
+  /** Editors see the uploader and the file in the info panel. */
+  editor?: boolean;
 };
 
 /** A button in the lightbox's toolbar, styled as its own. */
-function ToolbarButton({ label, icon: Icon, onClick }: { label: string; icon: React.ComponentType<{ className?: string }>; onClick: () => void }) {
+function ToolbarButton({ label, icon: Icon, onClick, pressed, filled }: {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  onClick: () => void;
+  pressed?: boolean;
+  filled?: boolean
+}) {
   return (
-    <button type="button" className="yarl__button" aria-label={label} title={label} onClick={onClick}>
-      <Icon className="yarl__icon" />
+    <button type="button" className="yarl__button" aria-label={label} title={label} onClick={onClick} aria-pressed={pressed}>
+      <Icon className={`yarl__icon ${filled ? "fill-current" : ""}`} />
     </button>
   );
 }
@@ -42,17 +53,25 @@ function ToolbarButton({ label, icon: Icon, onClick }: { label: string; icon: Re
  * browser version through its signed address), and a slideshow. The toolbar downloads the preview (and the original
  * when allowed), reports the item and opens its own page.
  */
-export function ItemViewer({ items, index, onIndexChange, onClose, options }: {
+export function ItemViewer({ items, index, onIndexChange, onClose, options, slideshow = false, onFavourite }: {
   items: GalleryItem[];
   /** The open item's index in `items`, or null when closed. */
   index: number | null;
   onIndexChange: (index: number) => void;
   onClose: () => void;
-  options: ViewerOptions
+  options: ViewerOptions;
+  /** Starts the slideshow at once, e.g. for a memory. */
+  slideshow?: boolean;
+  /** Told when the member marks or unmarks the item as a favourite here. */
+  onFavourite?: (id: string, favourite: boolean) => void
 }) {
   const t = useTranslations("Viewer");
   const locale = useLocale();
   const [reportItem, setReportItem] = useState<string | null>(null);
+  const [info, setInfo] = useState(false);
+  // Favourites changed here, until the page that gave the items knows
+  const [favourites, setFavourites] = useState<Record<string, boolean>>({});
+  const member = !options.report.visitor;
   // A phone's toolbar has no room for every button: zoom is a pinch or a double tap there
   const narrow = useIsMobile();
   const shown = useMemo(() => items.filter(isShowable), [items]);
@@ -95,7 +114,27 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options }: {
   const toItemsIndex = (slide: number) => items.findIndex(item => item.id === shown[slide]?.id);
 
   // A video is downloaded only as its original, when originals may be (spec 5.1); playing uses the browser version
+  const favourite = current ? favourites[current.id] ?? current.favourite : false;
+
+  const toggleFavourite = async (id: string, on: boolean) => {
+    setFavourites(known => ({ ...known, [id]: on }));
+
+    const result = await favouriteAction([id], on);
+
+    if (result.ok) {
+      onFavourite?.(id, on);
+    } else {
+      setFavourites(known => ({ ...known, [id]: !on }));
+      toast.error(result.message);
+    }
+  };
+
   const buttons = current ? [
+    ...(member ? [
+      <ToolbarButton key="favourite" label={favourite ? t("unfavourite") : t("favourite")} icon={Heart} pressed={favourite}
+                     filled={favourite} onClick={() => void toggleFavourite(current.id, !favourite)} />,
+    ] : []),
+    <ToolbarButton key="info" label={t("info")} icon={Info} pressed={info} onClick={() => setInfo(open => !open)} />,
     ...(current.type === "PHOTO" && current.media ? [
       <ToolbarButton key="download" label={t("downloadPreview")} icon={Download}
                      onClick={() => {
@@ -134,7 +173,12 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options }: {
         plugins={[Captions, Counter, Fullscreen, Slideshow, Video, Zoom]}
         toolbar={{ buttons }}
         // The plugin adds its buttons to the toolbar itself, so they are left out by rendering nothing
-        render={narrow ? { buttonZoom: () => null } : undefined}
+        render={{
+          ...(narrow ? { buttonZoom: () => null } : {}),
+          controls: () => info && current
+            ? <InfoPanel item={current} member={member} editor={options.editor ?? false} onClose={() => setInfo(false)} />
+            : null,
+        }}
         on={{ view: ({ index: viewed }) => {
           const next = toItemsIndex(viewed);
 
@@ -148,7 +192,7 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options }: {
         // The counter sits in the bottom left corner, where a long description would run under it
         styles={{ captionsDescriptionContainer: { paddingInline: "4.5rem" } }}
         zoom={{ maxZoomPixelRatio: 3, scrollToZoom: true }}
-        slideshow={{ delay: 4000 }}
+        slideshow={{ delay: 4000, autoplay: slideshow }}
         video={{ autoPlay: false }}
         labels={{
           Previous: t("previous"),

@@ -2,21 +2,25 @@ import { acceptCookies, expect, ids, mockTurnstile, test } from "./fixtures";
 import { uuidOf } from "./constants";
 
 test.describe("The public side, for visitors who are not logged in", () => {
-  test("the start page shows public albums only, with Logga in", async ({ page }) => {
+  test("the start page is the timeline of public items, and Explore shows public albums only, with Logga in", async ({ page }) => {
     await page.goto("/");
     await acceptCookies(page);
 
-    await expect(page.getByRole("heading", { level: 1, name: "Välkommen till Spexgram" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Logga in" }).first()).toBeVisible();
+    await expect(page.getByTestId("timeline")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Finalen med hela ensemblen" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Bakom scenen" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "spexgram@example.org" })).toBeVisible();
+
+    await page.goto("/explore");
     await expect(page.getByRole("link", { name: /Nobel 1975 – premiären/ })).toBeVisible();
     await expect(page.getByText("Sittning efter premiären")).toHaveCount(0);
     await expect(page.getByText("Opublicerat album")).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "spexgram@example.org" })).toBeVisible();
 
     // The sidebar leaves out the members' pages
     const sidebar = page.locator("[data-slot=\"sidebar\"]:visible");
     await expect(sidebar.getByRole("link", { name: "Album" }).first()).toBeVisible();
-    for (const name of ["Karta", "Mina bidrag", "Föreslå album", "Mina anmälningar"]) {
+    for (const name of ["Favoriter", "Karta", "Mina bidrag", "Föreslå album", "Mina anmälningar"]) {
       await expect(sidebar.getByRole("link", { name }), name).toHaveCount(0);
     }
   });

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { AlbumGrid } from "@/components/gram/album-card";
 import { AlbumFilters } from "@/components/gram/album-filters";
 import { Pager } from "@/components/gram/pager";
+import { KindChips } from "@/components/gram/kind-chips";
 import { DataEmpty } from "@/components/data-empty";
 import { getBrowse } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
@@ -14,7 +15,8 @@ const SIZE = 48;
 export const metadata: Metadata = { robots: { index: true, follow: true } };
 
 /**
- * Every album the viewer may see, newest first, filtered by category, year, kind and spex.
+ * Every album the viewer may see as covers in a grid, newest first, filtered by kind (as chips, from the album kinds),
+ * decade, year, category, spex and place.
  */
 export default async function AlbumsPage({ searchParams }: { searchParams: Promise<FilterSearch> }) {
   const t = await getTranslations("Albums");
@@ -28,6 +30,10 @@ export default async function AlbumsPage({ searchParams }: { searchParams: Promi
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
       <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+      {data && (
+        <KindChips kinds={data.albumKinds} search={search} />
+      )}
+      {search.place && <p className="text-sm">{t("atPlace", { place: search.place })}</p>}
       {data && (
         <AlbumFilters path="/albums" search={search} categories={data.categories} years={data.years} kinds={data.albumKinds}
                       spex={data.spexWithAlbums} editor={viewer.editor} />

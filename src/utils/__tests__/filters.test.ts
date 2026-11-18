@@ -1,13 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { filterHref, firstValues, toAlbumFilter, toPage } from "@/utils/filters";
+import { decadesOf, filterHref, firstValues, toAlbumFilter, toPage } from "@/utils/filters";
 
 const id = "00000000-0000-7000-8000-000000000001";
 
 describe("filters", () => {
   it("reads the filter from the address, leaving out what is malformed", () => {
     expect(toAlbumFilter({ category: id, year: "1975", kind: "x", spex: id, visibility: "PUBLIC" })).toEqual({
-      categoryId: id, year: 1975, kindId: null, spexId: id, visibility: null,
+      categoryId: id, year: 1975, decade: null, place: null, kindId: null, spexId: id, visibility: null,
     });
+    expect(toAlbumFilter({ decade: "1980", place: " Kårhuset " })).toMatchObject({ decade: 1980, place: "Kårhuset" });
+    expect(toAlbumFilter({ decade: "1985" }).decade).toBeNull();
     expect(toAlbumFilter({ visibility: "PUBLIC" }, true).visibility).toBe("PUBLIC");
     expect(toAlbumFilter({ year: "abc" }).year).toBeNull();
   });
@@ -23,5 +25,11 @@ describe("filters", () => {
 describe("firstValues", () => {
   it("keeps the first of a repeated parameter", () => {
     expect(firstValues({ q: ["a", "b"], year: "1975", kind: undefined })).toEqual({ q: "a", year: "1975", kind: undefined });
+  });
+});
+
+describe("decadesOf", () => {
+  it("gives each decade once, newest first", () => {
+    expect(decadesOf([1975, 1984, 1989, 2001])).toEqual([2000, 1980, 1970]);
   });
 });
