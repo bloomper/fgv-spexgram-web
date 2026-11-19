@@ -33,7 +33,12 @@ type Kind = { id: string; nameSv: string; nameEn: string; isDefault: boolean };
  * Creates or edits an album: its spex (or none), kind, title (by default the main spex's title and year and the kind),
  * dates, place and description.
  */
-export function AlbumForm({ album, kinds }: { album?: AlbumFormValue; kinds: Kind[] }) {
+export function AlbumForm({ album, kinds, spexipediaUrl }: {
+  album?: AlbumFormValue;
+  kinds: Kind[];
+  /** Spexipedia's web, for editing the picked spex there. */
+  spexipediaUrl?: string | null;
+}) {
   const t = useTranslations("ManageAlbum");
   const locale = useLocale();
   const router = useRouter();
@@ -97,7 +102,7 @@ export function AlbumForm({ album, kinds }: { album?: AlbumFormValue; kinds: Kin
         }
       });
     }}>
-      <SpexPicker value={spex} onChange={setSpex} none={none} onNoneChange={setNone} />
+      <SpexPicker value={spex} onChange={setSpex} none={none} onNoneChange={setNone} spexipediaUrl={spexipediaUrl} />
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="album-kind">{t("kind")}</Label>
