@@ -48,7 +48,7 @@
     "tus-js-client": "^4.3.1",
     "urql": "^5.0.4",
     "use-intl": "^4.15.1",
-    "yet-another-react-lightbox": "^3.33.0"
+    "yet-another-react-lightbox": "^3.33.1"
   },
   "devDependencies": {
     "@eslint/css": "^2.0.1",
