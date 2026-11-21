@@ -20,6 +20,7 @@ type Documents = {
     "\n    mutation SettingsUpdate($input: SettingsInput!) { settingsUpdate(input: $input) { maxUploadGb } }\n": typeof types.SettingsUpdateDocument,
     "\n    query MaintenanceJobs { maintenanceJobs { job schedule running lastStartedAt lastFinishedAt lastSucceeded } }\n": typeof types.MaintenanceJobsDocument,
     "\n    mutation MaintenanceJobRun($job: MaintenanceJob!) { maintenanceJobRun(job: $job) }\n": typeof types.MaintenanceJobRunDocument,
+    "\n    query SpexipediaSync { spexipediaSync { lastPulledAt lastSuccess lastError skipped { sequence kind id change error skippedAt } } }\n": typeof types.SpexipediaSyncDocument,
     "\n    query ImmichStatus {\n        immichStatus {\n            available version usedBytes availableBytes sizeBytes\n            queues { name paused active waiting failed }\n            failedItems { id caption type status failure originalFileName album { id title } media { thumbnailUrl expiresAt } }\n        }\n    }\n": typeof types.ImmichStatusDocument,
     "\n    mutation ImmichJobRun($itemIds: [ID!]!, $job: ImmichJob!) { immichJobRun(itemIds: $itemIds, job: $job) }\n": typeof types.ImmichJobRunDocument,
     "\n    mutation AlbumKindCreate($input: AlbumKindInput!) { albumKindCreate(input: $input) { id } }\n": typeof types.AlbumKindCreateDocument,
@@ -88,6 +89,7 @@ const documents: Documents = {
     "\n    mutation SettingsUpdate($input: SettingsInput!) { settingsUpdate(input: $input) { maxUploadGb } }\n": types.SettingsUpdateDocument,
     "\n    query MaintenanceJobs { maintenanceJobs { job schedule running lastStartedAt lastFinishedAt lastSucceeded } }\n": types.MaintenanceJobsDocument,
     "\n    mutation MaintenanceJobRun($job: MaintenanceJob!) { maintenanceJobRun(job: $job) }\n": types.MaintenanceJobRunDocument,
+    "\n    query SpexipediaSync { spexipediaSync { lastPulledAt lastSuccess lastError skipped { sequence kind id change error skippedAt } } }\n": types.SpexipediaSyncDocument,
     "\n    query ImmichStatus {\n        immichStatus {\n            available version usedBytes availableBytes sizeBytes\n            queues { name paused active waiting failed }\n            failedItems { id caption type status failure originalFileName album { id title } media { thumbnailUrl expiresAt } }\n        }\n    }\n": types.ImmichStatusDocument,
     "\n    mutation ImmichJobRun($itemIds: [ID!]!, $job: ImmichJob!) { immichJobRun(itemIds: $itemIds, job: $job) }\n": types.ImmichJobRunDocument,
     "\n    mutation AlbumKindCreate($input: AlbumKindInput!) { albumKindCreate(input: $input) { id } }\n": types.AlbumKindCreateDocument,
@@ -188,6 +190,10 @@ export function graphql(source: "\n    query MaintenanceJobs { maintenanceJobs {
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    mutation MaintenanceJobRun($job: MaintenanceJob!) { maintenanceJobRun(job: $job) }\n"): (typeof documents)["\n    mutation MaintenanceJobRun($job: MaintenanceJob!) { maintenanceJobRun(job: $job) }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query SpexipediaSync { spexipediaSync { lastPulledAt lastSuccess lastError skipped { sequence kind id change error skippedAt } } }\n"): (typeof documents)["\n    query SpexipediaSync { spexipediaSync { lastPulledAt lastSuccess lastError skipped { sequence kind id change error skippedAt } } }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
