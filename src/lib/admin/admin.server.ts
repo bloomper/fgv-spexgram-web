@@ -32,6 +32,9 @@ const MaintenanceJobsQuery = graphql(`
 const MaintenanceJobRunMutation = graphql(`
     mutation MaintenanceJobRun($job: MaintenanceJob!) { maintenanceJobRun(job: $job) }
 `);
+const SpexipediaSyncQuery = graphql(`
+    query SpexipediaSync { spexipediaSync { lastPulledAt lastSuccess lastError skipped { sequence kind id change error skippedAt } } }
+`);
 const ImmichStatusQuery = graphql(`
     query ImmichStatus {
         immichStatus {
@@ -63,6 +66,7 @@ export const getAuditActors = async () => (await runQuery(AuditActorsQuery, {}))
 export const getSettings = async () => (await runQuery(SettingsQuery, {}))?.settings;
 export const settingsUpdate = (input: SettingsInput) => runMutation(SettingsUpdateMutation, { input });
 export const getMaintenanceJobs = async () => (await runQuery(MaintenanceJobsQuery, {}))?.maintenanceJobs ?? [];
+export const getSpexipediaSync = async () => (await runQuery(SpexipediaSyncQuery, {}))?.spexipediaSync;
 export const maintenanceJobRun = async (job: MaintenanceJob) =>
   Boolean((await runMutation(MaintenanceJobRunMutation, { job }))?.maintenanceJobRun);
 export const getImmichStatus = async () => (await runQuery(ImmichStatusQuery, {}))?.immichStatus;

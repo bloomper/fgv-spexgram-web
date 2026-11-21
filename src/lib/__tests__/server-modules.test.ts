@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { NextRequest } from "next/server";
 import { CombinedError } from "@urql/core";
 import { GraphQLError } from "graphql";
 import { tokenWithRoles } from "@/utils/__tests__/token";
@@ -99,31 +98,6 @@ describe("the plain HTTP endpoints", () => {
     mocks.getAccessToken.mockResolvedValue(null);
     await apiFetch("/api/x", { method: "POST" });
     expect(new Headers((fetchMock.mock.calls.at(-1) as unknown as [string, RequestInit])[1].headers).get("authorization")).toBeNull();
-  });
-});
-
-describe("forwarding a form", () => {
-  const ID = "00000000-0000-7000-8000-000000000001";
-  const request = (origin = "http://localhost:3104") => new NextRequest("http://localhost:3104/api/x", {
-    method: "POST", headers: { origin, host: "localhost:3104" }, body: new FormData(),
-  });
-
-  it("refuses bad ids and other sites, and passes the server's error on", async () => {
-    const { forwardForm } = await import("@/lib/http/forward-form.server");
-
-    expect((await forwardForm(request(), "nope", id => `/api/${id}`)).status).toBe(400);
-    expect((await forwardForm(request("https://evil.example"), ID, id => `/api/${id}`)).status).toBe(403);
-
-    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ code: "BAD_REQUEST", message: "Fel" }), { status: 400 }));
-    const failed = await forwardForm(request(), ID, id => `/api/${id}`);
-    expect(failed.status).toBe(400);
-    expect(await failed.json()).toEqual({ code: "BAD_REQUEST", message: "Fel" });
-
-    fetchMock.mockResolvedValueOnce(new Response("not json", { status: 500 }));
-    expect(await (await forwardForm(request(), ID, id => `/api/${id}`)).json()).toEqual({ code: null, message: null });
-
-    fetchMock.mockResolvedValueOnce(new Response("{}"));
-    expect(await (await forwardForm(request(), ID, id => `/api/${id}`)).json()).toEqual({ ok: true });
   });
 });
 

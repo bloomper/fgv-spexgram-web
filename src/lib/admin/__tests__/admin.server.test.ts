@@ -45,6 +45,9 @@ describe("the admin client", () => {
     runQuery.mockResolvedValueOnce(undefined);
     expect(await admin.getMaintenanceJobs()).toEqual([]);
 
+    runQuery.mockResolvedValueOnce({ spexipediaSync: { lastError: null, skipped: [] } });
+    expect(await admin.getSpexipediaSync()).toEqual({ lastError: null, skipped: [] });
+
     runMutation.mockResolvedValueOnce({ maintenanceJobRun: true });
     expect(await admin.maintenanceJobRun("UPLOAD_CLEANUP")).toBe(true);
     expect(runMutation.mock.calls.at(-1)?.[1]).toEqual({ job: "UPLOAD_CLEANUP" });

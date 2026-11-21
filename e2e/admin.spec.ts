@@ -35,6 +35,15 @@ test.describe("Administration", () => {
     await expect(job.getByText(/^Lyckades/)).toBeVisible();
   });
 
+  test("shows the changes from Spexipedia that were skipped", async ({ page }) => {
+    await page.goto("/admin/maintenance");
+
+    const sync = page.getByRole("region", { name: "Ändringar från Spexipedia" });
+
+    await expect(sync.getByText("1 ändring har hoppats över")).toBeVisible();
+    await expect(sync.getByText("The category is not here yet")).toBeVisible();
+  });
+
   test("adds an album kind", async ({ page }) => {
     await page.goto("/admin/kinds");
     await page.getByLabel("Namn på svenska").last().fill("Turné");
