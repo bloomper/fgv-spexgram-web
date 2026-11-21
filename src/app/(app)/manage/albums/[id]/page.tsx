@@ -96,7 +96,7 @@ export default async function ManageAlbumPage({ params, searchParams }: {
 
         <section aria-labelledby="details" className="space-y-3">
           <h2 id="details" className="text-lg font-semibold">{t("details")}</h2>
-          <AlbumForm kinds={data.albumKinds} album={{
+          <AlbumForm kinds={data.albumKinds} spexipediaUrl={process.env.SPEXIPEDIA_WEB_URL?.trim().replace(/\/+$/, "") || null} album={{
             id: album.id,
             title: album.title,
             kindId: album.kind.id,

@@ -4,7 +4,7 @@ import * as React from "react";
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ArrowUp, CornerDownRight, X } from "lucide-react";
+import { ArrowUp, CornerDownRight, ExternalLink, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -25,12 +25,17 @@ export type PickedSpex = {
  * Picks the spex something is about from Spexipedia, the main one first, or none at all. Search results show each
  * original with its revivals indented under it.
  */
-export function SpexPicker({ value, onChange, none, onNoneChange }: {
+export function SpexPicker({ value, onChange, none, onNoneChange, spexipediaUrl }: {
   value: PickedSpex[];
   onChange: (spex: PickedSpex[]) => void;
   /** Whether it is deliberately not about any spex. */
   none: boolean;
   onNoneChange: (none: boolean) => void;
+  /**
+   * Spexipedia's web, where the spex are edited (fgv-infra-deploy docs/data-ownership.md): each picked spex links to
+   * its editing page there. Null leaves the links out.
+   */
+  spexipediaUrl?: string | null;
 }) {
   const t = useTranslations("SpexPicker");
   const [query, setQuery] = useState("");
@@ -85,6 +90,12 @@ export function SpexPicker({ value, onChange, none, onNoneChange }: {
                 <li key={spex.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm">
                                     <span className="flex flex-wrap items-center gap-1.5">
                                         <SpexName spex={spex} revival={t("revival")} />
+                                      {spexipediaUrl && (
+                                        <a href={`${spexipediaUrl}/manage/spex/${spex.id}`} target="_blank" rel="noopener noreferrer"
+                                           className="inline-flex items-center gap-0.5 text-xs text-primary hover:text-primary/80">
+                                          {t("editInSpexipedia")}<ExternalLink className="size-3" aria-hidden />
+                                        </a>
+                                      )}
                                       {index === 0 && value.length > 1 &&
                                         <Badge variant="secondary">{t("main")}</Badge>}
                                     </span>
