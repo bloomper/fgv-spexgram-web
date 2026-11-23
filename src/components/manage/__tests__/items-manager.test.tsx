@@ -149,7 +149,7 @@ describe("ItemsManager", () => {
     await userEvent.type(screen.getByLabelText("longitude"), "11.9");
     await userEvent.click(screen.getByRole("button", { name: "save" }));
     await waitFor(() => expect(mocks.actions.updateItemAction).toHaveBeenCalledWith("i1", "a1", expect.objectContaining({
-      caption: "Ny text", latitude: 57.7, longitude: 11.9, takenAt: "1975-02-14T20:00",
+      caption: "Ny text", latitude: 57.7, longitude: 11.9, takenAt: "1975-02-14T20:00:00",
     })));
     await waitFor(() => expect(screen.queryByRole("heading", { name: "editTitle" })).not.toBeInTheDocument());
 

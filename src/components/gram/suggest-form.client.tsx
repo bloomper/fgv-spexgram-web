@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker.client";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
@@ -63,11 +64,11 @@ export function SuggestForm({ kinds }: { kinds: { id: string; nameSv: string; na
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
           <Label htmlFor="suggest-from">{t("dateFrom")}</Label>
-          <Input id="suggest-from" name="dateFrom" type="date" />
+          <DatePicker id="suggest-from" name="dateFrom" />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="suggest-to">{t("dateTo")}</Label>
-          <Input id="suggest-to" name="dateTo" type="date" />
+          <DatePicker id="suggest-to" name="dateTo" />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="suggest-kind">{t("kind")}</Label>

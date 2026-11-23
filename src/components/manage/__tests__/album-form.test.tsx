@@ -46,7 +46,7 @@ describe("AlbumForm", () => {
     await userEvent.click(screen.getByRole("button", { name: "save" }));
     expect(mocks.toast.error).toHaveBeenCalledWith("dateOrder");
 
-    await userEvent.clear(screen.getByLabelText("dateTo"));
+    await userEvent.click(screen.getAllByRole("button", { name: "clearDate" })[1]);
     await userEvent.type(screen.getByLabelText("place"), "Kårhuset");
     await userEvent.click(screen.getByRole("button", { name: "save" }));
     await waitFor(() => expect(mocks.actions.updateAlbumAction).toHaveBeenCalledWith("a1", {
