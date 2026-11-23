@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker.client";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
@@ -119,11 +120,11 @@ export function AlbumForm({ album, kinds, spexipediaUrl }: {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="album-from">{t("dateFrom")}</Label>
-          <Input id="album-from" name="dateFrom" type="date" defaultValue={album?.dateFrom ?? ""} />
+          <DatePicker id="album-from" name="dateFrom" defaultValue={album?.dateFrom ?? ""} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="album-to">{t("dateTo")}</Label>
-          <Input id="album-to" name="dateTo" type="date" defaultValue={album?.dateTo ?? ""} />
+          <DatePicker id="album-to" name="dateTo" defaultValue={album?.dateTo ?? ""} />
           <p className="text-xs text-muted-foreground">{t("dateToHint")}</p>
         </div>
       </div>

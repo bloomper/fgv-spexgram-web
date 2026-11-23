@@ -173,4 +173,17 @@ export async function answerDialog(page: Page, button: string) {
   await expect(dialog).toBeHidden();
 }
 
+/** Picks an ISO date (yyyy-mm-dd) in the date picker labelled `label`: its year and month, then the day. */
+export async function pickDate(page: Page, label: string, date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+
+  await page.getByLabel(label, { exact: true }).click();
+  const calendar = page.locator("[data-slot=popover-content]");
+
+  await calendar.getByLabel("Välj år").selectOption(String(year));
+  await calendar.getByLabel("Välj månad").selectOption(String(month - 1));
+  await calendar.locator("td:not([data-outside]) button", { hasText: new RegExp(`^${day}$`) }).click();
+  await expect(calendar).toBeHidden();
+}
+
 export { expect } from "@playwright/test";

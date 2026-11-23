@@ -1,4 +1,4 @@
-import { answerDialog, expect, hydrated, ids, test } from "./fixtures";
+import { answerDialog, expect, hydrated, ids, pickDate, test } from "./fixtures";
 
 const photo = (name: string) => ({ name, mimeType: "image/jpeg", buffer: Buffer.from("not really a jpeg") });
 
@@ -44,7 +44,7 @@ test.describe("Contributions", () => {
     await loginAs("viewer");
     await page.goto("/suggestions");
     await page.getByLabel("Titel").fill("Kräftskivan 1975");
-    await page.getByLabel("Datum", { exact: true }).fill("1975-08-20");
+    await pickDate(page, "Datum", "1975-08-20");
     await page.getByRole("button", { name: "Föreslå" }).click();
 
     await expect(page.getByRole("heading", { level: 1, name: "Lägg till dina bilder i Kräftskivan 1975" })).toBeVisible();

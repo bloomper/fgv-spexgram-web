@@ -1,4 +1,4 @@
-import { answerDialog, expect, hydrated, ids, test } from "./fixtures";
+import { answerDialog, expect, hydrated, ids, pickDate, test } from "./fixtures";
 
 const photo = (name: string) => ({ name, mimeType: "image/jpeg", buffer: Buffer.from("not really a jpeg") });
 
@@ -12,7 +12,7 @@ test.describe("Editing", () => {
     await page.getByLabel("Sök spex på titel eller år").fill("Statyer");
     await page.getByRole("button", { name: /Statyerna 1990/ }).click();
     await page.locator("#album-kind").selectOption({ label: "Fest" });
-    await page.getByLabel("Datum").fill("1990-03-10");
+    await pickDate(page, "Datum", "1990-03-10");
     await page.getByLabel("Plats").fill("Chalmers kårhus");
     await page.getByRole("button", { name: "Skapa album" }).click();
 

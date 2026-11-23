@@ -9,6 +9,7 @@ import { Eye, FolderInput, ImageIcon, PenLine, Trash2, User } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker.client";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -29,6 +30,9 @@ import { altText, type GalleryItem, VISIBILITIES } from "@/utils/gram";
 import { formatPeriod } from "@/utils/format";
 import { track } from "@/utils/umami";
 import { DataEmpty } from "@/components/data-empty";
+
+/** Joins the date and time fields of the edit form into a local date-time, or null without a date. */
+const takenAt = (date: string, time: string) => date ? `${date}T${time || "00:00:00"}` : null;
 
 type ManagedItem = GalleryItem & { fileSize?: number | null; trashedAt?: string | null };
 
@@ -250,7 +254,7 @@ function ItemEditor({ item, albumId, isCover, onClose }: {
             const result = await updateItemAction(item.id, albumId, {
               caption: String(data.get("caption") ?? ""),
               photographer: String(data.get("photographer") ?? ""),
-              takenAt: String(data.get("takenAt") ?? "") || null,
+              takenAt: takenAt(String(data.get("takenDate") ?? ""), String(data.get("takenTime") ?? "")),
               latitude: hasPosition ? latitude : null,
               longitude: hasPosition ? longitude : null,
             });
@@ -280,10 +284,15 @@ function ItemEditor({ item, albumId, isCover, onClose }: {
                 <Label htmlFor="item-photographer">{t("photographer")}</Label>
                 <Input id="item-photographer" name="photographer" maxLength={200} defaultValue={item.photographer ?? ""} />
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="item-taken">{t("taken")}</Label>
-                <Input id="item-taken" name="takenAt" type="datetime-local" step={1} defaultValue={item.takenAt?.slice(0, 19) ?? ""} />
-              </div>
+              <fieldset className="space-y-1.5">
+                <legend className="text-sm font-medium">{t("taken")}</legend>
+                <div className="flex flex-wrap items-center gap-2">
+                  <DatePicker id="item-taken" name="takenDate" defaultValue={item.takenAt?.slice(0, 10) ?? ""} />
+                  <Input name="takenTime" aria-label={t("takenTime")} className="w-28 tabular-nums" inputMode="numeric"
+                         placeholder={t("timeFormat")} title={t("timeFormat")} pattern="([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?"
+                         defaultValue={item.takenAt?.slice(11, 19) ?? ""} />
+                </div>
+              </fieldset>
             </div>
           </div>
           <fieldset className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
