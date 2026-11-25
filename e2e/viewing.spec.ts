@@ -114,6 +114,8 @@ test.describe("Viewing, for members", () => {
 
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByTestId("no-access-notice")).toContainText("nils@example.org");
+
+    await page.goto("/photos");
     await expect(page.getByRole("button", { name: "Finalen med hela ensemblen" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Bakom scenen" })).toHaveCount(0);
 

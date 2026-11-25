@@ -8,6 +8,7 @@ import {
   Drama,
   FolderPlus,
   Heart,
+  House,
   Image as ImageIcon,
   Map,
   type LucideIcon,
@@ -80,7 +81,8 @@ export function AppSidebar({ roles, accountUrl, user, ...props }: AppSidebarProp
 
   const navigation = useMemo((): { main: NavItem[]; secondary: NavSecondaryItem[] } => {
     const mainItems: NavItem[] = [
-      { title: t("Nav.photos"), url: "/", icon: ImageIcon, isActive: pathname === "/" || pathname.startsWith("/items") },
+      { title: t("Nav.home"), url: "/", icon: House, isActive: pathname === "/" },
+      { title: t("Nav.photos"), url: "/photos", icon: ImageIcon, isActive: pathname.startsWith("/photos") || pathname.startsWith("/items") },
       { title: t("Nav.explore"), url: "/explore", icon: Compass, isActive: pathname.startsWith("/explore") || pathname.startsWith("/spex") },
       { title: t("Nav.albums"), url: "/albums", icon: BookImage, isActive: pathname.startsWith("/albums") },
       { title: t("Nav.search"), url: "/search", icon: Search, isActive: pathname.startsWith("/search") },

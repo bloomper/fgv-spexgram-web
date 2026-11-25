@@ -2,14 +2,18 @@ import { acceptCookies, expect, ids, mockTurnstile, test } from "./fixtures";
 import { uuidOf } from "./constants";
 
 test.describe("The public side, for visitors who are not logged in", () => {
-  test("the start page is the timeline of public items, and Explore shows public albums only, with Logga in", async ({ page }) => {
-    await page.goto("/");
+  test("the photos page is the timeline of public items, and Explore shows public albums only, with Logga in", async ({ page }) => {
+    await page.goto("/photos");
     await acceptCookies(page);
 
     await expect(page.getByRole("link", { name: "Logga in" }).first()).toBeVisible();
     await expect(page.getByTestId("timeline")).toBeVisible();
     await expect(page.getByRole("button", { name: "Finalen med hela ensemblen" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Bakom scenen" })).toHaveCount(0);
+
+    // The welcome text and contact address are on the home page
+    await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1, name: "Välkommen till Spexgram" })).toBeVisible();
     await expect(page.getByRole("link", { name: "spexgram@example.org" })).toBeVisible();
 
     await page.goto("/explore");

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Memories } from "@/components/gram/memories.client";
-import { Timeline } from "@/components/gram/timeline.client";
-import { DataEmpty } from "@/components/data-empty";
-import { getMe, getMemories, getTimeline } from "@/lib/gram/gram.server";
+import { HomeSection } from "@/components/home-section";
+import { getMemories } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,38 +19,50 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * The start page, Photos: memories at the top (this day in earlier years, albums of spex whose premiere is near
- * today), then the timeline of every item the viewer may see across albums, newest first. Visitors see the same of
- * what is public, under the public welcome text.
+ * The home page: the welcome text (the administrators' own, else the standard one), then memories (this day in
+ * earlier years, albums of spex whose premiere is near today) and the ways into the archive. Visitors see what is public.
  */
-export default async function PhotosPage() {
+export default async function HomePage() {
   const t = await getTranslations("Home");
-  const [memories, months, viewer] = await Promise.all([getMemories(), getTimeline(false), getViewer()]);
-  const me = viewer.member ? await getMe() : undefined;
-  const options = { canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report, editor: viewer.editor };
+  const [memories, viewer] = await Promise.all([getMemories(), getViewer()]);
   const welcome = memories?.startPage.welcome;
+  const contactEmail = memories?.startPage.contactEmail;
+  const options = { canDownloadOriginals: false, report: viewer.report, editor: viewer.editor };
+  const links = [
+    { href: "/photos", title: t("photos"), text: t("photosText") },
+    { href: "/explore", title: t("explore"), text: t("exploreText") },
+    { href: "/albums", title: t("albums"), text: t("albumsText") },
+  ];
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
-      <h1 className="sr-only">{t("photos")}</h1>
-      {!viewer.member && (
-        <section className="space-y-2">
-          <p className="max-w-4xl whitespace-pre-line text-pretty text-muted-foreground">{welcome || t("introVisitor")}</p>
-          {memories?.startPage.contactEmail && (
-            <p className="text-sm text-muted-foreground">
-              {t("contact")} <a className="text-primary hover:text-primary/80" href={`mailto:${memories.startPage.contactEmail}`}>{memories.startPage.contactEmail}</a>
-            </p>
-          )}
-        </section>
-      )}
-      {viewer.member && welcome && <p className="max-w-4xl whitespace-pre-line text-pretty text-muted-foreground">{welcome}</p>}
+    <div className="flex flex-1 flex-col gap-8 p-4 md:p-6">
+      <section className="space-y-2">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("title")}</h1>
+        <p className="max-w-4xl whitespace-pre-line text-pretty text-muted-foreground">
+          {welcome || (viewer.member ? t("intro") : t("introVisitor"))}
+        </p>
+        {contactEmail && (
+          <p className="text-sm text-muted-foreground">
+            {t("contact")} <a className="text-primary hover:text-primary/80" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+          </p>
+        )}
+      </section>
       {memories && (
         <Memories thisDay={memories.thisDayInHistory} premiereAlbums={memories.premiereAlbums} options={options}
                   now={new Date().toISOString()} />
       )}
-      {months && months.length > 0
-        ? <Timeline months={months} options={options} member={viewer.member} editor={viewer.editor} />
-        : <DataEmpty title={t("empty")} description={viewer.member ? t("emptyText") : t("emptyVisitor")} />}
+      <HomeSection id="home-browse" title={t("browse")}>
+        <ul className="grid gap-3 sm:grid-cols-3">
+          {links.map(link => (
+            <li key={link.href}>
+              <Link href={link.href} className="block h-full rounded-lg border p-4 transition-colors hover:bg-accent">
+                <span className="font-medium">{link.title}</span>
+                <span className="mt-1 block text-sm text-muted-foreground">{link.text}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </HomeSection>
     </div>
   );
 }

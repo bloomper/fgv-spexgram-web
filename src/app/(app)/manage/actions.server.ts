@@ -57,6 +57,7 @@ function changed(albumIds: (string | null | undefined)[] = []) {
   revalidatePath("/manage", "layout");
   revalidatePath("/albums");
   revalidatePath("/");
+  revalidatePath("/photos");
   for (const id of albumIds.filter(Boolean)) {
     revalidatePath(`/albums/${id}`);
   }
