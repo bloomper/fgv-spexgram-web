@@ -177,6 +177,7 @@
     }
   },
   "Nav": {
+    "home": "Hem",
     "photos": "Bilder",
     "explore": "Utforska",
     "favourites": "Favoriter",
@@ -202,6 +203,13 @@
   "Home": {
     "title": "Välkommen till Spexgram",
     "introVisitor": "Bilder och korta filmer från spexen genom åren. Här visas det som är publikt; logga in med ditt FGV-konto för att se mer.",
+    "intro": "Bilder och korta filmer från spexen genom åren.",
+    "browse": "Börja här",
+    "photosText": "Allt du får se, nyast först.",
+    "explore": "Utforska",
+    "exploreText": "Spexen, ett i taget, med deras album.",
+    "albums": "Album",
+    "albumsText": "Föreställningar, repetitioner, fester och jubileer.",
     "contact": "Frågor om en bild?",
     "empty": "Inga bilder eller filmer ännu.",
     "photos": "Bilder",

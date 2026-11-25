@@ -7,13 +7,15 @@ test.describe("The application shell", () => {
 
     const sidebar = page.locator("[data-slot=\"sidebar\"]:visible");
 
-    await expect(sidebar.getByRole("link", { name: "Bilder" })).toHaveAttribute("href", "/");
+    await expect(sidebar.getByRole("link", { name: "Hem" })).toHaveAttribute("href", "/");
+    await expect(sidebar.getByRole("link", { name: "Bilder" })).toHaveAttribute("href", "/photos");
     await expect(sidebar.getByRole("link", { name: "Utforska" })).toHaveAttribute("href", "/explore");
     await expect(sidebar.getByRole("link", { name: "Favoriter" })).toHaveAttribute("href", "/favourites");
     await expect(sidebar.getByRole("link", { name: "Album" }).first()).toHaveAttribute("href", "/albums");
     await expect(sidebar.getByRole("link", { name: "Karta" })).toBeVisible();
     await expect(sidebar.getByRole("button", { name: "Redigera", exact: true })).toBeVisible();
     await expect(sidebar.getByRole("button", { name: "Administration", exact: true })).toBeVisible();
+    await page.goto("/photos");
     await expect(page.getByTestId("timeline")).toBeVisible();
   });
 

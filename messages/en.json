@@ -177,6 +177,7 @@
     }
   },
   "Nav": {
+    "home": "Home",
     "photos": "Photos",
     "explore": "Explore",
     "favourites": "Favourites",
@@ -202,6 +203,13 @@
   "Home": {
     "title": "Welcome to Spexgram",
     "introVisitor": "Photos and short videos from the spex through the years. What is public is shown here; log in with your FGV account to see more.",
+    "intro": "Photos and short videos from the spex through the years.",
+    "browse": "Start here",
+    "photosText": "Everything you may see, newest first.",
+    "explore": "Explore",
+    "exploreText": "The spex, one at a time, with their albums.",
+    "albums": "Albums",
+    "albumsText": "Shows, rehearsals, parties and jubilees.",
     "contact": "Questions about a photo?",
     "empty": "No photos or videos yet.",
     "photos": "Photos",

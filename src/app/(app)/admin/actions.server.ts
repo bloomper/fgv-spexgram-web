@@ -21,6 +21,7 @@ export async function saveSettingsAction(input: SettingsInput): Promise<ActionRe
     await settingsUpdate(input);
     revalidatePath("/admin/settings");
     revalidatePath("/");
+    revalidatePath("/photos");
     return null;
   }));
 }

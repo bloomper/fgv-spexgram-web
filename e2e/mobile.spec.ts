@@ -8,7 +8,7 @@ const SCREENS = [
   { width: 768, height: 1024 },
 ];
 
-const PUBLIC_PAGES = ["/", "/explore", "/albums", `/albums/${ids.publicAlbum}`, `/items/${ids.publicItemInMembersAlbum}`,
+const PUBLIC_PAGES = ["/", "/photos", "/explore", "/albums", `/albums/${ids.publicAlbum}`, `/items/${ids.publicItemInMembersAlbum}`,
   `/spex/${ids.spex}`, "/search?q=nobel", `/albums/${ids.membersAlbum}`, "/about", "/support"];
 const MEMBER_PAGES = ["/", "/favourites", `/albums/${ids.membersAlbum}`, `/albums/${ids.membersAlbum}/contribute`, "/contributions",
   "/suggestions", "/reports", "/map", "/search?q=talet&smart=1", `/items/${ids.publicItem}`];
