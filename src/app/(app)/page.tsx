@@ -5,6 +5,7 @@ import { Memories } from "@/components/gram/memories.client";
 import { HomeSection } from "@/components/home-section";
 import { getMemories } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
+import { Page } from "@bloomper/fgv-web-ui/shell/page-header";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Meta");
@@ -35,7 +36,7 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="flex flex-1 flex-col gap-8 p-4 md:p-6">
+    <Page variant="content" className="md:p-6">
       <section className="space-y-2">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("title")}</h1>
         <p className="max-w-4xl whitespace-pre-line text-pretty text-muted-foreground">
@@ -43,7 +44,7 @@ export default async function HomePage() {
         </p>
         {contactEmail && (
           <p className="text-sm text-muted-foreground">
-            {t("contact")} <a className="text-primary hover:text-primary/80" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+            {t("contact")} <a className="text-link hover:text-link/80" href={`mailto:${contactEmail}`}>{contactEmail}</a>
           </p>
         )}
       </section>
@@ -63,6 +64,6 @@ export default async function HomePage() {
           ))}
         </ul>
       </HomeSection>
-    </div>
+    </Page>
   );
 }

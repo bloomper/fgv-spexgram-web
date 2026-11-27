@@ -15,7 +15,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => mocks.router }));
 vi.mock("sonner", () => ({ toast: mocks.toast }));
 vi.mock("@/utils/umami", () => ({ track: vi.fn() }));
 vi.mock("@/app/(app)/manage/actions.server", () => mocks.actions);
-vi.mock("@/components/dialogs.client", () => ({ useDialogs: () => mocks.dialogs }));
+vi.mock("@bloomper/fgv-web-ui/shell/dialogs", () => ({ useDialogs: () => mocks.dialogs }));
 
 const days = [
   { date: "2026-10-01", items: [item("u1", { album: null }), item("u2", { album: null })] },

@@ -4,9 +4,9 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
-import { Label } from "@/components/ui/label";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
+import { NativeSelect, NativeSelectOption } from "@bloomper/fgv-web-ui/ui/native-select";
+import { Label } from "@bloomper/fgv-web-ui/ui/label";
 import type { ImmichJob } from "@/gql/graphql";
 import { runImmichJobAction } from "../actions.server";
 

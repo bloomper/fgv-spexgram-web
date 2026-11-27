@@ -4,8 +4,8 @@ import { useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Undo2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useDialogs } from "@/components/dialogs.client";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
+import { useDialogs } from "@bloomper/fgv-web-ui/shell/dialogs";
 import { withdrawContributionAction } from "@/app/(app)/actions.server";
 import { track } from "@/utils/umami";
 

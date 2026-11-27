@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import { AlbumGrid } from "@/components/gram/album-card";
 import { AlbumFilters } from "@/components/gram/album-filters";
 import { Pager } from "@/components/gram/pager";
@@ -9,7 +9,8 @@ import { getBrowse } from "@/lib/gram/gram.server";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { filterHref, type FilterSearch, firstValues, toAlbumFilter, toPage } from "@/utils/filters";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 
 const SIZE = 48;
 
@@ -25,11 +26,8 @@ export default async function ManageAlbumsPage({ searchParams }: { searchParams:
     const pages = Math.max(1, Math.ceil((data?.albums.totalCount ?? 0) / SIZE));
 
     return (
-      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-          <Button nativeButton={false} render={<Link href="/manage/albums/new" />}><Plus /> {t("new")}</Button>
-        </div>
+      <Page variant="content">
+        <PageHeader title={t("title")} actions={<Button nativeButton={false} render={<Link href="/manage/albums/new" />}><Plus /> {t("new")}</Button>}/>
         {data && <AlbumFilters path="/manage/albums" search={search} categories={data.categories} years={data.years}
                                kinds={data.albumKinds} spex={data.spexWithAlbums} editor />}
         <p className="text-sm text-muted-foreground">{t("count", { count: data?.albums.totalCount ?? 0 })}</p>
@@ -37,7 +35,7 @@ export default async function ManageAlbumsPage({ searchParams }: { searchParams:
           ? <AlbumGrid albums={data.albums.albums} showVisibility hrefOf={album => `/manage/albums/${album.id}`} />
           : <DataEmpty title={t("none")} description={null} />}
         <Pager page={page} pages={pages} hrefOf={next => filterHref("/manage/albums", search, { page: String(next) })} />
-      </div>
+      </Page>
     );
   });
 }

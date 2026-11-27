@@ -4,6 +4,7 @@ import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { isAdmin } from "@/utils/auth";
 import { TrashList } from "./trash.client";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 
 export default async function TrashPage() {
   return withPolicyPage(Policies.editor.requireEditor, async (authz) => {
@@ -11,11 +12,10 @@ export default async function TrashPage() {
     const trash = await getTrash();
 
     return (
-      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
-        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="max-w-prose text-sm text-muted-foreground">{isAdmin(authz.roles) ? t("textAdmin") : t("text")}</p>
+      <Page variant="content">
+        <PageHeader title={t("title")} description={isAdmin(authz.roles) ? t("textAdmin") : t("text")}/>
         <TrashList admin={isAdmin(authz.roles)} albums={trash?.albums ?? []} items={trash?.items ?? []} />
-      </div>
+      </Page>
     );
   });
 }

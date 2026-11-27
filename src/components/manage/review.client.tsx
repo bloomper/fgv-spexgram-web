@@ -6,14 +6,14 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Check, Pencil, User, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import { ItemImage } from "@/components/gram/item-image.client";
-import { useDialogs } from "@/components/dialogs.client";
+import { useDialogs } from "@bloomper/fgv-web-ui/shell/dialogs";
 import { reviewContributionsAction, reviewSuggestionAction, updateItemsAction } from "@/app/(app)/manage/actions.server";
 import { altText, type GalleryItem } from "@/utils/gram";
 import { formatInstant, formatPeriod } from "@/utils/format";
 import { track } from "@/utils/umami";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
 
 type Suggestion = {
   id: string;
@@ -96,7 +96,7 @@ export function ContributionReview({ items }: { items: (GalleryItem & { fileSize
         <section key={albumId} className="space-y-2" aria-label={group.title}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="font-semibold">
-              {albumId ? <Link href={`/manage/albums/${albumId}`} className="hover:text-primary">{group.title}</Link> : group.title}
+              {albumId ? <Link href={`/manage/albums/${albumId}`} className="hover:text-link">{group.title}</Link> : group.title}
             </h3>
             <Button size="sm" variant="outline" disabled={pending} onClick={() => review(group.items.map(item => item.id), true)}>
               <Check /> {t("acceptAll", { count: group.items.length })}
@@ -113,7 +113,7 @@ export function ContributionReview({ items }: { items: (GalleryItem & { fileSize
                   <p className="text-xs text-muted-foreground">{[item.uploadedBy, formatInstant(item.createdAt)].filter(Boolean).join(" · ")}</p>
                   <p className="text-xs">
                     {t("photographer")}: {item.photographer ?? "–"}{" "}
-                    <button type="button" className="text-primary hover:text-primary/80" disabled={pending}
+                    <button type="button" className="text-link hover:text-link/80" disabled={pending}
                             aria-label={t("editPhotographerOf", { name: item.originalFileName ?? altText(item, locale) })}
                             onClick={() => editPhotographer(item.id, item.photographer)}>
                       <User className="inline size-3" aria-hidden /> {t("editPhotographer")}

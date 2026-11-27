@@ -3,20 +3,20 @@ import { Info } from "lucide-react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { SidebarProvider } from "@bloomper/fgv-web-ui/ui/sidebar";
+import { TooltipProvider } from "@bloomper/fgv-web-ui/ui/tooltip";
 import { AppSidebar } from "@/components/app-sidebar.client";
 import { SiteHeader } from "@/components/site-header.client";
 import { AboutPage } from "@/components/about-page.client";
 import { SupportPage } from "@/components/support-page.client";
 import { HeaderSearch } from "@/components/header-search.client";
 import { LoginButton } from "@/components/login-button.client";
-import { NavSecondary } from "@/components/nav-secondary.client";
+import { NavSecondary } from "@bloomper/fgv-web-ui/shell/sidebar-parts";
 import { LinkSegments, LinkTabs } from "@/components/link-tabs";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
 import { HomeSection } from "@/components/home-section";
-import { Logo } from "@/components/logo";
-import { LogoText } from "@/components/logo-text";
+import { Logo } from "@bloomper/fgv-web-ui/shell/logo";
+import { LogoText } from "@bloomper/fgv-web-ui/shell/logo-text";
 import { Umami } from "@/components/umami";
 import { AlbumCard, AlbumGrid } from "@/components/gram/album-card";
 import { AlbumFilters } from "@/components/gram/album-filters";
@@ -42,12 +42,15 @@ vi.mock("next-intl/server", () => ({
   getTranslations: async () => (key: string, values?: Record<string, unknown>) => (values ? `${key}:${JSON.stringify(values)}` : key),
   getLocale: async () => "sv",
 }));
-vi.mock("@/hooks/use-is-client.client", () => ({ useIsClient: () => true }));
+vi.mock("@bloomper/fgv-web-ui/hooks/use-is-client", () => ({ useIsClient: () => true }));
 vi.mock("@/components/nav-user.client", () => ({ NavUser: () => <span>nav-user</span> }));
-vi.mock("@/components/app-switcher.client", () => ({ AppSwitcher: ({ title }: { title: string }) => <span>{title}</span> }));
+vi.mock("@bloomper/fgv-web-ui/shell/app-switcher", () => ({ AppSwitcher: ({ title }: { title: string }) => <span>{title}</span> }));
 vi.mock("@/components/upload/uploads.client", () => ({ UploadIndicator: () => null }));
-// Tested in toggles.test.tsx, with the locale provider they need
-vi.mock("@/components/language-toggle.client", () => ({ LanguageToggle: () => null }));
+// The language menu is tested in @bloomper/fgv-web-ui, with the shell provider it needs
+vi.mock("@bloomper/fgv-web-ui/shell/toggles", async importOriginal => ({
+  ...await importOriginal<typeof import("@bloomper/fgv-web-ui/shell/toggles")>(),
+  LanguageToggle: () => null,
+}));
 
 const album = (fields: Partial<AlbumCardFieldsFragment> = {}) => ({
   id: "a1", title: "Nobel 1975", dateFrom: "1975-02-14", dateTo: null, place: "Kårhuset", visibility: "MEMBERS", itemCount: 12,

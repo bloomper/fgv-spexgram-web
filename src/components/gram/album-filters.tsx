@@ -2,8 +2,8 @@ import Form from "next/form";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { SubmitButton } from "@/components/submit-button.client";
-import { Label } from "@/components/ui/label";
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { Label } from "@bloomper/fgv-web-ui/ui/label";
+import { NativeSelect, NativeSelectOption } from "@bloomper/fgv-web-ui/ui/native-select";
 import { kindName } from "@/utils/format";
 import { decadesOf, type FilterSearch } from "@/utils/filters";
 
@@ -90,7 +90,7 @@ export async function AlbumFilters({ path, search, categories, years, kinds, spe
       )}
       <div className="col-span-2 flex items-end gap-2 md:col-span-1">
         <SubmitButton>{t("filter")}</SubmitButton>
-        {filtered && <Link href={path} className="px-2 py-2 text-sm text-primary hover:text-primary/80">{t("reset")}</Link>}
+        {filtered && <Link href={path} className="px-2 py-2 text-sm text-link hover:text-link/80">{t("reset")}</Link>}
       </div>
     </Form>
   );

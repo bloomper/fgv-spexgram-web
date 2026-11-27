@@ -5,16 +5,16 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FolderInput, FolderPlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
+import { Checkbox } from "@bloomper/fgv-web-ui/ui/checkbox";
 import { ItemImage } from "@/components/gram/item-image.client";
-import { useDialogs } from "@/components/dialogs.client";
+import { useDialogs } from "@bloomper/fgv-web-ui/shell/dialogs";
 import { albumFromItemsAction, albumTitlesAction, updateItemsAction } from "@/app/(app)/manage/actions.server";
 import { altText, type GalleryItem } from "@/utils/gram";
 import { formatDay, formatPeriod, formatTaken } from "@/utils/format";
 import { track } from "@/utils/umami";
 import { useServerState } from "@/hooks/use-server-state.client";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
 
 type Day = { date?: string | null; items: GalleryItem[] };
 

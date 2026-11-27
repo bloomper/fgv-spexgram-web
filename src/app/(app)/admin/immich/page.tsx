@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@bloomper/fgv-web-ui/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@bloomper/fgv-web-ui/ui/table";
 import { ItemImage } from "@/components/gram/item-image.client";
 import { getImmichStatus } from "@/lib/admin/admin.server";
 import { formatBytes } from "@/utils/format";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { ImmichJobs } from "./immich-jobs.client";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 
 /**
  * Immich's status: whether the API reaches it, its version, job queues and disk, and the items that failed, which can
@@ -21,9 +22,8 @@ export default async function ImmichPage() {
     const status = await getImmichStatus();
 
     return (
-      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
-        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="max-w-3xl text-sm text-muted-foreground">{t("text")}</p>
+      <Page variant="content">
+        <PageHeader title={t("title")} description={t("text")}/>
         {!status?.available ? (
           <p className="text-destructive" role="alert">{t("unavailable")}</p>
         ) : (
@@ -78,7 +78,7 @@ export default async function ImmichPage() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{item.originalFileName ?? item.caption ?? item.id}</p>
                       <p className="text-xs text-muted-foreground">
-                        {item.album ? <Link href={`/manage/albums/${item.album.id}`} className="hover:text-primary">{item.album.title}</Link> : t("unsorted")}
+                        {item.album ? <Link href={`/manage/albums/${item.album.id}`} className="hover:text-link">{item.album.title}</Link> : t("unsorted")}
                         {item.failure && <> · {t(`failure.${item.failure}`)}</>}
                       </p>
                     </div>
@@ -88,7 +88,7 @@ export default async function ImmichPage() {
             </>
           ) : <DataEmpty title={t("noFailed")} description={null} />}
         </section>
-      </div>
+      </Page>
     );
   });
 }

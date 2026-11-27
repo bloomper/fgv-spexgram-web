@@ -5,15 +5,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@bloomper/fgv-web-ui/ui/badge";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import { ItemImage } from "@/components/gram/item-image.client";
 import { VisibilityBadge } from "@/components/gram/visibility-badge";
-import { useDialogs } from "@/components/dialogs.client";
+import { useDialogs } from "@bloomper/fgv-web-ui/shell/dialogs";
 import { handleReportAction } from "@/app/(app)/manage/actions.server";
 import type { ReportOutcome, ReportReason, ReportStatus, Visibility } from "@/gql/graphql";
 import { formatInstant } from "@/utils/format";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
 
 type Report = {
   id: string;

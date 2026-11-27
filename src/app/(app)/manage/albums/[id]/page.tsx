@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import { AlbumForm } from "@/components/manage/album-form.client";
 import { ItemsManager } from "@/components/manage/items-manager.client";
 import { VisibilityControl } from "@/components/manage/visibility-control.client";
@@ -19,6 +19,7 @@ import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { ID } from "@/utils/ids";
 import { toPage } from "@/utils/filters";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 
 /** Items a page of the editor shows; an album can hold thousands. */
 const ITEMS_PAGE = 200;
@@ -60,21 +61,21 @@ export default async function ManageAlbumPage({ params, searchParams }: {
     const pageHref = (next: number) => `/manage/albums/${album.id}${next > 0 ? `?page=${next}` : ""}`;
 
     return (
-      <div className="flex flex-1 flex-col gap-8 p-4 md:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="space-y-1">
-            <nav className="text-sm text-muted-foreground"><Link href="/manage/albums" className="hover:text-primary">{t("albums")}</Link></nav>
-            <h1 className="text-2xl font-bold tracking-tight">{album.title}</h1>
-            <div className="flex flex-wrap gap-2">
-              <VisibilityBadge visibility={album.visibility} />
-              {album.suggested && <span className="text-sm text-muted-foreground">{t("suggested")}</span>}
-              {album.trashedAt && <span className="text-sm text-destructive">{t("inTrash")}</span>}
-            </div>
-          </div>
-          <Button variant="outline" nativeButton={false} render={<Link href={`/albums/${album.id}`} />}>
-            <ExternalLink /> {t("view")}
-          </Button>
-        </div>
+      <Page variant="content">
+        <PageHeader
+          title={album.title}
+          eyebrow={<nav><Link href="/manage/albums" className="hover:text-link">{t("albums")}</Link></nav>}
+          badges={<>
+            <VisibilityBadge visibility={album.visibility} />
+            {album.suggested && <span className="text-sm text-muted-foreground">{t("suggested")}</span>}
+            {album.trashedAt && <span className="text-sm text-destructive">{t("inTrash")}</span>}
+          </>}
+          actions={
+            <Button variant="outline" nativeButton={false} render={<Link href={`/albums/${album.id}`} />}>
+              <ExternalLink /> {t("view")}
+            </Button>
+          }
+        />
 
         {!album.trashedAt && (
           <section aria-labelledby="upload" className="space-y-3">
@@ -115,7 +116,7 @@ export default async function ManageAlbumPage({ params, searchParams }: {
         </section>
 
         <RecordHistory entityId={album.id} path="/manage/audit" linkOf={auditLink} />
-      </div>
+      </Page>
     );
   });
 }

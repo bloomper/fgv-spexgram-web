@@ -6,14 +6,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { CheckCircle2, CircleAlert, Copy, Loader2, Upload } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@bloomper/fgv-web-ui/ui/dropdown-menu";
 import { uploadFile } from "@/components/upload/tus.client";
 import { addUploadsAction } from "@/app/(app)/actions.server";
 import type { UploadResultView } from "@/utils/gram";
@@ -191,7 +191,7 @@ function UploadRow({ entry }: { entry: UploadEntry }) {
             <>
               {entry.result?.existingAlbumTitle ? t("duplicateIn", { album: entry.result.existingAlbumTitle }) : t("duplicate")}
               {entry.result?.existingItemId && (
-                <>{" "}<Link href={`/items/${entry.result.existingItemId}`} className="text-primary hover:text-primary/80">{t("showExisting")}</Link></>
+                <>{" "}<Link href={`/items/${entry.result.existingItemId}`} className="text-link hover:text-link/80">{t("showExisting")}</Link></>
               )}
             </>
           )}

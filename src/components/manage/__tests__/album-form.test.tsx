@@ -16,7 +16,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => mocks.router }));
 vi.mock("sonner", () => ({ toast: mocks.toast }));
 vi.mock("@/utils/umami", () => ({ track: vi.fn() }));
 vi.mock("@/app/(app)/manage/actions.server", () => mocks.actions);
-vi.mock("@/components/dialogs.client", () => ({ useDialogs: () => mocks.dialogs }));
+vi.mock("@bloomper/fgv-web-ui/shell/dialogs", () => ({ useDialogs: () => mocks.dialogs }));
 
 const kinds = [{ id: "k1", nameSv: "Föreställning", nameEn: "Show", isDefault: false }, { id: "k2", nameSv: "Fest", nameEn: "Party", isDefault: true }];
 const spex = { id: "s1", title: "Nobel", year: 1975, revival: false, parentId: null, categoryName: "Chalmersspexet" };

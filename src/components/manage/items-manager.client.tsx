@@ -6,15 +6,15 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Eye, FolderInput, ImageIcon, PenLine, Trash2, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
+import { Badge } from "@bloomper/fgv-web-ui/ui/badge";
+import { Input } from "@bloomper/fgv-web-ui/ui/input";
 import { DatePicker } from "@/components/date-picker.client";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useDialogs } from "@/components/dialogs.client";
+import { Label } from "@bloomper/fgv-web-ui/ui/label";
+import { Textarea } from "@bloomper/fgv-web-ui/ui/textarea";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@bloomper/fgv-web-ui/ui/dialog";
+import { Checkbox } from "@bloomper/fgv-web-ui/ui/checkbox";
+import { useDialogs } from "@bloomper/fgv-web-ui/shell/dialogs";
 import { ItemImage } from "@/components/gram/item-image.client";
 import { VisibilityBadge } from "@/components/gram/visibility-badge";
 import {
@@ -29,7 +29,7 @@ import { useServerState } from "@/hooks/use-server-state.client";
 import { altText, type GalleryItem, VISIBILITIES } from "@/utils/gram";
 import { formatPeriod } from "@/utils/format";
 import { track } from "@/utils/umami";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
 
 /** Joins the date and time fields of the edit form into a local date-time, or null without a date. */
 const takenAt = (date: string, time: string) => date ? `${date}T${time || "00:00:00"}` : null;
@@ -207,7 +207,7 @@ export function ItemsManager({ albumId, albumTitle, items, coverId, spexflixUrl,
                   <p className="text-destructive">
                     {t(`failure.${item.failure ?? "NOT_PROCESSED"}`)}
                     {item.failure === "TOO_LONG" && spexflixUrl && (
-                      <> <a href={spexflixUrl} className="font-medium text-primary hover:text-primary/80" target="_blank" rel="noopener noreferrer">Spexflix</a></>
+                      <> <a href={spexflixUrl} className="font-medium text-link hover:text-link/80" target="_blank" rel="noopener noreferrer">Spexflix</a></>
                     )}
                   </p>
                 )}

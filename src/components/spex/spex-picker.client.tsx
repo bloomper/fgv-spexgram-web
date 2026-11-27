@@ -5,11 +5,11 @@ import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ArrowUp, CornerDownRight, ExternalLink, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Badge } from "@bloomper/fgv-web-ui/ui/badge";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
+import { Checkbox } from "@bloomper/fgv-web-ui/ui/checkbox";
+import { Input } from "@bloomper/fgv-web-ui/ui/input";
+import { Label } from "@bloomper/fgv-web-ui/ui/label";
 import { searchSpexAction } from "@/app/(app)/manage/actions.server";
 
 export type PickedSpex = {
@@ -92,7 +92,7 @@ export function SpexPicker({ value, onChange, none, onNoneChange, spexipediaUrl 
                                         <SpexName spex={spex} revival={t("revival")} />
                                       {spexipediaUrl && (
                                         <a href={`${spexipediaUrl}/manage/spex/${spex.id}`} target="_blank" rel="noopener noreferrer"
-                                           className="inline-flex items-center gap-0.5 text-xs text-primary hover:text-primary/80">
+                                           className="inline-flex items-center gap-0.5 text-xs text-link hover:text-link/80">
                                           {t("editInSpexipedia")}<ExternalLink className="size-3" aria-hidden />
                                         </a>
                                       )}

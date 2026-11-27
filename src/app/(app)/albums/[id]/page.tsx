@@ -3,16 +3,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Download, ImagePlus, Pencil } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import { Gallery } from "@/components/gram/gallery.client";
 import { VisibilityBadge } from "@/components/gram/visibility-badge";
 import { LoginPrompt } from "@/components/login-prompt.client";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
 import { getAlbum, getAlbumMeta } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
 import { privateMetadata, publicMetadata } from "@/lib/gram/metadata.server";
 import { formatPeriod, kindName } from "@/utils/format";
 import { ID } from "@/utils/ids";
+import { Page } from "@bloomper/fgv-web-ui/shell/page-header";
 
 const PAGE_SIZE = 60;
 
@@ -60,10 +61,10 @@ export default async function AlbumPage({ params }: Props) {
   const canZip = data?.limits.canDownloadOriginals && album.itemCount > 0;
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
+    <Page variant="content">
       <header className="space-y-3">
         <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
-          <Link href="/albums" className="hover:text-primary">{t("albums")}</Link>
+          <Link href="/albums" className="hover:text-link">{t("albums")}</Link>
         </nav>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
@@ -76,7 +77,7 @@ export default async function AlbumPage({ params }: Props) {
                 {album.spex.map((spex, index) => (
                   <span key={spex.id}>
                     {index > 0 && ", "}
-                    <Link href={`/spex/${spex.familyId}`} className="text-primary hover:text-primary/80">
+                    <Link href={`/spex/${spex.familyId}`} className="text-link hover:text-link/80">
                       {[spex.title, spex.year].filter(Boolean).join(" ")}
                     </Link>
                     {spex.revival && <span className="text-muted-foreground"> ({t("revival")})</span>}
@@ -114,6 +115,6 @@ export default async function AlbumPage({ params }: Props) {
                  options={{ canDownloadOriginals: data?.limits.canDownloadOriginals ?? false, report: viewer.report, albumTitle: album.title }} />
       ) : <DataEmpty title={t("empty")} description={canContribute ? t("emptyContribute") : t("emptyText")} />}
 
-    </div>
+    </Page>
   );
 }

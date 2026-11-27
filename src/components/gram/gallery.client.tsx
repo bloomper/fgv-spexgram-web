@@ -10,7 +10,7 @@ import { ItemImage } from "@/components/gram/item-image.client";
 import { ItemViewer, type ViewerOptions } from "@/components/gram/viewer.client";
 import { albumItemsAction, renewItemsAction } from "@/app/(app)/actions.server";
 import { altText, type GalleryItem, isShowable, mergeRenewed, mergeShown, needsRenewal } from "@/utils/gram";
-import { Button } from "@/components/ui/button";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
 
 type GalleryPhoto = Photo & { item: GalleryItem };
 

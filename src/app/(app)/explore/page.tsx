@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Search } from "lucide-react";
 import { AlbumGrid } from "@/components/gram/album-card";
 import { HomeSection } from "@/components/home-section";
-import { PageHeader } from "@/components/page-header";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 import { getExplore } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
 import { kindName } from "@/utils/format";
@@ -31,7 +31,7 @@ export default async function ExplorePage() {
       .reduce((sum, other) => sum + (other.albumCount ?? 0), 0) }));
 
   return (
-    <div className="flex flex-1 flex-col gap-8 p-4 md:p-8">
+    <Page variant="content">
       <PageHeader title={t("title")} description={t("description")} />
 
       <HomeSection id="suggested" title={t("suggested")}>
@@ -124,6 +124,6 @@ export default async function ExplorePage() {
           <AlbumGrid albums={data.recentAlbums} showVisibility={viewer.editor} />
         </HomeSection>
       )}
-    </div>
+    </Page>
   );
 }

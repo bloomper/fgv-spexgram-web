@@ -7,6 +7,7 @@ import { getContribute } from "@/lib/gram/gram.server";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { ID } from "@/utils/ids";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 
 /**
  * *Lägg till dina bilder*: a member uploads photos and videos to an album for members or the public (or one they
@@ -26,12 +27,11 @@ export default async function ContributePage({ params }: { params: Promise<{ id:
     const open = album.visibility !== "UNPUBLISHED" || album.suggested;
 
     return (
-      <div className="mx-auto w-full max-w-3xl flex flex-1 flex-col gap-6 p-4 md:p-8">
+      <Page variant="content" className="mx-auto w-full max-w-3xl">
         <nav className="text-sm text-muted-foreground">
-          <Link href={`/albums/${album.id}`} className="hover:text-primary">{album.title}</Link>
+          <Link href={`/albums/${album.id}`} className="hover:text-link">{album.title}</Link>
         </nav>
-        <h1 className="text-2xl font-bold tracking-tight">{t("title", { album: album.title })}</h1>
-        <p className="text-pretty text-muted-foreground">{t("text")}</p>
+        <PageHeader title={t("title", { album: album.title })} description={t("text")}/>
         <p className="text-sm text-muted-foreground">
           {t("limits", { items: data.limits.contributionMaxItems, gb: data.limits.contributionMaxGb })}
         </p>
@@ -41,9 +41,9 @@ export default async function ContributePage({ params }: { params: Promise<{ id:
         ) : <p className="text-destructive">{t("closed")}</p>}
         <UploadList albumId={album.id} />
         <p className="text-sm">
-          <Link href="/contributions" className="text-primary hover:text-primary/80">{t("mine")}</Link>
+          <Link href="/contributions" className="text-link hover:text-link/80">{t("mine")}</Link>
         </p>
-      </div>
+      </Page>
     );
   });
 }
