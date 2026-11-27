@@ -23,17 +23,11 @@
     "confirm": "Confirm",
     "loading": "Loading…",
     "saved": "Saved",
-    "themeLight": "Light",
-    "themeDark": "Dark",
-    "themeSystem": "System",
     "myFgvAccount": "My FGV account",
-    "toggle": "Toggle",
     "search": "Search",
     "selected": "{count, plural, =1 {# selected} other {# selected}}",
     "reset": "Reset",
     "resetFilters": "Reset filters",
-    "noDataHeading": "No data found",
-    "noDataDescription": "Couldn't find any data at the moment. Please check back later.",
     "noFilterMatchHeading": "No data found",
     "noFilterMatchDescription": "Try adjusting your filters or search query to find what you're looking for.",
     "rowsPerPage": "Rows per page",
@@ -45,7 +39,6 @@
     "clearSearch": "Clear search",
     "datePlaceholder": "YYYY-MM-DD",
     "pickDate": "Pick a date",
-    "noMatches": "Nothing matches",
     "pages": "Pages",
     "loadMore": "Load more",
     "chooseDate": "Pick a date",
@@ -67,26 +60,6 @@
       "step": "Please enter a valid value."
     }
   },
-  "Header": {
-    "toggleLanguage": "Change language",
-    "toggleTheme": "Change theme",
-    "showMenu": "Show menu"
-  },
-  "Sidebar": {
-    "hideMenu": "Hide menu",
-    "showMenu": "Show menu"
-  },
-  "AppSwitcher": {
-    "membership": "Membership",
-    "heading": "Switch application",
-    "spexregister": "Spexregister",
-    "revival": "Nyuppsättning",
-    "spexflix": "Spexflix",
-    "spexify": "Spexify",
-    "spexgram": "Spexgram",
-    "spexipedia": "Spexipedia",
-    "archive": "Spexarkiv"
-  },
   "NoAccess": {
     "title": "You do not have access",
     "text": "Your FGV account ({email}) has no access to Spexgram. Ask an administrator for access, or log out and log in with another account.",
@@ -97,16 +70,6 @@
     "title": "Login failed",
     "text": "Something went wrong while logging in. Please try again.",
     "retry": "Try again"
-  },
-  "Forbidden": {
-    "title": "You do not have permission",
-    "text": "You do not have permission to see this page. Ask a admin if you need it.",
-    "home": "To the home page"
-  },
-  "NotFound": {
-    "title": "Page not found",
-    "text": "The page, album or photo does not exist, or you do not have access to it.",
-    "home": "To the home page"
   },
   "Error": {
     "title": "Something went wrong",

@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@bloomper/fgv-web-ui/ui/badge";
 import { ItemImage } from "@/components/gram/item-image.client";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
 import { getMyReports } from "@/lib/gram/gram.server";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { formatInstant } from "@/utils/format";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -21,9 +22,8 @@ export default async function ReportsPage() {
     const reports = await getMyReports();
 
     return (
-      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
-        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="max-w-4xl text-pretty text-muted-foreground">{t("text")}</p>
+      <Page variant="content">
+        <PageHeader title={t("title")} description={t("text")}/>
         {reports.length === 0 ? <DataEmpty title={t("none")} description={t("noneText")} /> : (
           <ul className="divide-y overflow-hidden rounded-lg border">
             {reports.map(report => (
@@ -47,7 +47,7 @@ export default async function ReportsPage() {
             ))}
           </ul>
         )}
-      </div>
+      </Page>
     );
   });
 }

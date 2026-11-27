@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Download, Flag, HardDriveDownload } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import { ItemImage } from "@/components/gram/item-image.client";
 import { ReportDialog, type ReportViewer } from "@/components/gram/report-dialog.client";
 import { downloadFile } from "@/components/gram/download.client";

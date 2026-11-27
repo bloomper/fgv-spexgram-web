@@ -5,10 +5,11 @@ import { AlbumGrid } from "@/components/gram/album-card";
 import { AlbumFilters } from "@/components/gram/album-filters";
 import { Pager } from "@/components/gram/pager";
 import { KindChips } from "@/components/gram/kind-chips";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
 import { getBrowse } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
 import { filterHref, type FilterSearch, firstValues, toAlbumFilter, toPage } from "@/utils/filters";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 
 const SIZE = 48;
 
@@ -28,8 +29,8 @@ export default async function AlbumsPage({ searchParams }: { searchParams: Promi
   const pages = Math.max(1, Math.ceil((data?.albums.totalCount ?? 0) / SIZE));
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
-      <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+    <Page variant="content">
+      <PageHeader title={t("title")}/>
       {data && (
         <KindChips kinds={data.albumKinds} search={search} />
       )}
@@ -49,7 +50,7 @@ export default async function AlbumsPage({ searchParams }: { searchParams: Promi
           <ul className="columns-2 gap-6 text-sm sm:columns-3 lg:columns-4">
             {data.spexWithAlbums.map(spex => (
               <li key={spex.id} className="break-inside-avoid py-0.5">
-                <Link href={`/spex/${spex.id}`} className="hover:text-primary">
+                <Link href={`/spex/${spex.id}`} className="hover:text-link">
                   {[spex.title, spex.year].filter(Boolean).join(" ")}
                 </Link>
                 {spex.revival && <span className="text-muted-foreground"> ({t("revival")})</span>}
@@ -59,6 +60,6 @@ export default async function AlbumsPage({ searchParams }: { searchParams: Promi
           </ul>
         </section>
       )}
-    </div>
+    </Page>
   );
 }

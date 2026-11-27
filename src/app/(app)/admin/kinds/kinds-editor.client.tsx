@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useDialogs } from "@/components/dialogs.client";
+import { Badge } from "@bloomper/fgv-web-ui/ui/badge";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
+import { Input } from "@bloomper/fgv-web-ui/ui/input";
+import { Label } from "@bloomper/fgv-web-ui/ui/label";
+import { useDialogs } from "@bloomper/fgv-web-ui/shell/dialogs";
 import { kindName } from "@/utils/format";
 import { createKindAction, deleteKindAction, reorderKindsAction, updateKindAction } from "../actions.server";
 

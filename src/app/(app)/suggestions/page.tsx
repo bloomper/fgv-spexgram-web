@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@bloomper/fgv-web-ui/ui/badge";
 import { SuggestForm } from "@/components/gram/suggest-form.client";
 import { getMySuggestions } from "@/lib/gram/gram.server";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { formatInstant } from "@/utils/format";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -21,9 +22,8 @@ export default async function SuggestionsPage() {
     const suggestions = data.suggestions;
 
     return (
-      <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
-        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="max-w-4xl text-pretty text-muted-foreground">{t("text")}</p>
+      <Page variant="content">
+        <PageHeader title={t("title")} description={t("text")}/>
         <SuggestForm kinds={data.kinds} />
         <section aria-labelledby="my-suggestions" className="space-y-2">
           <h2 id="my-suggestions" className="text-lg font-semibold">{t("mine")}</h2>
@@ -44,14 +44,14 @@ export default async function SuggestionsPage() {
                     {t(`status.${suggestion.status}`)}
                   </Badge>
                   {suggestion.status === "OPEN" && suggestion.album && (
-                    <Link href={`/albums/${suggestion.album.id}/contribute`} className="text-sm text-primary hover:text-primary/80">{t("contribute")}</Link>
+                    <Link href={`/albums/${suggestion.album.id}/contribute`} className="text-sm text-link hover:text-link/80">{t("contribute")}</Link>
                   )}
                 </li>
               ))}
             </ul>
           )}
         </section>
-      </div>
+      </Page>
     );
   });
 }

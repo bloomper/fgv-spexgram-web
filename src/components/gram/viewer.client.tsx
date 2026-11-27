@@ -22,7 +22,7 @@ import { track } from "@/utils/umami";
 import { downloadFile } from "@/components/gram/download.client";
 import { InfoPanel } from "@/components/gram/info-panel.client";
 import { favouriteAction } from "@/app/(app)/actions.server";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@bloomper/fgv-web-ui/hooks/use-mobile";
 
 export type ViewerOptions = {
   canDownloadOriginals: boolean;

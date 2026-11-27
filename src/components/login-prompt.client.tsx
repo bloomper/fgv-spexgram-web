@@ -3,7 +3,7 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LogIn, Lock } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@bloomper/fgv-web-ui/ui/button";
 import { loginHref } from "@/utils/auth";
 
 /**

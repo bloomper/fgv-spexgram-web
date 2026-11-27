@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import { ItemImage } from "@/components/gram/item-image.client";
 import { formatInstant } from "@/utils/format";
 import { altText, type GalleryItem } from "@/utils/gram";
@@ -16,8 +16,8 @@ import {
   trashAlbumAction,
   trashItemsAction,
 } from "@/app/(app)/manage/actions.server";
-import { useDialogs } from "@/components/dialogs.client";
-import { DataEmpty } from "@/components/data-empty";
+import { useDialogs } from "@bloomper/fgv-web-ui/shell/dialogs";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
 
 type Album = { id: string; title: string; trashedAt?: string | null; itemCount: number };
 

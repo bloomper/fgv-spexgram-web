@@ -41,7 +41,7 @@ vi.mock("@/app/(app)/manage/actions.server", () => ({
   albumTitlesAction: mocks.albumTitlesAction,
   albumFromItemsAction: mocks.albumFromItemsAction,
 }));
-vi.mock("@/components/dialogs.client", () => ({ useDialogs: () => mocks.dialogs }));
+vi.mock("@bloomper/fgv-web-ui/shell/dialogs", () => ({ useDialogs: () => mocks.dialogs }));
 vi.mock("@/components/gram/download.client", () => ({ downloadFile: mocks.downloadFile }));
 vi.mock("@/utils/umami", () => ({ track: vi.fn() }));
 // jsdom has no layout: a plain list calls the timeline's own render functions

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Timeline } from "@/components/gram/timeline.client";
-import { DataEmpty } from "@/components/data-empty";
-import { PageHeader } from "@/components/page-header";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 import { getMe, getTimeline } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
 import { withPolicyPage } from "@/utils/route.server";
@@ -20,12 +20,12 @@ export default async function FavouritesPage() {
     const options = { canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report, editor: viewer.editor };
 
     return (
-      <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
+      <Page>
         <PageHeader title={t("title")} description={t("description")} />
         {months && months.length > 0
           ? <Timeline months={months} favourites options={options} member editor={viewer.editor} />
           : <DataEmpty title={t("none")} description={t("noneText")} />}
-      </div>
+      </Page>
     );
   });
 }

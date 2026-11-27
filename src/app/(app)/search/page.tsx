@@ -4,9 +4,9 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Search } from "lucide-react";
 import { SubmitButton } from "@/components/submit-button.client";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@bloomper/fgv-web-ui/ui/empty";
+import { Input } from "@bloomper/fgv-web-ui/ui/input";
+import { Label } from "@bloomper/fgv-web-ui/ui/label";
 import { AlbumGrid } from "@/components/gram/album-card";
 import { AlbumFilters } from "@/components/gram/album-filters";
 import { Gallery } from "@/components/gram/gallery.client";
@@ -15,7 +15,8 @@ import { getViewer } from "@/lib/gram/viewer.server";
 import { GraphQLRequestError } from "@/lib/graphql.server";
 import { loginHref } from "@/utils/auth";
 import { filterHref, type FilterSearch, firstValues, toAlbumFilter } from "@/utils/filters";
-import { DataEmpty } from "@/components/data-empty";
+import { DataEmpty } from "@bloomper/fgv-web-ui/shell/data-empty";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 
 export const metadata: Metadata = { robots: { index: false, follow: true } };
 
@@ -45,8 +46,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const options = { canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report };
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
-      <h1 className="text-2xl font-bold tracking-tight">{ready ? t("resultsFor", { q }) : t("title")}</h1>
+    <Page variant="content">
+      <PageHeader title={ready ? t("resultsFor", { q }) : t("title")}/>
       <Form action="/search" role="search" className="flex flex-wrap items-end gap-3" key={`${q}-${smart}`}>
         <div className="flex min-w-60 flex-1 flex-col gap-1.5">
           <Label htmlFor="search-q">{t("words")}</Label>
@@ -65,7 +66,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       {viewer.member
         ? <p className="text-sm text-muted-foreground">{smart ? t("smartHint") : t("textHint")}</p>
         : <p className="text-sm text-muted-foreground">{t("visitorHint")}{" "}
-          <a href={loginHref(q ? `/search?q=${encodeURIComponent(q)}` : "/search")} className="text-primary hover:text-primary/80">{t("loginForMore")}</a>
+          <a href={loginHref(q ? `/search?q=${encodeURIComponent(q)}` : "/search")} className="text-link hover:text-link/80">{t("loginForMore")}</a>
         </p>}
 
       {smart && filters && (
@@ -81,7 +82,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
             <EmptyDescription>{t("emptyText")}</EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Link href="/albums" className="text-sm text-primary hover:text-primary/80">{t("browse")}</Link>
+            <Link href="/albums" className="text-sm text-link hover:text-link/80">{t("browse")}</Link>
           </EmptyContent>
         </Empty>
       )}
@@ -110,9 +111,9 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         : <DataEmpty title={t("none")} description={null} />)}
       {smart && ready && (
         <p className="text-sm">
-          <Link href={filterHref("/search", { q })} className="text-primary hover:text-primary/80">{t("textInstead")}</Link>
+          <Link href={filterHref("/search", { q })} className="text-link hover:text-link/80">{t("textInstead")}</Link>
         </p>
       )}
-    </div>
+    </Page>
   );
 }

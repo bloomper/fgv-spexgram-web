@@ -16,7 +16,7 @@ test.describe("The application shell", () => {
     await expect(sidebar.getByRole("button", { name: "Redigera", exact: true })).toBeVisible();
     await expect(sidebar.getByRole("button", { name: "Administration", exact: true })).toBeVisible();
     await page.goto("/photos");
-    await expect(page.getByTestId("timeline")).toBeVisible();
+    await expect(page.getByRole("main").getByTestId("timeline")).toBeVisible();
   });
 
   test("hides editing and administration from a member", async ({ page, loginAs }) => {

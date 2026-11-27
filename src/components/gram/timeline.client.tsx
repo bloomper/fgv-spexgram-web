@@ -23,7 +23,7 @@ import {
   scrubberMarks,
   type TimelineMonth,
 } from "@/utils/timeline";
-import { Button } from "@/components/ui/button";
+import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import { cn } from "@/utils/utils";
 
 type TimelinePhoto = Photo & { item: GalleryItem };

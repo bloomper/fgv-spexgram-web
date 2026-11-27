@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Globe, Lock, Users } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@bloomper/fgv-web-ui/ui/badge";
 import type { Visibility } from "@/gql/graphql";
 
 /**

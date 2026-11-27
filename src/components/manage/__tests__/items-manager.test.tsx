@@ -22,7 +22,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: mocks.refresh }
 vi.mock("sonner", () => ({ toast: mocks.toast }));
 vi.mock("@/utils/umami", () => ({ track: mocks.track }));
 vi.mock("@/app/(app)/manage/actions.server", () => mocks.actions);
-vi.mock("@/components/dialogs.client", () => ({ useDialogs: () => mocks.dialogs }));
+vi.mock("@bloomper/fgv-web-ui/shell/dialogs", () => ({ useDialogs: () => mocks.dialogs }));
 
 const items = [
   item("i1", { caption: "Finalen", visibility: "MEMBERS" }),

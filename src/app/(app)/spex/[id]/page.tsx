@@ -7,6 +7,7 @@ import { getSpexAlbums } from "@/lib/gram/gram.server";
 import { getViewer } from "@/lib/gram/viewer.server";
 import { privateMetadata, publicMetadata } from "@/lib/gram/metadata.server";
 import { ID } from "@/utils/ids";
+import { Page } from "@bloomper/fgv-web-ui/shell/page-header";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -60,7 +61,7 @@ export default async function SpexPage({ params }: Props) {
   const spex = spexOf(albums, id);
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
+    <Page variant="content">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{nameOf(spex) || t("title")}</h1>
         <p className="text-sm text-muted-foreground">
@@ -69,6 +70,6 @@ export default async function SpexPage({ params }: Props) {
         <p className="text-sm text-muted-foreground">{t("text")}</p>
       </div>
       <AlbumGrid albums={albums} showVisibility={viewer.editor} />
-    </div>
+    </Page>
   );
 }

@@ -7,6 +7,7 @@ import { getViewer } from "@/lib/gram/viewer.server";
 import { Policies } from "@/utils/policy.server";
 import { withPolicyPage } from "@/utils/route.server";
 import { type FilterSearch, firstValues, toAlbumFilter } from "@/utils/filters";
+import { Page, PageHeader } from "@bloomper/fgv-web-ui/shell/page-header";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -22,13 +23,12 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
     ]);
 
     return (
-      <div className="flex flex-1 flex-col gap-4 p-4 md:p-8">
-        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("text")}</p>
+      <Page>
+        <PageHeader title={t("title")} description={t("text")}/>
         {filters && <AlbumFilters path="/map" search={search} categories={filters.categories} years={filters.years}
                                   kinds={filters.albumKinds} />}
         <ItemMap items={items} options={{ canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report }} />
-      </div>
+      </Page>
     );
   });
 }
