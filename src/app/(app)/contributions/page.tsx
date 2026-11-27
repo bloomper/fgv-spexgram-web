@@ -25,28 +25,59 @@ export default async function ContributionsPage() {
 
     return (
       <Page variant="content">
-        <PageHeader title={t("title")} description={t("text")}/>
-        {items.length === 0 ? <DataEmpty title={t("none")} description={t("noneText")} /> : (
+        <PageHeader
+          title={t("title")}
+          description={t("text")}
+        />
+        {items.length === 0 ? (
+          <DataEmpty
+            title={t("none")}
+            description={t("noneText")}
+          />
+        ) : (
           <ul className="divide-y rounded-lg border">
-            {items.map(item => {
+            {items.map((item) => {
               const name = altText(item, locale);
 
               return (
-                <li key={item.id} className="flex flex-wrap items-center gap-3 p-3" data-testid="contribution">
+                <li
+                  key={item.id}
+                  className="flex flex-wrap items-center gap-3 p-3"
+                  data-testid="contribution"
+                >
                   <div className="size-16 shrink-0 overflow-hidden rounded">
-                    <ItemImage src={item.media?.thumbnailUrl} alt={name} status={item.status} type={item.type} fill />
+                    <ItemImage
+                      src={item.media?.thumbnailUrl}
+                      alt={name}
+                      status={item.status}
+                      type={item.type}
+                      fill
+                    />
                   </div>
                   <div className="min-w-0 flex-1 space-y-1">
                     <p className="truncate font-medium">{item.originalFileName ?? name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.album && <Link href={`/albums/${item.album.id}`} className="hover:text-link">{item.album.title}</Link>}
-                      {" · "}{formatInstant(item.createdAt)}
+                    <p className="text-muted-foreground text-xs">
+                      {item.album && (
+                        <Link
+                          href={`/albums/${item.album.id}`}
+                          className="hover:text-link"
+                        >
+                          {item.album.title}
+                        </Link>
+                      )}
+                      {" · "}
+                      {formatInstant(item.createdAt)}
                     </p>
                   </div>
                   <Badge variant={item.contributionStatus === "WAITING" ? "secondary" : "default"}>
                     {item.contributionStatus === "WAITING" ? t("waiting") : t("accepted")}
                   </Badge>
-                  {item.contributionStatus === "WAITING" && <WithdrawButton itemId={item.id} name={name} />}
+                  {item.contributionStatus === "WAITING" && (
+                    <WithdrawButton
+                      itemId={item.id}
+                      name={name}
+                    />
+                  )}
                 </li>
               );
             })}

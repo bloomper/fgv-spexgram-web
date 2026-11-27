@@ -18,28 +18,34 @@ export function WithdrawButton({ itemId, name }: { itemId: string; name: string 
   const [pending, start] = useTransition();
 
   return (
-    <Button variant="outline" size="sm" disabled={pending} aria-label={t("withdrawOf", { name })} onClick={async () => {
-      const confirmed = await dialogs.confirm({
-        title: t("withdrawTitle"),
-        description: t("withdrawText"),
-        confirmLabel: t("withdraw"),
-        destructive: true,
-      });
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={pending}
+      aria-label={t("withdrawOf", { name })}
+      onClick={async () => {
+        const confirmed = await dialogs.confirm({
+          title: t("withdrawTitle"),
+          description: t("withdrawText"),
+          confirmLabel: t("withdraw"),
+          destructive: true,
+        });
 
-      if (!confirmed) {
-        return;
-      }
-      start(async () => {
-        const result = await withdrawContributionAction(itemId);
-
-        if (result.ok) {
-          track("contribution-withdraw");
-          toast.success(t("withdrawn"));
-        } else {
-          toast.error(result.message);
+        if (!confirmed) {
+          return;
         }
-      });
-    }}>
+        start(async () => {
+          const result = await withdrawContributionAction(itemId);
+
+          if (result.ok) {
+            track("contribution-withdraw");
+            toast.success(t("withdrawn"));
+          } else {
+            toast.error(result.message);
+          }
+        });
+      }}
+    >
       <Undo2 /> {t("withdraw")}
     </Button>
   );

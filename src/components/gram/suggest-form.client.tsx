@@ -27,66 +27,109 @@ export function SuggestForm({ kinds }: { kinds: { id: string; nameSv: string; na
   const [title, setTitle] = useState("");
 
   return (
-    <form className="grid max-w-2xl gap-4 rounded-lg border p-4" onSubmit={event => {
-      event.preventDefault();
+    <form
+      className="grid max-w-2xl gap-4 rounded-lg border p-4"
+      onSubmit={(event) => {
+        event.preventDefault();
 
-      const data = new FormData(event.currentTarget);
-      const form = event.currentTarget;
+        const data = new FormData(event.currentTarget);
+        const form = event.currentTarget;
 
-      start(async () => {
-        const result = await suggestAlbumAction({
-          title: String(data.get("title") ?? ""),
-          dateFrom: String(data.get("dateFrom") ?? "") || null,
-          dateTo: String(data.get("dateTo") ?? "") || null,
-          place: String(data.get("place") ?? "") || null,
-          description: String(data.get("description") ?? "") || null,
-          kindId: String(data.get("kindId") ?? "") || null,
-        });
+        start(async () => {
+          const result = await suggestAlbumAction({
+            title: String(data.get("title") ?? ""),
+            dateFrom: String(data.get("dateFrom") ?? "") || null,
+            dateTo: String(data.get("dateTo") ?? "") || null,
+            place: String(data.get("place") ?? "") || null,
+            description: String(data.get("description") ?? "") || null,
+            kindId: String(data.get("kindId") ?? "") || null,
+          });
 
-        if (result.ok) {
-          track("album-suggest");
-          toast.success(t("sent"));
-          form.reset();
-          setTitle("");
-          if (result.data) {
-            router.push(`/albums/${result.data}/contribute`);
+          if (result.ok) {
+            track("album-suggest");
+            toast.success(t("sent"));
+            form.reset();
+            setTitle("");
+            if (result.data) {
+              router.push(`/albums/${result.data}/contribute`);
+            }
+          } else {
+            toast.error(result.message);
           }
-        } else {
-          toast.error(result.message);
-        }
-      });
-    }}>
+        });
+      }}
+    >
       <h2 className="text-lg font-semibold">{t("new")}</h2>
       <div className="space-y-1.5">
         <Label htmlFor="suggest-title">{t("titleLabel")}</Label>
-        <Input id="suggest-title" name="title" required maxLength={200} value={title} onChange={event => setTitle(event.target.value)} />
+        <Input
+          id="suggest-title"
+          name="title"
+          required
+          maxLength={200}
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
       </div>
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
           <Label htmlFor="suggest-from">{t("dateFrom")}</Label>
-          <DatePicker id="suggest-from" name="dateFrom" />
+          <DatePicker
+            id="suggest-from"
+            name="dateFrom"
+          />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="suggest-to">{t("dateTo")}</Label>
-          <DatePicker id="suggest-to" name="dateTo" />
+          <DatePicker
+            id="suggest-to"
+            name="dateTo"
+          />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="suggest-kind">{t("kind")}</Label>
-          <NativeSelect id="suggest-kind" name="kindId" defaultValue="" className="w-full">
+          <NativeSelect
+            id="suggest-kind"
+            name="kindId"
+            defaultValue=""
+            className="w-full"
+          >
             <NativeSelectOption value="">{t("defaultKind")}</NativeSelectOption>
-            {kinds.map(kind => <NativeSelectOption key={kind.id} value={kind.id}>{kindName(kind, locale)}</NativeSelectOption>)}
+            {kinds.map((kind) => (
+              <NativeSelectOption
+                key={kind.id}
+                value={kind.id}
+              >
+                {kindName(kind, locale)}
+              </NativeSelectOption>
+            ))}
           </NativeSelect>
         </div>
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="suggest-place">{t("place")}</Label>
-        <Input id="suggest-place" name="place" maxLength={200} />
+        <Input
+          id="suggest-place"
+          name="place"
+          maxLength={200}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="suggest-description">{t("description")}</Label>
-        <Textarea id="suggest-description" name="description" maxLength={4000} />
+        <Textarea
+          id="suggest-description"
+          name="description"
+          maxLength={4000}
+        />
       </div>
-      <div><Button type="submit" disabled={pending || !title.trim()}>{t("send")}</Button></div>
+      <div>
+        <Button
+          type="submit"
+          disabled={pending || !title.trim()}
+        >
+          {t("send")}
+        </Button>
+      </div>
     </form>
   );
 }

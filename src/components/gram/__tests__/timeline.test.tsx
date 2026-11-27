@@ -20,13 +20,23 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("next-intl", () => ({
-  useTranslations: () => Object.assign((key: string, values?: Record<string, unknown>) => (values ? `${key}:${JSON.stringify(values)}` : key),
-    { has: () => false, raw: (key: string) => key }),
+  useTranslations: () =>
+    Object.assign(
+      (key: string, values?: Record<string, unknown>) => (values ? `${key}:${JSON.stringify(values)}` : key),
+      { has: () => false, raw: (key: string) => key }
+    ),
   useLocale: () => "sv",
 }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: mocks.refresh, push: vi.fn() }) }));
 vi.mock("next/link", () => ({
-  default: ({ children, href, ...rest }: { children?: React.ReactNode; href: string }) => <a href={href} {...rest}>{children}</a>,
+  default: ({ children, href, ...rest }: { children?: React.ReactNode; href: string }) => (
+    <a
+      href={href}
+      {...rest}
+    >
+      {children}
+    </a>
+  ),
 }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() } }));
 vi.mock("@/app/(app)/actions.server", () => ({
@@ -46,7 +56,10 @@ vi.mock("@/components/gram/download.client", () => ({ downloadFile: mocks.downlo
 vi.mock("@/utils/umami", () => ({ track: vi.fn() }));
 // jsdom has no layout: a plain list calls the timeline's own render functions
 vi.mock("react-photo-album", () => ({
-  RowsPhotoAlbum: ({ photos, render }: {
+  RowsPhotoAlbum: ({
+    photos,
+    render,
+  }: {
     photos: { key: string }[];
     render: {
       wrapper: (props: Record<string, unknown>, context: { photo: unknown }) => React.ReactNode;
@@ -54,7 +67,7 @@ vi.mock("react-photo-album", () => ({
     };
   }) => (
     <div>
-      {photos.map(photo => (
+      {photos.map((photo) => (
         <React.Fragment key={photo.key}>
           {render.wrapper({ children: render.image({ sizes: "100vw" }, { photo }) }, { photo })}
         </React.Fragment>
@@ -64,15 +77,18 @@ vi.mock("react-photo-album", () => ({
 }));
 
 const options = { canDownloadOriginals: false, report: { visitor: false, turnstileSiteKey: null } };
-const months = [{ month: "1984-02", count: 3 }, { month: null, count: 1 }];
+const months = [
+  { month: "1984-02", count: 3 },
+  { month: null, count: 1 },
+];
 const february = [
   item("i1", { caption: "Finalen", takenAt: "1984-02-20T21:00:00", favourite: true }),
   item("i2", { caption: "Kören", takenAt: "1984-02-14T20:00:00" }),
   item("i3", { caption: "Orkestern", takenAt: "1984-02-14T19:00:00" }),
 ];
 
-const sectionOf = (id: string) => MockIntersectionObserver.instances.find(observer =>
-  [...observer.elements].some(element => element.id === id))!;
+const sectionOf = (id: string) =>
+  MockIntersectionObserver.instances.find((observer) => [...observer.elements].some((element) => element.id === id))!;
 
 describe("Timeline", () => {
   beforeEach(() => {
@@ -81,12 +97,22 @@ describe("Timeline", () => {
     mocks.dialogs = dialogs();
     mocks.timelineItemsAction.mockImplementation(async (month: string | null) => ({
       ok: true,
-      data: month === "1984-02" ? { items: february, totalCount: 3 } : { items: [item("u1", { caption: "Utan", takenAt: null })], totalCount: 1 },
+      data:
+        month === "1984-02"
+          ? { items: february, totalCount: 3 }
+          : { items: [item("u1", { caption: "Utan", takenAt: null })], totalCount: 1 },
     }));
   });
 
   it("lays out the months before loading them, and loads a month as it comes near", async () => {
-    render(<Timeline months={months} options={options} member editor={false} />);
+    render(
+      <Timeline
+        months={months}
+        options={options}
+        member
+        editor={false}
+      />
+    );
 
     expect(screen.getByRole("heading", { name: /februari 1984/ })).toBeInTheDocument();
     expect(screen.queryAllByTestId("timeline-item")).toHaveLength(0);
@@ -95,7 +121,10 @@ describe("Timeline", () => {
     await waitFor(() => expect(screen.getAllByTestId("timeline-item")).toHaveLength(3));
     expect(mocks.timelineItemsAction).toHaveBeenCalledWith("1984-02", false, 0);
     // Days under the month, newest first
-    expect(screen.getAllByRole("heading", { level: 3 }).map(heading => heading.textContent)).toEqual(["20 februari 1984", "14 februari 1984"]);
+    expect(screen.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
+      "20 februari 1984",
+      "14 februari 1984",
+    ]);
     expect(screen.getByLabelText("favourite")).toBeInTheDocument();
 
     act(() => sectionOf("m-undated").trigger(true));
@@ -106,7 +135,14 @@ describe("Timeline", () => {
     mocks.favouriteAction.mockResolvedValue({ ok: true, data: ["i1", "i2", "i3"] });
     mocks.trashItemsAction.mockResolvedValue({ ok: true, data: null });
     mocks.updateItemsAction.mockResolvedValue({ ok: true, data: 0 });
-    render(<Timeline months={months} options={options} member editor />);
+    render(
+      <Timeline
+        months={months}
+        options={options}
+        member
+        editor
+      />
+    );
     act(() => sectionOf("m-1984-02").trigger(true));
     await screen.findAllByTestId("timeline-item");
 
@@ -120,21 +156,31 @@ describe("Timeline", () => {
     await waitFor(() => expect(mocks.favouriteAction).toHaveBeenCalledWith(["i1", "i2", "i3"], true));
     expect(screen.queryByRole("toolbar")).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: `selectDay:${JSON.stringify({ day: "14 februari 1984" })}` }));
+    await userEvent.click(
+      screen.getByRole("button", { name: `selectDay:${JSON.stringify({ day: "14 februari 1984" })}` })
+    );
     expect(screen.getByText(`selected:${JSON.stringify({ count: 2 })}`)).toBeInTheDocument();
 
     mocks.dialogs.prompt.mockResolvedValueOnce("1985-03-01");
     await userEvent.click(screen.getByRole("button", { name: "date" }));
-    await waitFor(() => expect(mocks.updateItemsAction).toHaveBeenCalledWith(["i2", "i3"], { takenDate: "1985-03-01" }, ["a1"]));
+    await waitFor(() =>
+      expect(mocks.updateItemsAction).toHaveBeenCalledWith(["i2", "i3"], { takenDate: "1985-03-01" }, ["a1"])
+    );
     expect(mocks.refresh).toHaveBeenCalled();
 
-    await userEvent.click(screen.getByRole("button", { name: `selectDay:${JSON.stringify({ day: "14 februari 1984" })}` }));
+    await userEvent.click(
+      screen.getByRole("button", { name: `selectDay:${JSON.stringify({ day: "14 februari 1984" })}` })
+    );
     mocks.dialogs.choose.mockResolvedValueOnce("PUBLIC");
     await userEvent.click(screen.getByRole("button", { name: "visibility" }));
-    await waitFor(() => expect(mocks.updateItemsAction).toHaveBeenCalledWith(["i2", "i3"], { visibility: "PUBLIC" }, ["a1"]));
+    await waitFor(() =>
+      expect(mocks.updateItemsAction).toHaveBeenCalledWith(["i2", "i3"], { visibility: "PUBLIC" }, ["a1"])
+    );
     expect(mocks.dialogs.confirm).toHaveBeenCalled();
 
-    await userEvent.click(screen.getByRole("button", { name: `selectDay:${JSON.stringify({ day: "14 februari 1984" })}` }));
+    await userEvent.click(
+      screen.getByRole("button", { name: `selectDay:${JSON.stringify({ day: "14 februari 1984" })}` })
+    );
     await userEvent.click(screen.getByRole("button", { name: "trash" }));
     await waitFor(() => expect(mocks.trashItemsAction).toHaveBeenCalledWith(["i2", "i3"], true, ["a1"]));
     await waitFor(() => expect(screen.getAllByTestId("timeline-item")).toHaveLength(1));
@@ -144,13 +190,23 @@ describe("Timeline", () => {
     mocks.albumTitlesAction.mockResolvedValue({ ok: true, data: [{ id: "a2", title: "Fest", dateFrom: null }] });
     mocks.updateItemsAction.mockResolvedValue({ ok: true, data: 0 });
     mocks.albumFromItemsAction.mockResolvedValue({ ok: true, data: "a3" });
-    render(<Timeline months={months} options={options} member editor />);
+    render(
+      <Timeline
+        months={months}
+        options={options}
+        member
+        editor
+      />
+    );
     act(() => sectionOf("m-1984-02").trigger(true));
     await screen.findAllByTestId("timeline-item");
 
     await userEvent.click(screen.getByRole("button", { name: `select:${JSON.stringify({ name: "Kören" })}` }));
     await userEvent.click(screen.getByRole("button", { name: "download" }));
-    expect(mocks.downloadFile).toHaveBeenCalledWith("https://media/i2/p", expect.stringMatching(/^Kören 1984-02-14\.jpg$/));
+    expect(mocks.downloadFile).toHaveBeenCalledWith(
+      "https://media/i2/p",
+      expect.stringMatching(/^Kören 1984-02-14\.jpg$/)
+    );
 
     mocks.dialogs.choose.mockResolvedValueOnce("a2");
     await userEvent.click(screen.getByRole("button", { name: "move" }));
@@ -164,7 +220,15 @@ describe("Timeline", () => {
 
   it("takes items out of the favourites view, and opens an item in the viewer with its info", async () => {
     mocks.favouriteAction.mockResolvedValue({ ok: true, data: ["i1"] });
-    render(<Timeline months={months} favourites options={options} member editor={false} />);
+    render(
+      <Timeline
+        months={months}
+        favourites
+        options={options}
+        member
+        editor={false}
+      />
+    );
     act(() => sectionOf("m-1984-02").trigger(true));
     await screen.findAllByTestId("timeline-item");
     expect(mocks.timelineItemsAction).toHaveBeenCalledWith("1984-02", true, 0);
@@ -186,12 +250,26 @@ describe("Timeline", () => {
     const scrolled = vi.fn();
 
     Element.prototype.scrollIntoView = scrolled;
-    render(<Timeline months={[{ month: "2024-02", count: 5 }, ...months]} options={options} member={false} editor={false} />);
+    render(
+      <Timeline
+        months={[{ month: "2024-02", count: 5 }, ...months]}
+        options={options}
+        member={false}
+        editor={false}
+      />
+    );
     fireEvent.click(screen.getByRole("button", { name: "1984" }));
     expect(scrolled).toHaveBeenCalled();
     expect(screen.queryByRole("button", { name: /^select/ })).not.toBeInTheDocument();
 
-    const { container } = render(<Timeline months={[]} options={options} member={false} editor={false} />);
+    const { container } = render(
+      <Timeline
+        months={[]}
+        options={options}
+        member={false}
+        editor={false}
+      />
+    );
 
     expect(container).toBeEmptyDOMElement();
   });

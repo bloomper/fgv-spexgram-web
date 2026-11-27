@@ -9,7 +9,11 @@ import { Check, Pencil, User, X } from "lucide-react";
 import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import { ItemImage } from "@/components/gram/item-image.client";
 import { useDialogs } from "@bloomper/fgv-web-ui/shell/dialogs";
-import { reviewContributionsAction, reviewSuggestionAction, updateItemsAction } from "@/app/(app)/manage/actions.server";
+import {
+  reviewContributionsAction,
+  reviewSuggestionAction,
+  updateItemsAction,
+} from "@/app/(app)/manage/actions.server";
 import { altText, type GalleryItem } from "@/utils/gram";
 import { formatInstant, formatPeriod } from "@/utils/format";
 import { track } from "@/utils/umami";
@@ -20,7 +24,14 @@ type Suggestion = {
   title: string;
   suggestedBy?: string | null;
   createdAt: string;
-  album?: { id: string; title: string; dateFrom?: string | null; dateTo?: string | null; place?: string | null; description?: string | null } | null;
+  album?: {
+    id: string;
+    title: string;
+    dateFrom?: string | null;
+    dateTo?: string | null;
+    place?: string | null;
+    description?: string | null;
+  } | null;
 };
 
 /**
@@ -47,10 +58,22 @@ export function ContributionReview({ items }: { items: (GalleryItem & { fileSize
     let message: string | null = null;
 
     if (!accept) {
-      if (!await dialogs.confirm({ title: t("rejectTitle", { count: ids.length }), description: t("rejectText"), confirmLabel: t("reject"), destructive: true })) {
+      if (
+        !(await dialogs.confirm({
+          title: t("rejectTitle", { count: ids.length }),
+          description: t("rejectText"),
+          confirmLabel: t("reject"),
+          destructive: true,
+        }))
+      ) {
         return;
       }
-      message = await dialogs.prompt({ title: t("messageTitle"), label: t("message"), confirmLabel: t("send"), maxLength: 2000 });
+      message = await dialogs.prompt({
+        title: t("messageTitle"),
+        label: t("message"),
+        confirmLabel: t("send"),
+        maxLength: 2000,
+      });
     }
     start(async () => {
       const result = await reviewContributionsAction(ids, accept, message);
@@ -70,7 +93,12 @@ export function ContributionReview({ items }: { items: (GalleryItem & { fileSize
 
   // The contributor's name is the default credit; the editor checks it before the item is shown
   const editPhotographer = async (id: string, current: string | null | undefined) => {
-    const value = await dialogs.prompt({ title: t("editPhotographer"), label: t("photographer"), defaultValue: current ?? "", maxLength: 200 });
+    const value = await dialogs.prompt({
+      title: t("editPhotographer"),
+      label: t("photographer"),
+      defaultValue: current ?? "",
+      maxLength: 200,
+    });
 
     if (value !== null) {
       start(async () => {
@@ -87,48 +115,114 @@ export function ContributionReview({ items }: { items: (GalleryItem & { fileSize
   };
 
   if (items.length === 0) {
-    return <DataEmpty title={t("none")} description={null} />;
+    return (
+      <DataEmpty
+        title={t("none")}
+        description={null}
+      />
+    );
   }
 
   return (
     <div className="space-y-6">
       {[...groups.entries()].map(([albumId, group]) => (
-        <section key={albumId} className="space-y-2" aria-label={group.title}>
+        <section
+          key={albumId}
+          className="space-y-2"
+          aria-label={group.title}
+        >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="font-semibold">
-              {albumId ? <Link href={`/manage/albums/${albumId}`} className="hover:text-link">{group.title}</Link> : group.title}
+              {albumId ? (
+                <Link
+                  href={`/manage/albums/${albumId}`}
+                  className="hover:text-link"
+                >
+                  {group.title}
+                </Link>
+              ) : (
+                group.title
+              )}
             </h3>
-            <Button size="sm" variant="outline" disabled={pending} onClick={() => review(group.items.map(item => item.id), true)}>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={pending}
+              onClick={() =>
+                review(
+                  group.items.map((item) => item.id),
+                  true
+                )
+              }
+            >
               <Check /> {t("acceptAll", { count: group.items.length })}
             </Button>
           </div>
           <ul className="divide-y rounded-lg border">
-            {group.items.map(item => (
-              <li key={item.id} className="flex flex-wrap items-center gap-3 p-2" data-testid="review-item">
-                <a href={`/items/${item.id}`} className="block size-20 shrink-0 overflow-hidden rounded">
-                  <ItemImage src={item.media?.thumbnailUrl} alt={altText(item, locale)} status={item.status} type={item.type} fill />
+            {group.items.map((item) => (
+              <li
+                key={item.id}
+                className="flex flex-wrap items-center gap-3 p-2"
+                data-testid="review-item"
+              >
+                <a
+                  href={`/items/${item.id}`}
+                  className="block size-20 shrink-0 overflow-hidden rounded"
+                >
+                  <ItemImage
+                    src={item.media?.thumbnailUrl}
+                    alt={altText(item, locale)}
+                    status={item.status}
+                    type={item.type}
+                    fill
+                  />
                 </a>
                 <div className="min-w-0 flex-1 text-sm">
                   <p className="truncate font-medium">{item.originalFileName ?? altText(item, locale)}</p>
-                  <p className="text-xs text-muted-foreground">{[item.uploadedBy, formatInstant(item.createdAt)].filter(Boolean).join(" · ")}</p>
+                  <p className="text-muted-foreground text-xs">
+                    {[item.uploadedBy, formatInstant(item.createdAt)].filter(Boolean).join(" · ")}
+                  </p>
                   <p className="text-xs">
                     {t("photographer")}: {item.photographer ?? "–"}{" "}
-                    <button type="button" className="text-link hover:text-link/80" disabled={pending}
-                            aria-label={t("editPhotographerOf", { name: item.originalFileName ?? altText(item, locale) })}
-                            onClick={() => editPhotographer(item.id, item.photographer)}>
-                      <User className="inline size-3" aria-hidden /> {t("editPhotographer")}
+                    <button
+                      type="button"
+                      className="text-link hover:text-link/80"
+                      disabled={pending}
+                      aria-label={t("editPhotographerOf", { name: item.originalFileName ?? altText(item, locale) })}
+                      onClick={() => editPhotographer(item.id, item.photographer)}
+                    >
+                      <User
+                        className="inline size-3"
+                        aria-hidden
+                      />{" "}
+                      {t("editPhotographer")}
                     </button>
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  <Button size="sm" disabled={pending} onClick={() => review([item.id], true)}><Check /> {t("accept")}</Button>
+                  <Button
+                    size="sm"
+                    disabled={pending}
+                    onClick={() => review([item.id], true)}
+                  >
+                    <Check /> {t("accept")}
+                  </Button>
                   {albumId && (
-                    <Button size="sm" variant="outline" disabled={pending}
-                            onClick={() => review([item.id], true, `/manage/albums/${albumId}?item=${item.id}`)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={pending}
+                      onClick={() => review([item.id], true, `/manage/albums/${albumId}?item=${item.id}`)}
+                    >
                       <Pencil /> {t("acceptEdit")}
                     </Button>
                   )}
-                  <Button size="sm" variant="destructive" disabled={pending} onClick={() => review([item.id], false)}>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={pending}
+                    onClick={() => review([item.id], false)}
+                  >
                     <X /> {t("reject")}
                   </Button>
                 </div>
@@ -156,10 +250,22 @@ export function SuggestionReview({ suggestions }: { suggestions: Suggestion[] })
     let message: string | null = null;
 
     if (!accept) {
-      if (!await dialogs.confirm({ title: t("rejectSuggestionTitle"), description: t("rejectSuggestionText"), confirmLabel: t("reject"), destructive: true })) {
+      if (
+        !(await dialogs.confirm({
+          title: t("rejectSuggestionTitle"),
+          description: t("rejectSuggestionText"),
+          confirmLabel: t("reject"),
+          destructive: true,
+        }))
+      ) {
         return;
       }
-      message = await dialogs.prompt({ title: t("messageTitle"), label: t("message"), confirmLabel: t("send"), maxLength: 2000 });
+      message = await dialogs.prompt({
+        title: t("messageTitle"),
+        label: t("message"),
+        confirmLabel: t("send"),
+        maxLength: 2000,
+      });
     }
     start(async () => {
       const result = await reviewSuggestionAction(id, accept, message);
@@ -174,24 +280,61 @@ export function SuggestionReview({ suggestions }: { suggestions: Suggestion[] })
   };
 
   if (suggestions.length === 0) {
-    return <DataEmpty title={t("noSuggestions")} description={null} />;
+    return (
+      <DataEmpty
+        title={t("noSuggestions")}
+        description={null}
+      />
+    );
   }
   return (
     <ul className="divide-y overflow-hidden rounded-lg border">
-      {suggestions.map(suggestion => (
-        <li key={suggestion.id} className="link-row flex flex-wrap items-start gap-3 p-3">
+      {suggestions.map((suggestion) => (
+        <li
+          key={suggestion.id}
+          className="link-row flex flex-wrap items-start gap-3 p-3"
+        >
           <div className="min-w-0 flex-1 space-y-1 text-sm">
             <p className="font-medium">
-              {suggestion.album ? <Link href={`/manage/albums/${suggestion.album.id}`} className="row-link">{suggestion.title}</Link> : suggestion.title}
+              {suggestion.album ? (
+                <Link
+                  href={`/manage/albums/${suggestion.album.id}`}
+                  className="row-link"
+                >
+                  {suggestion.title}
+                </Link>
+              ) : (
+                suggestion.title
+              )}
             </p>
-            <p className="text-xs text-muted-foreground">
-              {[suggestion.suggestedBy, formatPeriod(suggestion.album?.dateFrom, suggestion.album?.dateTo, locale), suggestion.album?.place, formatInstant(suggestion.createdAt)].filter(Boolean).join(" · ")}
+            <p className="text-muted-foreground text-xs">
+              {[
+                suggestion.suggestedBy,
+                formatPeriod(suggestion.album?.dateFrom, suggestion.album?.dateTo, locale),
+                suggestion.album?.place,
+                formatInstant(suggestion.createdAt),
+              ]
+                .filter(Boolean)
+                .join(" · ")}
             </p>
             {suggestion.album?.description && <p>{suggestion.album.description}</p>}
           </div>
           <div className="flex gap-1">
-            <Button size="sm" disabled={pending} onClick={() => review(suggestion.id, true)}><Check /> {t("accept")}</Button>
-            <Button size="sm" variant="destructive" disabled={pending} onClick={() => review(suggestion.id, false)}><X /> {t("reject")}</Button>
+            <Button
+              size="sm"
+              disabled={pending}
+              onClick={() => review(suggestion.id, true)}
+            >
+              <Check /> {t("accept")}
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              disabled={pending}
+              onClick={() => review(suggestion.id, false)}
+            >
+              <X /> {t("reject")}
+            </Button>
           </div>
         </li>
       ))}

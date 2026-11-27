@@ -5,8 +5,16 @@ import { apiFetch } from "@/lib/api.server";
 
 export { ID } from "@/utils/ids";
 
-const PASSED_HEADERS = ["content-type", "content-length", "content-range", "accept-ranges", "content-disposition",
-  "cache-control", "etag", "last-modified"];
+const PASSED_HEADERS = [
+  "content-type",
+  "content-length",
+  "content-range",
+  "accept-ranges",
+  "content-disposition",
+  "cache-control",
+  "etag",
+  "last-modified",
+];
 
 /**
  * Whether a request that changes something comes from this application's own pages. Route handlers get none of the
@@ -35,7 +43,11 @@ export const crossSite = () => NextResponse.json({ code: "FORBIDDEN", message: "
  * Streams a GET from the server to the browser with the user's token, passing byte ranges both ways so that the
  * player can seek. The browser never holds the token.
  */
-export async function streamFromApi(request: NextRequest, path: string, extra: Record<string, string> = {}): Promise<Response> {
+export async function streamFromApi(
+  request: NextRequest,
+  path: string,
+  extra: Record<string, string> = {}
+): Promise<Response> {
   const headers = new Headers();
   const range = request.headers.get("range");
 

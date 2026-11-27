@@ -12,7 +12,10 @@ describe("LoginPrompt", () => {
     render(<LoginPrompt />);
 
     expect(screen.getByRole("heading", { name: "content.title" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "login" })).toHaveAttribute("href", "/api/auth/login?returnTo=%2Falbums%2Fa1%3Fx%3D1");
+    expect(screen.getByRole("link", { name: "login" })).toHaveAttribute(
+      "href",
+      "/api/auth/login?returnTo=%2Falbums%2Fa1%3Fx%3D1"
+    );
   });
 
   it("tells someone logged in without access that it cannot be shown, with no login link", () => {
@@ -28,7 +31,12 @@ describe("LoginPrompt", () => {
     expect(screen.getByRole("link", { name: "login" })).toBeInTheDocument();
     unmount();
 
-    render(<LoginPrompt kind="page" noAccess />);
+    render(
+      <LoginPrompt
+        kind="page"
+        noAccess
+      />
+    );
     expect(screen.getByRole("heading", { name: "page.noAccessTitle" })).toBeInTheDocument();
     expect(screen.queryByRole("link")).toBeNull();
   });

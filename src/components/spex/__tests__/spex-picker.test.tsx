@@ -31,7 +31,14 @@ function Picker({ initial = [] }: { initial?: PickedSpex[] }) {
   const [value, setValue] = useState(initial);
   const [none, setNone] = useState(false);
 
-  return <SpexPicker value={value} onChange={setValue} none={none} onNoneChange={setNone} />;
+  return (
+    <SpexPicker
+      value={value}
+      onChange={setValue}
+      none={none}
+      onNoneChange={setNone}
+    />
+  );
 }
 
 describe("SpexPicker", () => {

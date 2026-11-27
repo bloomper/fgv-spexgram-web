@@ -2,7 +2,9 @@ import { acceptCookies, expect, ids, mockTurnstile, test } from "./fixtures";
 import { uuidOf } from "./constants";
 
 test.describe("The public side, for visitors who are not logged in", () => {
-  test("the photos page is the timeline of public items, and Explore shows public albums only, with Logga in", async ({ page }) => {
+  test("the photos page is the timeline of public items, and Explore shows public albums only, with Logga in", async ({
+    page,
+  }) => {
     await page.goto("/photos");
     await acceptCookies(page);
 
@@ -22,7 +24,7 @@ test.describe("The public side, for visitors who are not logged in", () => {
     await expect(page.getByText("Opublicerat album")).toHaveCount(0);
 
     // The sidebar leaves out the members' pages
-    const sidebar = page.locator("[data-slot=\"sidebar\"]:visible");
+    const sidebar = page.locator('[data-slot="sidebar"]:visible');
     await expect(sidebar.getByRole("link", { name: "Album" }).first()).toBeVisible();
     for (const name of ["Favoriter", "Karta", "Mina bidrag", "Föreslå album", "Mina anmälningar"]) {
       await expect(sidebar.getByRole("link", { name }), name).toHaveCount(0);
@@ -46,15 +48,18 @@ test.describe("The public side, for visitors who are not logged in", () => {
     await expect(page.getByRole("button", { name: "Ladda ner albumet" })).toHaveCount(0);
   });
 
-  test("a members' album, an unpublished one and one that does not exist all ask to log in, alike", async ({ page }) => {
+  test("a members' album, an unpublished one and one that does not exist all ask to log in, alike", async ({
+    page,
+  }) => {
     for (const id of [ids.membersAlbum, ids.unpublishedAlbum, uuidOf(999)]) {
       await page.goto(`/albums/${id}`);
       await expect(page.getByRole("main").getByTestId("login-prompt")).toBeVisible();
       await expect(page.getByRole("heading", { level: 1, name: "Logga in för att se det här" })).toBeVisible();
       await expect(page.locator("meta[name='robots']")).toHaveAttribute("content", /noindex/);
       await expect(page.locator("meta[property='og:title']")).toHaveCount(0);
-      await expect(page.getByRole("main").getByTestId("login-prompt").getByRole("link", { name: "Logga in" }))
-        .toHaveAttribute("href", `/api/auth/login?returnTo=${encodeURIComponent(`/albums/${id}`)}`);
+      await expect(
+        page.getByRole("main").getByTestId("login-prompt").getByRole("link", { name: "Logga in" })
+      ).toHaveAttribute("href", `/api/auth/login?returnTo=${encodeURIComponent(`/albums/${id}`)}`);
     }
     await expect(page.getByText("Sittning efter premiären")).toHaveCount(0);
   });
@@ -102,7 +107,12 @@ test.describe("The public side, for visitors who are not logged in", () => {
     await expect(page.getByText("Tack! Anmälan är skickad och bilden är dold")).toBeVisible();
     const report = (await mock.state()).reports.at(-1);
 
-    expect(report).toMatchObject({ itemId: ids.publicItem, reason: "I_AM_IN_IT", email: "besok@example.org", reporter: null });
+    expect(report).toMatchObject({
+      itemId: ids.publicItem,
+      reason: "I_AM_IN_IT",
+      email: "besok@example.org",
+      reporter: null,
+    });
   });
 
   test("search finds public items for visitors", async ({ page }) => {

@@ -34,15 +34,28 @@ export type ViewerOptions = {
 };
 
 /** A button in the lightbox's toolbar, styled as its own. */
-function ToolbarButton({ label, icon: Icon, onClick, pressed, filled }: {
+function ToolbarButton({
+  label,
+  icon: Icon,
+  onClick,
+  pressed,
+  filled,
+}: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   onClick: () => void;
   pressed?: boolean;
-  filled?: boolean
+  filled?: boolean;
 }) {
   return (
-    <button type="button" className="yarl__button" aria-label={label} title={label} onClick={onClick} aria-pressed={pressed}>
+    <button
+      type="button"
+      className="yarl__button"
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      aria-pressed={pressed}
+    >
       <Icon className={`yarl__icon ${filled ? "fill-current" : ""}`} />
     </button>
   );
@@ -53,7 +66,15 @@ function ToolbarButton({ label, icon: Icon, onClick, pressed, filled }: {
  * browser version through its signed address), and a slideshow. The toolbar downloads the preview (and the original
  * when allowed), reports the item and opens its own page.
  */
-export function ItemViewer({ items, index, onIndexChange, onClose, options, slideshow = false, onFavourite }: {
+export function ItemViewer({
+  items,
+  index,
+  onIndexChange,
+  onClose,
+  options,
+  slideshow = false,
+  onFavourite,
+}: {
   items: GalleryItem[];
   /** The open item's index in `items`, or null when closed. */
   index: number | null;
@@ -63,7 +84,7 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options, slid
   /** Starts the slideshow at once, e.g. for a memory. */
   slideshow?: boolean;
   /** Told when the member marks or unmarks the item as a favourite here. */
-  onFavourite?: (id: string, favourite: boolean) => void
+  onFavourite?: (id: string, favourite: boolean) => void;
 }) {
   const t = useTranslations("Viewer");
   const locale = useLocale();
@@ -75,93 +96,153 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options, slid
   // A phone's toolbar has no room for every button: zoom is a pinch or a double tap there
   const narrow = useIsMobile();
   const shown = useMemo(() => items.filter(isShowable), [items]);
-  const current = index === null ? null : items[index] ?? null;
-  const slideIndex = current ? Math.max(0, shown.findIndex(item => item.id === current.id)) : 0;
+  const current = index === null ? null : (items[index] ?? null);
+  const slideIndex = current
+    ? Math.max(
+        0,
+        shown.findIndex((item) => item.id === current.id)
+      )
+    : 0;
 
-  const slides: Slide[] = useMemo(() => shown.map((item): Slide => {
-    const media = item.media!;
-    const alt = altText(item, locale, options.albumTitle);
-    const description = [item.photographer, formatDay(item.takenAt, locale)].filter(Boolean).join(" · ");
+  const slides: Slide[] = useMemo(
+    () =>
+      shown.map((item): Slide => {
+        const media = item.media!;
+        const alt = altText(item, locale, options.albumTitle);
+        const description = [item.photographer, formatDay(item.takenAt, locale)].filter(Boolean).join(" · ");
 
-    if (item.type === "VIDEO" && media.videoUrl) {
-      return {
-        type: "video",
-        poster: media.previewUrl,
-        width: item.width ?? undefined,
-        height: item.height ?? undefined,
-        controls: true,
-        playsInline: true,
-        preload: "metadata",
-        sources: [{ src: media.videoUrl, type: "video/mp4" }],
-        title: item.caption ?? undefined,
-        description: description || undefined,
-      };
-    }
-    return {
-      src: media.previewUrl,
-      alt,
-      width: item.width ?? undefined,
-      height: item.height ?? undefined,
-      srcSet: item.width && item.height ? [
-        { src: media.thumbnailUrl, width: 250, height: Math.round(250 * item.height / item.width) },
-        { src: media.previewUrl, width: Math.min(1440, item.width), height: Math.round(Math.min(1440, item.width) * item.height / item.width) },
-      ] : undefined,
-      title: item.caption ?? undefined,
-      description: description || undefined,
-    };
-  }), [shown, locale, options.albumTitle]);
+        if (item.type === "VIDEO" && media.videoUrl) {
+          return {
+            type: "video",
+            poster: media.previewUrl,
+            width: item.width ?? undefined,
+            height: item.height ?? undefined,
+            controls: true,
+            playsInline: true,
+            preload: "metadata",
+            sources: [{ src: media.videoUrl, type: "video/mp4" }],
+            title: item.caption ?? undefined,
+            description: description || undefined,
+          };
+        }
+        return {
+          src: media.previewUrl,
+          alt,
+          width: item.width ?? undefined,
+          height: item.height ?? undefined,
+          srcSet:
+            item.width && item.height
+              ? [
+                  { src: media.thumbnailUrl, width: 250, height: Math.round((250 * item.height) / item.width) },
+                  {
+                    src: media.previewUrl,
+                    width: Math.min(1440, item.width),
+                    height: Math.round((Math.min(1440, item.width) * item.height) / item.width),
+                  },
+                ]
+              : undefined,
+          title: item.caption ?? undefined,
+          description: description || undefined,
+        };
+      }),
+    [shown, locale, options.albumTitle]
+  );
 
-  const toItemsIndex = (slide: number) => items.findIndex(item => item.id === shown[slide]?.id);
+  const toItemsIndex = (slide: number) => items.findIndex((item) => item.id === shown[slide]?.id);
 
   // A video is downloaded only as its original, when originals may be (spec 5.1); playing uses the browser version
-  const favourite = current ? favourites[current.id] ?? current.favourite : false;
+  const favourite = current ? (favourites[current.id] ?? current.favourite) : false;
 
   const toggleFavourite = async (id: string, on: boolean) => {
-    setFavourites(known => ({ ...known, [id]: on }));
+    setFavourites((known) => ({ ...known, [id]: on }));
 
     const result = await favouriteAction([id], on);
 
     if (result.ok) {
       onFavourite?.(id, on);
     } else {
-      setFavourites(known => ({ ...known, [id]: !on }));
+      setFavourites((known) => ({ ...known, [id]: !on }));
       toast.error(result.message);
     }
   };
 
-  const buttons = current ? [
-    ...(member ? [
-      <ToolbarButton key="favourite" label={favourite ? t("unfavourite") : t("favourite")} icon={Heart} pressed={favourite}
-                     filled={favourite} onClick={() => void toggleFavourite(current.id, !favourite)} />,
-    ] : []),
-    <ToolbarButton key="info" label={t("info")} icon={Info} pressed={info} onClick={() => setInfo(open => !open)} />,
-    ...(current.type === "PHOTO" && current.media ? [
-      <ToolbarButton key="download" label={t("downloadPreview")} icon={Download}
-                     onClick={() => {
-                       track("item-download", { original: false });
-                       void downloadFile(current.media!.previewUrl, downloadName(current, "preview"));
-                     }} />,
-    ] : []),
-    ...(options.canDownloadOriginals && current.media?.originalUrl ? [
-      <ToolbarButton key="original" label={t("downloadOriginal")} icon={HardDriveDownload}
-                     onClick={() => {
-                       track("item-download", { original: true });
-                       void downloadFile(current.media!.originalUrl!, current.originalFileName ?? downloadName(current, "original"));
-                     }} />,
-    ] : []),
-    <ToolbarButton key="report" label={t("report")} icon={Flag}
-                   onClick={() => {
-                  setReportItem(current.id);
-                  onClose();
-                }} />,
-    <a key="page" href={`/items/${current.id}`} className="yarl__button" aria-label={t("openPage")} title={t("openPage")}>
-      <ExternalLink aria-hidden className="yarl__icon" />
-    </a>,
-    "slideshow",
-    "fullscreen",
-    "zoom",
-    "close",
-  ] : ["close"];
+  const buttons = current
+    ? [
+        ...(member
+          ? [
+              <ToolbarButton
+                key="favourite"
+                label={favourite ? t("unfavourite") : t("favourite")}
+                icon={Heart}
+                pressed={favourite}
+                filled={favourite}
+                onClick={() => void toggleFavourite(current.id, !favourite)}
+              />,
+            ]
+          : []),
+        <ToolbarButton
+          key="info"
+          label={t("info")}
+          icon={Info}
+          pressed={info}
+          onClick={() => setInfo((open) => !open)}
+        />,
+        ...(current.type === "PHOTO" && current.media
+          ? [
+              <ToolbarButton
+                key="download"
+                label={t("downloadPreview")}
+                icon={Download}
+                onClick={() => {
+                  track("item-download", { original: false });
+                  void downloadFile(current.media!.previewUrl, downloadName(current, "preview"));
+                }}
+              />,
+            ]
+          : []),
+        ...(options.canDownloadOriginals && current.media?.originalUrl
+          ? [
+              <ToolbarButton
+                key="original"
+                label={t("downloadOriginal")}
+                icon={HardDriveDownload}
+                onClick={() => {
+                  track("item-download", { original: true });
+                  void downloadFile(
+                    current.media!.originalUrl!,
+                    current.originalFileName ?? downloadName(current, "original")
+                  );
+                }}
+              />,
+            ]
+          : []),
+        <ToolbarButton
+          key="report"
+          label={t("report")}
+          icon={Flag}
+          onClick={() => {
+            setReportItem(current.id);
+            onClose();
+          }}
+        />,
+        <a
+          key="page"
+          href={`/items/${current.id}`}
+          className="yarl__button"
+          aria-label={t("openPage")}
+          title={t("openPage")}
+        >
+          <ExternalLink
+            aria-hidden
+            className="yarl__icon"
+          />
+        </a>,
+        "slideshow",
+        "fullscreen",
+        "zoom",
+        "close",
+      ]
+    : ["close"];
 
   return (
     <>
@@ -175,17 +256,25 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options, slid
         // The plugin adds its buttons to the toolbar itself, so they are left out by rendering nothing
         render={{
           ...(narrow ? { buttonZoom: () => null } : {}),
-          controls: () => info && current
-            ? <InfoPanel item={current} member={member} editor={options.editor ?? false} onClose={() => setInfo(false)} />
-            : null,
+          controls: () =>
+            info && current ? (
+              <InfoPanel
+                item={current}
+                member={member}
+                editor={options.editor ?? false}
+                onClose={() => setInfo(false)}
+              />
+            ) : null,
         }}
-        on={{ view: ({ index: viewed }) => {
-          const next = toItemsIndex(viewed);
+        on={{
+          view: ({ index: viewed }) => {
+            const next = toItemsIndex(viewed);
 
-          if (next >= 0 && next !== index) {
-            onIndexChange(next);
-          }
-        } }}
+            if (next >= 0 && next !== index) {
+              onIndexChange(next);
+            }
+          },
+        }}
         carousel={{ finite: false, preload: 2 }}
         captions={{ descriptionTextAlign: "center", descriptionMaxLines: 3 }}
         counter={{ container: { style: { top: "unset", bottom: 0 } } }}
@@ -212,8 +301,12 @@ export function ItemViewer({ items, index, onIndexChange, onClose, options, slid
           "Exit Fullscreen": t("exitFullscreen"),
         }}
       />
-      <ReportDialog itemId={reportItem} open={reportItem !== null} onOpenChange={open => !open && setReportItem(null)}
-                    viewer={options.report} />
+      <ReportDialog
+        itemId={reportItem}
+        open={reportItem !== null}
+        onOpenChange={(open) => !open && setReportItem(null)}
+        viewer={options.report}
+      />
     </>
   );
 }

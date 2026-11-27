@@ -18,7 +18,12 @@ vi.mock("@/app/(app)/manage/actions.server", () => mocks.actions);
 vi.mock("@bloomper/fgv-web-ui/shell/dialogs", () => ({ useDialogs: () => mocks.dialogs }));
 
 const contributions = [
-  item("c1", { originalFileName: "a.jpg", uploadedBy: "Tina", photographer: "Tina", createdAt: "2026-11-01T10:00:00Z" }),
+  item("c1", {
+    originalFileName: "a.jpg",
+    uploadedBy: "Tina",
+    photographer: "Tina",
+    createdAt: "2026-11-01T10:00:00Z",
+  }),
   item("c2", { originalFileName: "b.jpg" }),
   item("c3", { album: null }),
 ];
@@ -27,7 +32,7 @@ describe("ContributionReview", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.dialogs = makeDialogs();
-    Object.values(mocks.actions).forEach(action => action.mockResolvedValue({ ok: true, data: null }));
+    Object.values(mocks.actions).forEach((action) => action.mockResolvedValue({ ok: true, data: null }));
   });
 
   it("says when nothing waits", () => {
@@ -64,24 +69,35 @@ describe("ContributionReview", () => {
 
   it("corrects the photographer before accepting", async () => {
     render(<ContributionReview items={contributions} />);
-    await userEvent.click(screen.getByRole("button", { name: `editPhotographerOf:${JSON.stringify({ name: "a.jpg" })}` }));
+    await userEvent.click(
+      screen.getByRole("button", { name: `editPhotographerOf:${JSON.stringify({ name: "a.jpg" })}` })
+    );
     await waitFor(() => expect(mocks.actions.updateItemsAction).toHaveBeenCalledWith(["c1"], { photographer: "Svar" }));
     expect(mocks.dialogs.prompt).toHaveBeenCalledWith(expect.objectContaining({ defaultValue: "Tina" }));
 
     mocks.actions.updateItemsAction.mockResolvedValueOnce({ ok: false, message: "Nej" });
-    await userEvent.click(screen.getByRole("button", { name: `editPhotographerOf:${JSON.stringify({ name: "b.jpg" })}` }));
+    await userEvent.click(
+      screen.getByRole("button", { name: `editPhotographerOf:${JSON.stringify({ name: "b.jpg" })}` })
+    );
     await waitFor(() => expect(mocks.toast.error).toHaveBeenCalledWith("Nej"));
 
     mocks.dialogs.prompt.mockResolvedValueOnce(null);
-    await userEvent.click(screen.getByRole("button", { name: `editPhotographerOf:${JSON.stringify({ name: "b.jpg" })}` }));
+    await userEvent.click(
+      screen.getByRole("button", { name: `editPhotographerOf:${JSON.stringify({ name: "b.jpg" })}` })
+    );
     expect(mocks.actions.updateItemsAction).toHaveBeenCalledTimes(2);
   });
 });
 
 describe("SuggestionReview", () => {
   const suggestions = [
-    { id: "s1", title: "Sittning", suggestedBy: "Tina", createdAt: "2026-11-01T10:00:00Z",
-      album: { id: "a9", title: "Sittning", dateFrom: "2026-10-01", place: "Kårhuset", description: "Efter premiären" } },
+    {
+      id: "s1",
+      title: "Sittning",
+      suggestedBy: "Tina",
+      createdAt: "2026-11-01T10:00:00Z",
+      album: { id: "a9", title: "Sittning", dateFrom: "2026-10-01", place: "Kårhuset", description: "Efter premiären" },
+    },
     { id: "s2", title: "Utan album", createdAt: "2026-11-02T10:00:00Z", album: null },
   ];
 

@@ -15,13 +15,32 @@ export default async function ManageContributionsPage() {
 
     return (
       <Page variant="content">
-        <PageHeader title={t("title")} description={t("text")}/>
-        <section aria-labelledby="queue" className="space-y-3">
-          <h2 id="queue" className="text-lg font-semibold">{t("contributions", { count: data?.contributions.length ?? 0 })}</h2>
+        <PageHeader
+          title={t("title")}
+          description={t("text")}
+        />
+        <section
+          aria-labelledby="queue"
+          className="space-y-3"
+        >
+          <h2
+            id="queue"
+            className="text-lg font-semibold"
+          >
+            {t("contributions", { count: data?.contributions.length ?? 0 })}
+          </h2>
           <ContributionReview items={data?.contributions ?? []} />
         </section>
-        <section aria-labelledby="suggestions" className="space-y-3">
-          <h2 id="suggestions" className="text-lg font-semibold">{t("suggestions", { count: data?.albumSuggestions.length ?? 0 })}</h2>
+        <section
+          aria-labelledby="suggestions"
+          className="space-y-3"
+        >
+          <h2
+            id="suggestions"
+            className="text-lg font-semibold"
+          >
+            {t("suggestions", { count: data?.albumSuggestions.length ?? 0 })}
+          </h2>
           <SuggestionReview suggestions={data?.albumSuggestions ?? []} />
         </section>
       </Page>

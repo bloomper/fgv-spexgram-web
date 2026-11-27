@@ -30,7 +30,7 @@ export function uploadFile(file: File, onProgress: (fraction: number) => void): 
       },
     });
 
-    upload.findPreviousUploads().then(previous => {
+    upload.findPreviousUploads().then((previous) => {
       if (previous.length > 0) {
         upload.resumeFromPreviousUpload(previous[0]);
       }

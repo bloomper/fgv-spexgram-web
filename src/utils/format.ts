@@ -1,5 +1,10 @@
 const DATE_TIME = new Intl.DateTimeFormat("sv-SE", {
-  year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
   timeZone: "Europe/Stockholm",
 });
 
@@ -17,7 +22,7 @@ export function formatInstant(value: string | Date | null | undefined): string |
     return typeof value === "string" ? value : null;
   }
 
-  const parts = Object.fromEntries(DATE_TIME.formatToParts(date).map(part => [part.type, part.value]));
+  const parts = Object.fromEntries(DATE_TIME.formatToParts(date).map((part) => [part.type, part.value]));
 
   return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}`;
 }
@@ -32,8 +37,34 @@ export function kindName(kind: KindName, locale: string): string {
 }
 
 const MONTHS: Record<string, string[]> = {
-  sv: ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"],
-  en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  sv: [
+    "januari",
+    "februari",
+    "mars",
+    "april",
+    "maj",
+    "juni",
+    "juli",
+    "augusti",
+    "september",
+    "oktober",
+    "november",
+    "december",
+  ],
+  en: [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ],
 };
 
 function parseDay(value: string | null | undefined): [number, number, number] | null {
@@ -61,7 +92,11 @@ export function formatDay(value: string | null | undefined, locale: string): str
 /**
  * An album's date: one day, or a period, shortened where the parts are the same ("14–16 februari 1975").
  */
-export function formatPeriod(from: string | null | undefined, to: string | null | undefined, locale: string): string | null {
+export function formatPeriod(
+  from: string | null | undefined,
+  to: string | null | undefined,
+  locale: string
+): string | null {
   const start = parseDay(from);
   const end = parseDay(to);
 

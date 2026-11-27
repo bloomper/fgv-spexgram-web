@@ -39,6 +39,7 @@ The look (logo, favicon and colours) is FGV's, shared with Spexregister, Nyupps√
 ### Development
 
 1. **Install dependencies:**
+
    ```bash
    npm ci
    ```
@@ -46,6 +47,7 @@ The look (logo, favicon and colours) is FGV's, shared with Spexregister, Nyupps√
 2. **Configure environment:**
    Start fgv-infra-deploy's local stack, Spexregister's and [Spexgram Server][1]'s (its getting started guide describes
    all three), then create `.env.local` (`.env` already holds the rest):
+
    ```
    BETTER_AUTH_URL=http://localhost:3004
    AUTH_SECRET=<random string of at least 32 characters>
@@ -63,6 +65,7 @@ The look (logo, favicon and colours) is FGV's, shared with Spexregister, Nyupps√
    SPEXIPEDIA_WEB_URL=http://localhost:3006
    ARCHIVE_WEB_URL=http://localhost:3005
    ```
+
    The client secret is in `realm/fgv.json` in [fgv-keycloak][7]; search for `fgv-spexgram`.
    For visitor statistics, run fgv-infra-deploy's `local/bin/configure-umami.sh` and put the ID it prints for Spexgram
    in `.env.local` as `UMAMI_WEBSITE_ID`, with `UMAMI_URL=https://analytics.fgv.local.nu:8443`.
@@ -70,19 +73,20 @@ The look (logo, favicon and colours) is FGV's, shared with Spexregister, Nyupps√
    (`local/.docker/caddy/data/caddy/pki/authorities/local/root.crt`), read from `../../fgv-infra-deploy`, or from
    `INFRA_DEPLOY` if it is checked out elsewhere.
 
-   | Variable                         | Purpose                                                                   |
-   |----------------------------------|---------------------------------------------------------------------------|
-   | `API_GRAPHQL_ENDPOINT`           | Spexgram Server's GraphQL endpoint                                        |
-   | `API_ENDPOINT`                   | Spexgram Server's origin for tus uploads and albums as zips; defaults to the GraphQL endpoint's |
-   | `MEDIA_ORIGIN`                   | The media server's origin, allowed by the pages' Content Security Policy; `http://localhost:8086` when Spexgram Server runs with `bootRun` |
-   | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile's site key for visitors' reports (read at runtime despite its prefix); `1x00000000000000000000AA` is Cloudflare's test key, which always passes |
-   | `API_CLIENT_IP_SECRET`           | Optional: the secret shared with Spexgram Server's `API_CLIENT_IP_SECRET`, sent with the visitor's address so that visitors' reports are limited per visitor; without it they are limited per web |
-   | `SPEXFLIX_WEB_URL`               | Spexflix, where uploaders of long videos are pointed; also the application switcher |
-   | `SPEXREGISTER_WEB_URL`, `REVIVAL_WEB_URL`, `SPEXIFY_WEB_URL`, `SPEXIPEDIA_WEB_URL`, `ARCHIVE_WEB_URL` | The other applications, for the application switcher in the header |
-   | `SUPPORT_EMAIL`, `FEEDBACK_EMAIL`| The addresses on the support and about pages (in `.env`)                 |
+   | Variable                                                                                              | Purpose                                                                                                                                                                                           |
+   | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | `API_GRAPHQL_ENDPOINT`                                                                                | Spexgram Server's GraphQL endpoint                                                                                                                                                                |
+   | `API_ENDPOINT`                                                                                        | Spexgram Server's origin for tus uploads and albums as zips; defaults to the GraphQL endpoint's                                                                                                   |
+   | `MEDIA_ORIGIN`                                                                                        | The media server's origin, allowed by the pages' Content Security Policy; `http://localhost:8086` when Spexgram Server runs with `bootRun`                                                        |
+   | `NEXT_PUBLIC_TURNSTILE_SITE_KEY`                                                                      | Cloudflare Turnstile's site key for visitors' reports (read at runtime despite its prefix); `1x00000000000000000000AA` is Cloudflare's test key, which always passes                              |
+   | `API_CLIENT_IP_SECRET`                                                                                | Optional: the secret shared with Spexgram Server's `API_CLIENT_IP_SECRET`, sent with the visitor's address so that visitors' reports are limited per visitor; without it they are limited per web |
+   | `SPEXFLIX_WEB_URL`                                                                                    | Spexflix, where uploaders of long videos are pointed; also the application switcher                                                                                                               |
+   | `SPEXREGISTER_WEB_URL`, `REVIVAL_WEB_URL`, `SPEXIFY_WEB_URL`, `SPEXIPEDIA_WEB_URL`, `ARCHIVE_WEB_URL` | The other applications, for the application switcher in the header                                                                                                                                |
+   | `SUPPORT_EMAIL`, `FEEDBACK_EMAIL`                                                                     | The addresses on the support and about pages (in `.env`)                                                                                                                                          |
 
 3. **Generate GraphQL types:**
    If you change GraphQL queries or the schema, regenerate types from the sibling `fgv-spexgram-server` checkout:
+
    ```bash
    npm run gql-codegen
    ```
@@ -119,7 +123,7 @@ fgv-infra-deploy's local Caddy. To log in, `SPEXGRAM_URL` in fgv-infra-deploy's 
 CI publishes `bloomper/fgv-spexgram-web` for `linux/amd64`:
 
 | Trigger              | Tags                              |
-|----------------------|-----------------------------------|
+| -------------------- | --------------------------------- |
 | push to `develop`    | `develop`, `sha-<commit>`         |
 | push of tag `vX.Y.Z` | `X.Y.Z`, `latest`, `sha-<commit>` |
 
@@ -164,17 +168,10 @@ You can contribute to Spexgram Web by:
 Spexgram Web is open source software released under the [Apache 2.0 license][6].
 
 [1]: https://github.com/bloomper/fgv-spexgram-server
-
 [2]: https://github.com/bloomper/fgv-spexgram-spec
-
 [3]: CODE_OF_CONDUCT.md
-
 [4]: https://help.github.com/articles/using-pull-requests/
-
 [5]: CONTRIBUTING.md
-
 [6]: https://www.apache.org/licenses/LICENSE-2.0.html
-
 [7]: https://github.com/bloomper/fgv-keycloak
-
 [8]: https://github.com/bloomper/fgv-spexgram-deploy

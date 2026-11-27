@@ -23,19 +23,31 @@ export function AlbumCard({ album, href, showVisibility }: Props) {
 
   return (
     <li className="group">
-      <Link href={href ?? `/albums/${album.id}`}
-            className="block overflow-hidden rounded-lg border bg-card focus-visible:ring-2 focus-visible:ring-ring">
+      <Link
+        href={href ?? `/albums/${album.id}`}
+        className="bg-card focus-visible:ring-ring block overflow-hidden rounded-lg border focus-visible:ring-2"
+      >
         <div className="aspect-[4/3]">
-          <ItemImage src={album.cover?.media?.thumbnailUrl} srcSet={album.cover?.media
-            ? `${album.cover.media.thumbnailUrl} 250w, ${album.cover.media.previewUrl} 1440w` : undefined}
-                     sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-                     alt="" type={album.cover?.type} fill
-                     className="transition-transform group-hover:scale-[1.02]" />
+          <ItemImage
+            src={album.cover?.media?.thumbnailUrl}
+            srcSet={
+              album.cover?.media
+                ? `${album.cover.media.thumbnailUrl} 250w, ${album.cover.media.previewUrl} 1440w`
+                : undefined
+            }
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+            alt=""
+            type={album.cover?.type}
+            fill
+            className="transition-transform group-hover:scale-[1.02]"
+          />
         </div>
         <div className="space-y-1 p-3">
-          <h3 className="line-clamp-2 font-medium leading-snug">{album.title}</h3>
-          <p className="text-xs text-muted-foreground">
-            {[period, kindName(album.kind, locale), t("itemCount", { count: album.itemCount })].filter(Boolean).join(" · ")}
+          <h3 className="line-clamp-2 leading-snug font-medium">{album.title}</h3>
+          <p className="text-muted-foreground text-xs">
+            {[period, kindName(album.kind, locale), t("itemCount", { count: album.itemCount })]
+              .filter(Boolean)
+              .join(" · ")}
           </p>
           {showVisibility && album.visibility !== "MEMBERS" && <VisibilityBadge visibility={album.visibility} />}
         </div>
@@ -44,14 +56,25 @@ export function AlbumCard({ album, href, showVisibility }: Props) {
   );
 }
 
-export function AlbumGrid({ albums, showVisibility, hrefOf }: {
+export function AlbumGrid({
+  albums,
+  showVisibility,
+  hrefOf,
+}: {
   albums: AlbumCardFieldsFragment[];
   showVisibility?: boolean;
-  hrefOf?: (album: AlbumCardFieldsFragment) => string
+  hrefOf?: (album: AlbumCardFieldsFragment) => string;
 }) {
   return (
     <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-      {albums.map(album => <AlbumCard key={album.id} album={album} showVisibility={showVisibility} href={hrefOf?.(album)} />)}
+      {albums.map((album) => (
+        <AlbumCard
+          key={album.id}
+          album={album}
+          showVisibility={showVisibility}
+          href={hrefOf?.(album)}
+        />
+      ))}
     </ul>
   );
 }

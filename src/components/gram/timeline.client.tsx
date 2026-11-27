@@ -36,15 +36,20 @@ function useMonthLabel() {
   const locale = useLocale();
   const t = useTranslations("Timeline");
 
-  return useCallback((month: string | null) => {
-    if (!month) {
-      return t("undated");
-    }
+  return useCallback(
+    (month: string | null) => {
+      if (!month) {
+        return t("undated");
+      }
 
-    const [year, number] = month.split("-").map(Number);
+      const [year, number] = month.split("-").map(Number);
 
-    return new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(Date.UTC(year, number - 1, 1));
-  }, [locale, t]);
+      return new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(
+        Date.UTC(year, number - 1, 1)
+      );
+    },
+    [locale, t]
+  );
 }
 
 /**
@@ -57,13 +62,19 @@ function useMonthLabel() {
  * Members select items with the check mark on hover or a long press; once something is selected a tap selects too,
  * shift-click selects a range and dragging over check marks selects many. The selection bar acts on them.
  */
-export function Timeline({ months, favourites = false, options, member, editor }: {
+export function Timeline({
+  months,
+  favourites = false,
+  options,
+  member,
+  editor,
+}: {
   months: TimelineMonth[];
   /** The member's favourites view. */
   favourites?: boolean;
   options: ViewerOptions;
   member: boolean;
-  editor: boolean
+  editor: boolean;
 }) {
   const t = useTranslations("Timeline");
   const locale = useLocale();
@@ -80,7 +91,7 @@ export function Timeline({ months, favourites = false, options, member, editor }
   const press = useRef<{ timer: ReturnType<typeof setTimeout>; fired: boolean } | null>(null);
   const [open, setOpen] = useState<number | null>(null);
   // The server's months: a render with other counts (after an editor's change) loads the months again
-  const monthsKey = months.map(month => `${month.month}:${month.count}`).join();
+  const monthsKey = months.map((month) => `${month.month}:${month.count}`).join();
   const [seen, setSeen] = useState(monthsKey);
 
   if (seen !== monthsKey) {
@@ -101,51 +112,55 @@ export function Timeline({ months, favourites = false, options, member, editor }
       return;
     }
 
-    const observer = new ResizeObserver(entries => setWidth(entries[0]?.contentRect.width || 1000));
+    const observer = new ResizeObserver((entries) => setWidth(entries[0]?.contentRect.width || 1000));
 
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
 
-  const load = useCallback(async (month: TimelineMonth) => {
-    const key = monthKey(month.month);
+  const load = useCallback(
+    async (month: TimelineMonth) => {
+      const key = monthKey(month.month);
 
-    if (loading.current.has(key)) {
-      return;
-    }
-    loading.current.add(key);
-
-    const items: GalleryItem[] = [];
-
-    for (let page = 0; ; page++) {
-      const result = await timelineItemsAction(month.month, favourites, page);
-
-      if (!result.ok) {
-        loading.current.delete(key);
-        setFailed(current => ({ ...current, [key]: true }));
+      if (loading.current.has(key)) {
         return;
       }
-      items.push(...result.data.items);
-      if (result.data.items.length === 0 || items.length >= result.data.totalCount) {
-        break;
+      loading.current.add(key);
+
+      const items: GalleryItem[] = [];
+
+      for (let page = 0; ; page++) {
+        const result = await timelineItemsAction(month.month, favourites, page);
+
+        if (!result.ok) {
+          loading.current.delete(key);
+          setFailed((current) => ({ ...current, [key]: true }));
+          return;
+        }
+        items.push(...result.data.items);
+        if (result.data.items.length === 0 || items.length >= result.data.totalCount) {
+          break;
+        }
       }
-    }
-    setFailed(current => ({ ...current, [key]: false }));
-    setLoaded(current => ({ ...current, [key]: items }));
-  }, [favourites]);
+      setFailed((current) => ({ ...current, [key]: false }));
+      setLoaded((current) => ({ ...current, [key]: items }));
+    },
+    [favourites]
+  );
 
   // The items in the order shown, for the viewer, ranges and renewal
-  const shown = useMemo(() => months.flatMap(month => loaded[monthKey(month.month)] ?? []), [months, loaded]);
-  const order = useMemo(() => shown.map(item => item.id), [shown]);
-  const selectedItems = useMemo(() => shown.filter(item => selected.has(item.id)), [shown, selected]);
+  const shown = useMemo(() => months.flatMap((month) => loaded[monthKey(month.month)] ?? []), [months, loaded]);
+  const order = useMemo(() => shown.map((item) => item.id), [shown]);
+  const selectedItems = useMemo(() => shown.filter((item) => selected.has(item.id)), [shown, selected]);
   const selecting = selected.size > 0;
 
-  const setMany = (ids: string[], on: boolean) => setSelected(current => {
-    const next = new Set(current);
+  const setMany = (ids: string[], on: boolean) =>
+    setSelected((current) => {
+      const next = new Set(current);
 
-    ids.forEach(id => on ? next.add(id) : next.delete(id));
-    return next;
-  });
+      ids.forEach((id) => (on ? next.add(id) : next.delete(id)));
+      return next;
+    });
 
   const toggle = (id: string, shift: boolean) => {
     if (shift && anchor.current) {
@@ -170,13 +185,15 @@ export function Timeline({ months, favourites = false, options, member, editor }
       return;
     }
 
-    const ids = shown.filter(item => item.media).map(item => item.id);
+    const ids = shown.filter((item) => item.media).map((item) => item.id);
 
     for (let start = 0; start < ids.length; start += RENEW_CHUNK) {
       const result = await renewItemsAction(ids.slice(start, start + RENEW_CHUNK));
 
       if (result.ok) {
-        setLoaded(current => Object.fromEntries(Object.entries(current).map(([key, items]) => [key, mergeRenewed(items, result.data)])));
+        setLoaded((current) =>
+          Object.fromEntries(Object.entries(current).map(([key, items]) => [key, mergeRenewed(items, result.data)]))
+        );
       }
     }
   }, [shown]);
@@ -196,12 +213,22 @@ export function Timeline({ months, favourites = false, options, member, editor }
     const ids = new Set(change.ids);
 
     if (change.kind === "favourite") {
-      setLoaded(current => Object.fromEntries(Object.entries(current).map(([key, items]) => [key,
-        favourites && !change.favourite
-          ? items.filter(item => !ids.has(item.id))
-          : items.map(item => ids.has(item.id) ? { ...item, favourite: change.favourite } : item)])));
+      setLoaded((current) =>
+        Object.fromEntries(
+          Object.entries(current).map(([key, items]) => [
+            key,
+            favourites && !change.favourite
+              ? items.filter((item) => !ids.has(item.id))
+              : items.map((item) => (ids.has(item.id) ? { ...item, favourite: change.favourite } : item)),
+          ])
+        )
+      );
     } else if (change.kind === "trash") {
-      setLoaded(current => Object.fromEntries(Object.entries(current).map(([key, items]) => [key, items.filter(item => !ids.has(item.id))])));
+      setLoaded((current) =>
+        Object.fromEntries(
+          Object.entries(current).map(([key, items]) => [key, items.filter((item) => !ids.has(item.id))])
+        )
+      );
     }
     if (change.kind !== "favourite" || favourites) {
       router.refresh();
@@ -211,7 +238,7 @@ export function Timeline({ months, favourites = false, options, member, editor }
   const onFavourite = (id: string, favourite: boolean) => update({ kind: "favourite", ids: [id], favourite });
 
   const openItem = (item: GalleryItem) => {
-    const index = shown.findIndex(entry => entry.id === item.id);
+    const index = shown.findIndex((entry) => entry.id === item.id);
 
     if (index >= 0 && isShowable(item)) {
       void renew();
@@ -264,113 +291,200 @@ export function Timeline({ months, favourites = false, options, member, editor }
 
   return (
     <div className="relative flex gap-2">
-      <div ref={container} className="min-w-0 flex-1 space-y-2" data-testid="timeline">
+      <div
+        ref={container}
+        className="min-w-0 flex-1 space-y-2"
+        data-testid="timeline"
+      >
         {member && (
-          <SelectionBar items={selectedItems} member={member} editor={editor} canDownloadOriginals={options.canDownloadOriginals}
-                        favouritesView={favourites} onClear={() => setSelected(new Set())} onChange={update} />
+          <SelectionBar
+            items={selectedItems}
+            member={member}
+            editor={editor}
+            canDownloadOriginals={options.canDownloadOriginals}
+            favouritesView={favourites}
+            onClear={() => setSelected(new Set())}
+            onChange={update}
+          />
         )}
-        {months.map(month => {
+        {months.map((month) => {
           const key = monthKey(month.month);
           const items = loaded[key];
 
           return (
-            <MonthSection key={key} id={`m-${key}`} label={monthLabel(month.month)} count={month.count}
-                          estimate={estimateHeight(month.count, width, rowHeight)} loaded={items !== undefined}
-                          failed={failed[key] ?? false} onNear={() => void load(month)} retryLabel={t("retry")}>
-              {items && groupByDay(items).map(day => {
-                const ids = day.items.map(item => item.id);
-                const all = ids.every(id => selected.has(id));
-                const dayLabel = day.day ? formatDay(day.day, locale) ?? day.day : t("undated");
+            <MonthSection
+              key={key}
+              id={`m-${key}`}
+              label={monthLabel(month.month)}
+              count={month.count}
+              estimate={estimateHeight(month.count, width, rowHeight)}
+              loaded={items !== undefined}
+              failed={failed[key] ?? false}
+              onNear={() => void load(month)}
+              retryLabel={t("retry")}
+            >
+              {items &&
+                groupByDay(items).map((day) => {
+                  const ids = day.items.map((item) => item.id);
+                  const all = ids.every((id) => selected.has(id));
+                  const dayLabel = day.day ? (formatDay(day.day, locale) ?? day.day) : t("undated");
 
-                return (
-                  <section key={day.day ?? "undated"} aria-label={dayLabel} className="space-y-1">
-                    <h3 className="group/day sticky top-[calc(var(--header-height)+2.5rem)] z-[5] flex items-center gap-2 bg-background/95 py-1 text-sm font-medium backdrop-blur">
-                      {member && (
-                        <button type="button" onClick={() => setMany(ids, !all)} aria-pressed={all}
-                                aria-label={all ? t("unselectDay", { day: dayLabel }) : t("selectDay", { day: dayLabel })}
-                                className={cn("rounded-full text-muted-foreground transition-opacity hover:text-foreground focus-visible:opacity-100",
-                                  all || selecting ? "opacity-100" : "opacity-0 group-hover/day:opacity-100")}>
-                          <CircleCheck className={cn("size-5", all && "fill-primary text-primary-foreground")} aria-hidden />
-                        </button>
-                      )}
-                      {dayLabel}
-                    </h3>
-                    <RowsPhotoAlbum
-                      photos={day.items.map((item): TimelinePhoto => ({
-                        key: item.id,
-                        src: item.media?.thumbnailUrl ?? "",
-                        width: item.width && item.width > 0 ? item.width : 4,
-                        height: item.height && item.height > 0 ? item.height : 3,
-                        alt: altText(item, locale),
-                        item,
-                      }))}
-                      targetRowHeight={rowHeight}
-                      spacing={4}
-                      defaultContainerWidth={1000}
-                      sizes={{ size: "calc(100vw - 48px)", sizes: [{ viewport: "(min-width: 768px)", size: "calc(100vw - 320px)" }] }}
-                      render={{
-                        wrapper: ({ children, ...props }, { photo }) => {
-                          const on = selected.has(photo.item.id);
+                  return (
+                    <section
+                      key={day.day ?? "undated"}
+                      aria-label={dayLabel}
+                      className="space-y-1"
+                    >
+                      <h3 className="group/day bg-background/95 sticky top-[calc(var(--header-height)+2.5rem)] z-[5] flex items-center gap-2 py-1 text-sm font-medium backdrop-blur">
+                        {member && (
+                          <button
+                            type="button"
+                            onClick={() => setMany(ids, !all)}
+                            aria-pressed={all}
+                            aria-label={all ? t("unselectDay", { day: dayLabel }) : t("selectDay", { day: dayLabel })}
+                            className={cn(
+                              "text-muted-foreground hover:text-foreground rounded-full transition-opacity focus-visible:opacity-100",
+                              all || selecting ? "opacity-100" : "opacity-0 group-hover/day:opacity-100"
+                            )}
+                          >
+                            <CircleCheck
+                              className={cn("size-5", all && "fill-primary text-primary-foreground")}
+                              aria-hidden
+                            />
+                          </button>
+                        )}
+                        {dayLabel}
+                      </h3>
+                      <RowsPhotoAlbum
+                        photos={day.items.map((item): TimelinePhoto => ({
+                          key: item.id,
+                          src: item.media?.thumbnailUrl ?? "",
+                          width: item.width && item.width > 0 ? item.width : 4,
+                          height: item.height && item.height > 0 ? item.height : 3,
+                          alt: altText(item, locale),
+                          item,
+                        }))}
+                        targetRowHeight={rowHeight}
+                        spacing={4}
+                        defaultContainerWidth={1000}
+                        sizes={{
+                          size: "calc(100vw - 48px)",
+                          sizes: [{ viewport: "(min-width: 768px)", size: "calc(100vw - 320px)" }],
+                        }}
+                        render={{
+                          wrapper: ({ children, ...props }, { photo }) => {
+                            const on = selected.has(photo.item.id);
 
-                          return (
-                            <div {...props} className={cn(props.className, "group/tile relative")}
-                                 onPointerEnter={() => {
-                                   if (drag.current !== null) {
-                                     setMany([photo.item.id], drag.current);
-                                   }
-                                 }}>
-                              <button type="button" aria-label={photo.alt} data-testid="timeline-item"
-                                      disabled={!isShowable(photo.item) && !member}
-                                      onClick={event => onTileClick(event, photo.item)}
-                                      onPointerDown={event => startPress(event, photo.item)}
-                                      onPointerUp={endPress} onPointerLeave={endPress} onContextMenu={event => press.current?.fired && event.preventDefault()}
-                                      className={cn("block h-full w-full transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                                        on && "scale-[0.92]")}>
-                                {children}
-                              </button>
-                              {member && (
-                                <button type="button" aria-pressed={on}
-                                        aria-label={on ? t("unselect", { name: photo.alt ?? "" }) : t("select", { name: photo.alt ?? "" })}
-                                        onPointerDown={event => {
-                                          if (event.pointerType === "mouse") {
-                                            drag.current = !on;
-                                          }
-                                        }}
-                                        onClick={event => toggle(photo.item.id, event.shiftKey)}
-                                        className={cn("absolute top-1 left-1 rounded-full text-white drop-shadow transition-opacity focus-visible:opacity-100",
-                                          on || selecting ? "opacity-100" : "opacity-0 group-hover/tile:opacity-100")}>
-                                  <CircleCheck className={cn("size-6", on ? "fill-primary" : "fill-black/30")} aria-hidden />
+                            return (
+                              <div
+                                {...props}
+                                className={cn(props.className, "group/tile relative")}
+                                onPointerEnter={() => {
+                                  if (drag.current !== null) {
+                                    setMany([photo.item.id], drag.current);
+                                  }
+                                }}
+                              >
+                                <button
+                                  type="button"
+                                  aria-label={photo.alt}
+                                  data-testid="timeline-item"
+                                  disabled={!isShowable(photo.item) && !member}
+                                  onClick={(event) => onTileClick(event, photo.item)}
+                                  onPointerDown={(event) => startPress(event, photo.item)}
+                                  onPointerUp={endPress}
+                                  onPointerLeave={endPress}
+                                  onContextMenu={(event) => press.current?.fired && event.preventDefault()}
+                                  className={cn(
+                                    "focus-visible:outline-ring block h-full w-full transition-transform focus-visible:outline-2 focus-visible:outline-offset-2",
+                                    on && "scale-[0.92]"
+                                  )}
+                                >
+                                  {children}
                                 </button>
-                              )}
-                              {photo.item.favourite && !favourites && (
-                                <Heart className="pointer-events-none absolute bottom-1 left-1 size-4 fill-white text-white drop-shadow" aria-label={t("favourite")} />
-                              )}
-                              {photo.item.contributionStatus === "WAITING" && (
-                                <span className="pointer-events-none absolute right-1 bottom-1 inline-flex items-center gap-1 rounded bg-black/65 px-1.5 py-0.5 text-xs text-white">
-                                  <Hourglass className="size-3" aria-hidden /> {t("waiting")}
-                                </span>
-                              )}
-                            </div>
-                          );
-                        },
-                        image: (props, { photo }) => (
-                          <ItemImage src={photo.item.media?.thumbnailUrl}
-                                     srcSet={photo.item.media ? `${photo.item.media.thumbnailUrl} 250w, ${photo.item.media.previewUrl} 1440w` : undefined}
-                                     sizes={props.sizes} alt={photo.alt ?? ""} status={photo.item.status} type={photo.item.type}
-                                     thumbhash={photo.item.thumbhash} fill />
-                        ),
-                      }}
-                    />
-                  </section>
-                );
-              })}
+                                {member && (
+                                  <button
+                                    type="button"
+                                    aria-pressed={on}
+                                    aria-label={
+                                      on
+                                        ? t("unselect", { name: photo.alt ?? "" })
+                                        : t("select", { name: photo.alt ?? "" })
+                                    }
+                                    onPointerDown={(event) => {
+                                      if (event.pointerType === "mouse") {
+                                        drag.current = !on;
+                                      }
+                                    }}
+                                    onClick={(event) => toggle(photo.item.id, event.shiftKey)}
+                                    className={cn(
+                                      "absolute top-1 left-1 rounded-full text-white drop-shadow transition-opacity focus-visible:opacity-100",
+                                      on || selecting ? "opacity-100" : "opacity-0 group-hover/tile:opacity-100"
+                                    )}
+                                  >
+                                    <CircleCheck
+                                      className={cn("size-6", on ? "fill-primary" : "fill-black/30")}
+                                      aria-hidden
+                                    />
+                                  </button>
+                                )}
+                                {photo.item.favourite && !favourites && (
+                                  <Heart
+                                    className="pointer-events-none absolute bottom-1 left-1 size-4 fill-white text-white drop-shadow"
+                                    aria-label={t("favourite")}
+                                  />
+                                )}
+                                {photo.item.contributionStatus === "WAITING" && (
+                                  <span className="pointer-events-none absolute right-1 bottom-1 inline-flex items-center gap-1 rounded bg-black/65 px-1.5 py-0.5 text-xs text-white">
+                                    <Hourglass
+                                      className="size-3"
+                                      aria-hidden
+                                    />{" "}
+                                    {t("waiting")}
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          },
+                          image: (props, { photo }) => (
+                            <ItemImage
+                              src={photo.item.media?.thumbnailUrl}
+                              srcSet={
+                                photo.item.media
+                                  ? `${photo.item.media.thumbnailUrl} 250w, ${photo.item.media.previewUrl} 1440w`
+                                  : undefined
+                              }
+                              sizes={props.sizes}
+                              alt={photo.alt ?? ""}
+                              status={photo.item.status}
+                              type={photo.item.type}
+                              thumbhash={photo.item.thumbhash}
+                              fill
+                            />
+                          ),
+                        }}
+                      />
+                    </section>
+                  );
+                })}
             </MonthSection>
           );
         })}
       </div>
-      <Scrubber months={months} label={monthLabel} onJump={jump} ariaLabel={t("scrubber")} />
-      <ItemViewer items={shown} index={open} onIndexChange={setOpen} onClose={() => setOpen(null)}
-                  options={{ ...options, editor }} onFavourite={onFavourite} />
+      <Scrubber
+        months={months}
+        label={monthLabel}
+        onJump={jump}
+        ariaLabel={t("scrubber")}
+      />
+      <ItemViewer
+        items={shown}
+        index={open}
+        onIndexChange={setOpen}
+        onClose={() => setOpen(null)}
+        options={{ ...options, editor }}
+        onFavourite={onFavourite}
+      />
     </div>
   );
 }
@@ -379,7 +493,17 @@ export function Timeline({ months, favourites = false, options, member, editor }
  * A month of the timeline: a sticky header, and its items once loaded. Until then it takes the height its count
  * needs and asks for its items when it comes within a few screens.
  */
-function MonthSection({ id, label, count, estimate, loaded, failed, onNear, retryLabel, children }: {
+function MonthSection({
+  id,
+  label,
+  count,
+  estimate,
+  loaded,
+  failed,
+  onNear,
+  retryLabel,
+  children,
+}: {
   id: string;
   label: string;
   count: number;
@@ -388,7 +512,7 @@ function MonthSection({ id, label, count, estimate, loaded, failed, onNear, retr
   failed: boolean;
   onNear: () => void;
   retryLabel: string;
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   const t = useTranslations("Timeline");
   const element = useRef<HTMLElement>(null);
@@ -400,25 +524,49 @@ function MonthSection({ id, label, count, estimate, loaded, failed, onNear, retr
       return;
     }
 
-    const observer = new IntersectionObserver(entries => {
-      if (entries.some(entry => entry.isIntersecting)) {
-        onNear();
-      }
-    }, { rootMargin: "1500px 0px" });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          onNear();
+        }
+      },
+      { rootMargin: "1500px 0px" }
+    );
 
     observer.observe(target);
     return () => observer.disconnect();
   }, [loaded, failed, onNear]);
 
   return (
-    <section ref={element} id={id} aria-label={label} className="scroll-mt-(--header-height)"
-             style={loaded ? { contentVisibility: "auto", containIntrinsicSize: `auto ${estimate}px` } : { minHeight: estimate }}>
-      <h2 className="sticky top-(--header-height) z-10 flex items-baseline gap-2 bg-background/95 py-2 text-lg font-semibold backdrop-blur">
-        {label} <span className="text-sm font-normal text-muted-foreground">{t("count", { count })}</span>
+    <section
+      ref={element}
+      id={id}
+      aria-label={label}
+      className="scroll-mt-(--header-height)"
+      style={
+        loaded ? { contentVisibility: "auto", containIntrinsicSize: `auto ${estimate}px` } : { minHeight: estimate }
+      }
+    >
+      <h2 className="bg-background/95 sticky top-(--header-height) z-10 flex items-baseline gap-2 py-2 text-lg font-semibold backdrop-blur">
+        {label} <span className="text-muted-foreground text-sm font-normal">{t("count", { count })}</span>
       </h2>
-      {failed
-        ? <Button variant="outline" size="sm" onClick={onNear}>{retryLabel}</Button>
-        : loaded ? <div className="space-y-2">{children}</div> : <div className="h-full animate-pulse rounded bg-muted/40" style={{ height: estimate - 48 }} aria-busy />}
+      {failed ? (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onNear}
+        >
+          {retryLabel}
+        </Button>
+      ) : loaded ? (
+        <div className="space-y-2">{children}</div>
+      ) : (
+        <div
+          className="bg-muted/40 h-full animate-pulse rounded"
+          style={{ height: estimate - 48 }}
+          aria-busy
+        />
+      )}
     </section>
   );
 }
@@ -427,11 +575,16 @@ function MonthSection({ id, label, count, estimate, loaded, failed, onNear, retr
  * The scrubber at the side: the years along the length of the timeline, newest at the top. Clicking or dragging
  * jumps to the month at that point; the month is shown while dragging.
  */
-function Scrubber({ months, label, onJump, ariaLabel }: {
+function Scrubber({
+  months,
+  label,
+  onJump,
+  ariaLabel,
+}: {
   months: TimelineMonth[];
   label: (month: string | null) => string;
   onJump: (month: string | null) => void;
-  ariaLabel: string
+  ariaLabel: string;
 }) {
   const marks = useMemo(() => scrubberMarks(months), [months]);
   const bar = useRef<HTMLDivElement>(null);
@@ -450,51 +603,73 @@ function Scrubber({ months, label, onJump, ariaLabel }: {
   }
 
   return (
-    <nav aria-label={ariaLabel} className="sticky top-[calc(var(--header-height)+0.5rem)] h-[calc(100svh-var(--header-height)-1rem)] w-10 shrink-0 select-none sm:w-12">
-      <div ref={bar} className="relative h-full cursor-ns-resize touch-none"
-           onPointerDown={event => {
-             dragging.current = true;
-             event.currentTarget.setPointerCapture(event.pointerId);
+    <nav
+      aria-label={ariaLabel}
+      className="sticky top-[calc(var(--header-height)+0.5rem)] h-[calc(100svh-var(--header-height)-1rem)] w-10 shrink-0 select-none sm:w-12"
+    >
+      <div
+        ref={bar}
+        className="relative h-full cursor-ns-resize touch-none"
+        onPointerDown={(event) => {
+          dragging.current = true;
+          event.currentTarget.setPointerCapture(event.pointerId);
 
-             const point = at(event);
+          const point = at(event);
 
-             onJump(point.month?.month ?? null);
-           }}
-           onPointerMove={event => {
-             const point = at(event);
+          onJump(point.month?.month ?? null);
+        }}
+        onPointerMove={(event) => {
+          const point = at(event);
 
-             setHover({ at: point.share, month: point.month?.month ?? null });
-             if (dragging.current) {
-               onJump(point.month?.month ?? null);
-             }
-           }}
-           onPointerUp={() => {
-             dragging.current = false;
-           }}
-           onPointerLeave={() => {
-             if (!dragging.current) {
-               setHover(null);
-             }
-           }}>
+          setHover({ at: point.share, month: point.month?.month ?? null });
+          if (dragging.current) {
+            onJump(point.month?.month ?? null);
+          }
+        }}
+        onPointerUp={() => {
+          dragging.current = false;
+        }}
+        onPointerLeave={() => {
+          if (!dragging.current) {
+            setHover(null);
+          }
+        }}
+      >
         <ul>
           {marks.map((mark, index) => {
             // Years too close to the one above are left unlabelled, but still a mark
             const crowded = index > 0 && mark.at - marks[index - 1].at < 0.035;
 
             return (
-              <li key={mark.year} className="absolute right-0 flex items-center gap-1" style={{ top: `${mark.at * 100}%` }}>
-                <button type="button" onClick={() => onJump(mark.month)}
-                        className={cn("text-xs text-muted-foreground tabular-nums hover:text-foreground", crowded && "sr-only")}>
+              <li
+                key={mark.year}
+                className="absolute right-0 flex items-center gap-1"
+                style={{ top: `${mark.at * 100}%` }}
+              >
+                <button
+                  type="button"
+                  onClick={() => onJump(mark.month)}
+                  className={cn(
+                    "text-muted-foreground hover:text-foreground text-xs tabular-nums",
+                    crowded && "sr-only"
+                  )}
+                >
                   {mark.year}
                 </button>
-                <span className="block h-px w-1.5 bg-muted-foreground/60" aria-hidden />
+                <span
+                  className="bg-muted-foreground/60 block h-px w-1.5"
+                  aria-hidden
+                />
               </li>
             );
           })}
         </ul>
         {hover && (
-          <span className="pointer-events-none absolute right-full mr-1 -translate-y-1/2 rounded bg-popover px-2 py-0.5 text-xs whitespace-nowrap shadow"
-                style={{ top: `${hover.at * 100}%` }} aria-hidden>
+          <span
+            className="bg-popover pointer-events-none absolute right-full mr-1 -translate-y-1/2 rounded px-2 py-0.5 text-xs whitespace-nowrap shadow"
+            style={{ top: `${hover.at * 100}%` }}
+            aria-hidden
+          >
             {label(hover.month)}
           </span>
         )}

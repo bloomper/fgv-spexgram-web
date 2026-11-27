@@ -60,34 +60,82 @@ export default async function ItemPage({ params }: Props) {
   return (
     <Page className="mx-auto w-full max-w-5xl">
       {item.album && (
-        <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
-          <Link href={`/albums/${item.album.id}`} className="hover:text-link" data-testid="item-album-link">
+        <nav
+          aria-label={t("breadcrumb")}
+          className="text-muted-foreground text-sm"
+        >
+          <Link
+            href={`/albums/${item.album.id}`}
+            className="hover:text-link"
+            data-testid="item-album-link"
+          >
             {t("inAlbum", { album: item.album.title })}
           </Link>
         </nav>
       )}
-      <PageHeader title={altText(item, locale)}/>
-      <ItemView item={item} canDownloadOriginals={data?.limits.canDownloadOriginals ?? false} report={viewer.report} />
+      <PageHeader title={altText(item, locale)} />
+      <ItemView
+        item={item}
+        canDownloadOriginals={data?.limits.canDownloadOriginals ?? false}
+        report={viewer.report}
+      />
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-        {item.photographer && <><dt className="text-muted-foreground">{t("photographer")}</dt><dd>{item.photographer}</dd></>}
-        {item.takenAt && <><dt className="text-muted-foreground">{t("taken")}</dt><dd>{formatDay(item.takenAt, locale)}</dd></>}
-        {duration && <><dt className="text-muted-foreground">{t("length")}</dt><dd>{duration}</dd></>}
-        {item.width && item.height && <><dt className="text-muted-foreground">{t("size")}</dt><dd>{item.width} × {item.height}</dd></>}
-        {viewer.editor && item.uploadedBy && <><dt className="text-muted-foreground">{t("uploadedBy")}</dt><dd>{item.uploadedBy}</dd></>}
+        {item.photographer && (
+          <>
+            <dt className="text-muted-foreground">{t("photographer")}</dt>
+            <dd>{item.photographer}</dd>
+          </>
+        )}
+        {item.takenAt && (
+          <>
+            <dt className="text-muted-foreground">{t("taken")}</dt>
+            <dd>{formatDay(item.takenAt, locale)}</dd>
+          </>
+        )}
+        {duration && (
+          <>
+            <dt className="text-muted-foreground">{t("length")}</dt>
+            <dd>{duration}</dd>
+          </>
+        )}
+        {item.width && item.height && (
+          <>
+            <dt className="text-muted-foreground">{t("size")}</dt>
+            <dd>
+              {item.width} × {item.height}
+            </dd>
+          </>
+        )}
+        {viewer.editor && item.uploadedBy && (
+          <>
+            <dt className="text-muted-foreground">{t("uploadedBy")}</dt>
+            <dd>{item.uploadedBy}</dd>
+          </>
+        )}
         {item.latitude !== null && item.longitude !== null && viewer.member && (
-          <><dt className="text-muted-foreground">{t("position")}</dt><dd>
-            <Link href={`/map?item=${item.id}`} className="text-link hover:text-link/80">
-              {item.latitude.toFixed(5)}, {item.longitude.toFixed(5)}
-            </Link>
-          </dd></>
+          <>
+            <dt className="text-muted-foreground">{t("position")}</dt>
+            <dd>
+              <Link
+                href={`/map?item=${item.id}`}
+                className="text-link hover:text-link/80"
+              >
+                {item.latitude.toFixed(5)}, {item.longitude.toFixed(5)}
+              </Link>
+            </dd>
+          </>
         )}
       </dl>
       {(viewer.editor || (viewer.member && item.effectiveVisibility === "PUBLIC")) && (
         <div className="flex flex-wrap items-center gap-2">
           <VisibilityBadge visibility={item.effectiveVisibility} />
           {viewer.editor && item.album && (
-            <Button variant="outline" size="sm" nativeButton={false}
-                    render={<Link href={`/manage/albums/${item.album.id}?item=${item.id}`} />}>
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={<Link href={`/manage/albums/${item.album.id}?item=${item.id}`} />}
+            >
               <Pencil /> {t("edit")}
             </Button>
           )}

@@ -148,7 +148,8 @@ const TrashEmptyMutation = graphql(`
 
 export const getManageAlbums = async (filter: AlbumFilter, page: number, size: number) =>
   (await runQuery(ManageAlbumsQuery, { filter, page, size }))?.albums;
-export const getManageAlbum = async (id: string, page: number, size: number) => runQuery(ManageAlbumQuery, { id, page, size });
+export const getManageAlbum = async (id: string, page: number, size: number) =>
+  runQuery(ManageAlbumQuery, { id, page, size });
 export const getAlbumKinds = async () => (await runQuery(AlbumKindsQuery, {}))?.albumKinds ?? [];
 export const getAlbumTitles = async () => (await runQuery(AlbumTitlesQuery, {}))?.albums.albums ?? [];
 export const searchSpex = async (q: string) => (await runQuery(SpexSearchQuery, { q }))?.spexSearch ?? [];
@@ -157,7 +158,8 @@ export const getReports = async (open: boolean) => (await runQuery(ReportsQuery,
 export const getUnsorted = async () => (await runQuery(UnsortedQuery, {}))?.unsorted ?? [];
 export const getTrash = async () => (await runQuery(TrashQuery, {}))?.trash;
 
-export const albumCreate = async (input: AlbumInput) => (await runMutation(AlbumCreateMutation, { input }))?.albumCreate;
+export const albumCreate = async (input: AlbumInput) =>
+  (await runMutation(AlbumCreateMutation, { input }))?.albumCreate;
 export const albumUpdate = (id: string, input: AlbumInput) => runMutation(AlbumUpdateMutation, { id, input });
 export const albumSetVisibility = async (id: string, visibility: Visibility, items: boolean) =>
   (await runMutation(AlbumSetVisibilityMutation, { id, visibility, items }))?.albumSetVisibility.skipped ?? 0;

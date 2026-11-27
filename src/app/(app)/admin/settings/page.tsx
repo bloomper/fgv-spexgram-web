@@ -12,7 +12,7 @@ export default async function SettingsPage() {
 
     return (
       <Page variant="content">
-        <PageHeader title={t("title")}/>
+        <PageHeader title={t("title")} />
         {settings && <SettingsForm initial={settings} />}
       </Page>
     );

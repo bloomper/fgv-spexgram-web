@@ -11,7 +11,7 @@ const LOGIN_PATH = "/api/auth/login";
 
 export async function withPolicyAction<T>(
   policy: () => Promise<AuthzResult>,
-  handler: (authz: AuthzOk) => Promise<T>,
+  handler: (authz: AuthzOk) => Promise<T>
 ): Promise<T> {
   const authz = await policy();
   if (!authz.ok) {
@@ -30,7 +30,7 @@ export async function withPolicyAction<T>(
  */
 export async function withPolicyPage(
   policy: () => Promise<AuthzResult>,
-  handler: (authz: AuthzOk) => Promise<ReactNode>,
+  handler: (authz: AuthzOk) => Promise<ReactNode>
 ): Promise<ReactNode> {
   const authz = await policy();
 

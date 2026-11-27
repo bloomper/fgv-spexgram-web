@@ -28,17 +28,19 @@ export function UnsortedSorter({ days }: { days: Day[] }) {
   const router = useRouter();
   const dialogs = useDialogs();
   // Starts over when the server sends other items, e.g. after they were sorted on another page
-  const [selected, setSelected] = useServerState<Set<string>>(new Set(),
-    () => days.flatMap(day => day.items.map(item => item.id)).join());
+  const [selected, setSelected] = useServerState<Set<string>>(new Set(), () =>
+    days.flatMap((day) => day.items.map((item) => item.id)).join()
+  );
   const [pending, start] = useTransition();
   const ids = [...selected];
 
-  const setMany = (list: string[], on: boolean) => setSelected(current => {
-    const next = new Set(current);
+  const setMany = (list: string[], on: boolean) =>
+    setSelected((current) => {
+      const next = new Set(current);
 
-    list.forEach(id => on ? next.add(id) : next.delete(id));
-    return next;
-  });
+      list.forEach((id) => (on ? next.add(id) : next.delete(id)));
+      return next;
+    });
 
   const done = (result: { ok: boolean; message?: string }, then?: string) => {
     if (result.ok) {
@@ -64,7 +66,10 @@ export function UnsortedSorter({ days }: { days: Day[] }) {
 
     const target = await dialogs.choose({
       title: t("moveTitle", { count: ids.length }),
-      items: albums.data.map(album => ({ id: album.id, label: [album.title, formatPeriod(album.dateFrom, null, locale)].filter(Boolean).join(" · ") })),
+      items: albums.data.map((album) => ({
+        id: album.id,
+        label: [album.title, formatPeriod(album.dateFrom, null, locale)].filter(Boolean).join(" · "),
+      })),
       createLabel: t("newAlbum"),
     });
 
@@ -76,8 +81,12 @@ export function UnsortedSorter({ days }: { days: Day[] }) {
   };
 
   const moveToNew = async () => {
-    const firstDay = days.find(day => day.items.some(item => selected.has(item.id)))?.date ?? null;
-    const title = await dialogs.prompt({ title: t("newTitle", { count: ids.length }), label: t("albumTitle"), maxLength: 200 });
+    const firstDay = days.find((day) => day.items.some((item) => selected.has(item.id)))?.date ?? null;
+    const title = await dialogs.prompt({
+      title: t("newTitle", { count: ids.length }),
+      label: t("albumTitle"),
+      maxLength: 200,
+    });
 
     if (title) {
       start(async () => {
@@ -89,38 +98,83 @@ export function UnsortedSorter({ days }: { days: Day[] }) {
   };
 
   if (days.length === 0) {
-    return <DataEmpty title={t("none")} description={null} />;
+    return (
+      <DataEmpty
+        title={t("none")}
+        description={null}
+      />
+    );
   }
 
   return (
     <div className="space-y-4">
-      <div className="sticky top-(--header-height) z-10 flex flex-wrap items-center gap-2 rounded-lg border bg-background/95 p-2 backdrop-blur"
-           role="toolbar" aria-label={t("toolbar")}>
+      <div
+        className="bg-background/95 sticky top-(--header-height) z-10 flex flex-wrap items-center gap-2 rounded-lg border p-2 backdrop-blur"
+        role="toolbar"
+        aria-label={t("toolbar")}
+      >
         <span className="px-1 text-sm">{t("selected", { count: selected.size })}</span>
-        <Button size="sm" variant="outline" disabled={!selected.size || pending} onClick={moveToExisting}><FolderInput /> {t("move")}</Button>
-        <Button size="sm" variant="outline" disabled={!selected.size || pending} onClick={moveToNew}><FolderPlus /> {t("newAlbum")}</Button>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={!selected.size || pending}
+          onClick={moveToExisting}
+        >
+          <FolderInput /> {t("move")}
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={!selected.size || pending}
+          onClick={moveToNew}
+        >
+          <FolderPlus /> {t("newAlbum")}
+        </Button>
       </div>
-      {days.map(day => {
-        const dayIds = day.items.map(item => item.id);
-        const all = dayIds.every(id => selected.has(id));
-        const label = day.date ? formatDay(day.date, locale) ?? day.date : t("noDate");
+      {days.map((day) => {
+        const dayIds = day.items.map((item) => item.id);
+        const all = dayIds.every((id) => selected.has(id));
+        const label = day.date ? (formatDay(day.date, locale) ?? day.date) : t("noDate");
 
         return (
-          <section key={day.date ?? "none"} aria-label={label} className="space-y-2">
+          <section
+            key={day.date ?? "none"}
+            aria-label={label}
+            className="space-y-2"
+          >
             <label className="flex items-center gap-2 font-semibold">
-              <Checkbox className="relative after:absolute after:-inset-2" checked={all} onCheckedChange={checked => setMany(dayIds, checked)} />
-              {label} <span className="text-sm font-normal text-muted-foreground">({day.items.length})</span>
+              <Checkbox
+                className="relative after:absolute after:-inset-2"
+                checked={all}
+                onCheckedChange={(checked) => setMany(dayIds, checked)}
+              />
+              {label} <span className="text-muted-foreground text-sm font-normal">({day.items.length})</span>
             </label>
             <ul className="grid grid-cols-3 gap-2 sm:grid-cols-6 lg:grid-cols-8">
-              {day.items.map(item => (
-                <li key={item.id} className={`relative overflow-hidden rounded-md border ${selected.has(item.id) ? "ring-2 ring-primary" : ""}`}>
+              {day.items.map((item) => (
+                <li
+                  key={item.id}
+                  className={`relative overflow-hidden rounded-md border ${selected.has(item.id) ? "ring-primary ring-2" : ""}`}
+                >
                   <label className="block cursor-pointer">
                     <span className="block aspect-square">
-                      <ItemImage src={item.media?.thumbnailUrl} alt="" status={item.status} type={item.type} fill />
+                      <ItemImage
+                        src={item.media?.thumbnailUrl}
+                        alt=""
+                        status={item.status}
+                        type={item.type}
+                        fill
+                      />
                     </span>
-                    <span className="absolute top-1 left-1 flex rounded bg-background/85 p-1.5">
-                      <Checkbox className="size-5" checked={selected.has(item.id)} onCheckedChange={checked => setMany([item.id], checked)}
-                                aria-label={t("select", { name: [altText(item, locale), formatTaken(item.takenAt)].filter(Boolean).join(" ") })} />
+                    <span className="bg-background/85 absolute top-1 left-1 flex rounded p-1.5">
+                      <Checkbox
+                        className="size-5"
+                        checked={selected.has(item.id)}
+                        onCheckedChange={(checked) => setMany([item.id], checked)}
+                        aria-label={t("select", {
+                          name: [altText(item, locale), formatTaken(item.takenAt)].filter(Boolean).join(" "),
+                        })}
+                      />
                     </span>
                   </label>
                 </li>

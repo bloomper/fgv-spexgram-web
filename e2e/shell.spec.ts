@@ -5,7 +5,7 @@ test.describe("The application shell", () => {
   test("shows viewing, editing and administration to an admin", async ({ page, loginAs }) => {
     await loginAs("admin");
 
-    const sidebar = page.locator("[data-slot=\"sidebar\"]:visible");
+    const sidebar = page.locator('[data-slot="sidebar"]:visible');
 
     await expect(sidebar.getByRole("link", { name: "Hem" })).toHaveAttribute("href", "/");
     await expect(sidebar.getByRole("link", { name: "Bilder" })).toHaveAttribute("href", "/photos");
@@ -22,7 +22,7 @@ test.describe("The application shell", () => {
   test("hides editing and administration from a member", async ({ page, loginAs }) => {
     await loginAs("viewer");
 
-    const sidebar = page.locator("[data-slot=\"sidebar\"]:visible");
+    const sidebar = page.locator('[data-slot="sidebar"]:visible');
 
     await expect(sidebar.getByRole("button", { name: "Redigera", exact: true })).toHaveCount(0);
     await expect(sidebar.getByRole("button", { name: "Administration", exact: true })).toHaveCount(0);
@@ -40,7 +40,10 @@ test.describe("The application shell", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Sittning efter premiären" })).toBeVisible();
   });
 
-  test("the tokens stay on the server: Better Auth's token routes answer 404, the session still works", async ({ page, loginAs }) => {
+  test("the tokens stay on the server: Better Auth's token routes answer 404, the session still works", async ({
+    page,
+    loginAs,
+  }) => {
     await loginAs("viewer");
     for (const path of ["/api/auth/get-access-token", "/api/auth/refresh-token"]) {
       expect((await page.request.post(path, { data: { providerId: "keycloak" } })).status(), path).toBe(404);

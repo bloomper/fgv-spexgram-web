@@ -8,10 +8,11 @@ afterEach(() => {
 });
 
 vi.mock("next-intl", () => ({
-  useTranslations: () => Object.assign(
-    (key: string, values?: Record<string, unknown>) => (values ? `${key}:${JSON.stringify(values)}` : key),
-    { has: () => false },
-  ),
+  useTranslations: () =>
+    Object.assign(
+      (key: string, values?: Record<string, unknown>) => (values ? `${key}:${JSON.stringify(values)}` : key),
+      { has: () => false }
+    ),
   useLocale: () => "sv",
 }));
 
@@ -23,12 +24,9 @@ vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
 
 // jsdom ships no ResizeObserver, which Base UI's popups construct on mount.
 class MockResizeObserver implements ResizeObserver {
-  observe = () => {
-  };
-  unobserve = () => {
-  };
-  disconnect = () => {
-  };
+  observe = () => {};
+  unobserve = () => {};
+  disconnect = () => {};
 }
 
 vi.stubGlobal("ResizeObserver", MockResizeObserver);
@@ -50,5 +48,5 @@ vi.stubGlobal(
     addListener: vi.fn(),
     removeListener: vi.fn(),
     dispatchEvent: vi.fn(),
-  })),
+  }))
 );

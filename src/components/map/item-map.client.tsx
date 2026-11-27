@@ -29,34 +29,54 @@ export function ItemMap({ items, options }: { items: MapItem[]; options: ViewerO
   const [open, setOpen] = useState<GalleryItem[]>([]);
   const [index, setIndex] = useState<number | null>(null);
   const [, start] = useTransition();
-  const points: MapPoint[] = items.map(item => ({
+  const points: MapPoint[] = items.map((item) => ({
     id: item.id,
     latitude: item.latitude,
     longitude: item.longitude,
     label: formatDay(item.takenAt, locale) ?? t("item"),
   }));
 
-  const onOpen = useCallback((ids: string[]) => start(async () => {
-    const result = await renewItemsAction(ids);
+  const onOpen = useCallback(
+    (ids: string[]) =>
+      start(async () => {
+        const result = await renewItemsAction(ids);
 
-    if (result.ok && result.data.length > 0) {
-      setOpen(result.data);
-      setIndex(0);
-    } else if (!result.ok) {
-      toast.error(result.message);
-    }
-  }), []);
+        if (result.ok && result.data.length > 0) {
+          setOpen(result.data);
+          setIndex(0);
+        } else if (!result.ok) {
+          toast.error(result.message);
+        }
+      }),
+    []
+  );
 
   if (items.length === 0) {
-    return <DataEmpty title={t("emptyTitle")} description={t("emptyDescription")} icon={MapPin} />;
+    return (
+      <DataEmpty
+        title={t("emptyTitle")}
+        description={t("emptyDescription")}
+        icon={MapPin}
+      />
+    );
   }
 
   return (
     <div className="space-y-2">
-      <p className="text-sm text-muted-foreground">{t("count", { count: items.length })}</p>
-      <LeafletMap points={points} onOpen={onOpen} attribution={t("attribution")}
-                  clusterLabel={count => t("cluster", { count })} />
-      <ItemViewer items={open} index={index} onIndexChange={setIndex} onClose={() => setIndex(null)} options={options} />
+      <p className="text-muted-foreground text-sm">{t("count", { count: items.length })}</p>
+      <LeafletMap
+        points={points}
+        onOpen={onOpen}
+        attribution={t("attribution")}
+        clusterLabel={(count) => t("cluster", { count })}
+      />
+      <ItemViewer
+        items={open}
+        index={index}
+        onIndexChange={setIndex}
+        onClose={() => setIndex(null)}
+        options={options}
+      />
     </div>
   );
 }

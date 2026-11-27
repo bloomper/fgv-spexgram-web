@@ -8,7 +8,14 @@ import { Button } from "@bloomper/fgv-web-ui/ui/button";
 import { Input } from "@bloomper/fgv-web-ui/ui/input";
 import { Label } from "@bloomper/fgv-web-ui/ui/label";
 import { Textarea } from "@bloomper/fgv-web-ui/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@bloomper/fgv-web-ui/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@bloomper/fgv-web-ui/ui/dialog";
 import { Turnstile } from "@/components/gram/turnstile.client";
 import { reportAction } from "@/app/(app)/actions.server";
 import type { ReportReason } from "@/gql/graphql";
@@ -27,11 +34,16 @@ export type ReportViewer = {
  * Asks why an item should be removed or corrected. Visitors also give an email address for the answer and pass
  * Cloudflare Turnstile; the address stays with the report.
  */
-export function ReportDialog({ itemId, open, onOpenChange, viewer }: {
+export function ReportDialog({
+  itemId,
+  open,
+  onOpenChange,
+  viewer,
+}: {
   itemId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  viewer: ReportViewer
+  viewer: ReportViewer;
 }) {
   const t = useTranslations("Report");
   const [reason, setReason] = useState<ReportReason | null>(null);
@@ -64,7 +76,7 @@ export function ReportDialog({ itemId, open, onOpenChange, viewer }: {
         reason,
         message,
         email: viewer.visitor ? email : undefined,
-        turnstileToken: viewer.visitor ? token ?? undefined : undefined,
+        turnstileToken: viewer.visitor ? (token ?? undefined) : undefined,
       });
 
       if (result.ok) {
@@ -75,57 +87,108 @@ export function ReportDialog({ itemId, open, onOpenChange, viewer }: {
       } else {
         toast.error(result.message);
         setToken(null);
-        setAttempt(current => current + 1);
+        setAttempt((current) => current + 1);
       }
     });
   };
 
   return (
-    <Dialog open={open} onOpenChange={next => {
-      if (!next) {
-        reset();
-      }
-      onOpenChange(next);
-    }}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) {
+          reset();
+        }
+        onOpenChange(next);
+      }}
+    >
       <DialogContent className="sm:max-w-lg">
-        <form className="grid gap-4" onSubmit={submit}>
+        <form
+          className="grid gap-4"
+          onSubmit={submit}
+        >
           <DialogHeader>
             <DialogTitle>{t("title")}</DialogTitle>
             <DialogDescription>{t("text")}</DialogDescription>
           </DialogHeader>
           <fieldset className="space-y-2">
             <legend className="mb-1 text-sm font-medium">{t("reason")}</legend>
-            {REASONS.map(value => (
-              <label key={value} className="flex items-start gap-2 text-sm">
-                <input type="radio" name="reason" value={value} checked={reason === value}
-                       onChange={() => setReason(value)} className="mt-1 accent-primary" />
+            {REASONS.map((value) => (
+              <label
+                key={value}
+                className="flex items-start gap-2 text-sm"
+              >
+                <input
+                  type="radio"
+                  name="reason"
+                  value={value}
+                  checked={reason === value}
+                  onChange={() => setReason(value)}
+                  className="accent-primary mt-1"
+                />
                 <span>{t(`reasons.${value}`)}</span>
               </label>
             ))}
-            {reason === "I_AM_IN_IT" && <p className="text-xs text-muted-foreground">{t("hiddenAtOnce")}</p>}
+            {reason === "I_AM_IN_IT" && <p className="text-muted-foreground text-xs">{t("hiddenAtOnce")}</p>}
           </fieldset>
           <div className="space-y-1.5">
             <Label htmlFor="report-message">{t("message")}</Label>
-            <Textarea id="report-message" value={message} maxLength={2000} onChange={event => setMessage(event.target.value)} />
+            <Textarea
+              id="report-message"
+              value={message}
+              maxLength={2000}
+              onChange={(event) => setMessage(event.target.value)}
+            />
           </div>
           {viewer.visitor && (
             <>
               <div className="space-y-1.5">
                 <Label htmlFor="report-email">{t("email")}</Label>
-                <Input id="report-email" type="email" autoComplete="email" required value={email}
-                       aria-invalid={email.length > 0 && !emailValid}
-                       onChange={event => setEmail(event.target.value)} />
-                <p className="text-xs text-muted-foreground">{t("emailHint")}</p>
+                <Input
+                  id="report-email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  aria-invalid={email.length > 0 && !emailValid}
+                  onChange={(event) => setEmail(event.target.value)}
+                />
+                <p className="text-muted-foreground text-xs">{t("emailHint")}</p>
               </div>
               {viewer.turnstileSiteKey ? (
-                <Turnstile key={attempt} siteKey={viewer.turnstileSiteKey} onToken={setToken} onError={() => setTurnstileFailed(true)} />
-              ) : <p className="text-sm text-destructive">{t("turnstileMissing")}</p>}
-              {turnstileFailed && <p className="text-sm text-destructive" role="alert">{t("turnstileFailed")}</p>}
+                <Turnstile
+                  key={attempt}
+                  siteKey={viewer.turnstileSiteKey}
+                  onToken={setToken}
+                  onError={() => setTurnstileFailed(true)}
+                />
+              ) : (
+                <p className="text-destructive text-sm">{t("turnstileMissing")}</p>
+              )}
+              {turnstileFailed && (
+                <p
+                  className="text-destructive text-sm"
+                  role="alert"
+                >
+                  {t("turnstileFailed")}
+                </p>
+              )}
             </>
           )}
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button>
-            <Button type="submit" disabled={!ready || pending}>{t("send")}</Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              {t("cancel")}
+            </Button>
+            <Button
+              type="submit"
+              disabled={!ready || pending}
+            >
+              {t("send")}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

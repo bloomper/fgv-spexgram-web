@@ -19,23 +19,43 @@ export function TrashAlbum({ albumId, trashed }: { albumId: string; trashed: boo
   const [pending, start] = useTransition();
 
   return (
-    <Button variant={trashed ? "outline" : "destructive"} disabled={pending} onClick={async () => {
-      if (!trashed && !await dialogs.confirm({ title: t("trashTitle"), description: t("trashText"), confirmLabel: t("trash"), destructive: true })) {
-        return;
-      }
-      start(async () => {
-        const result = await trashAlbumAction(albumId, !trashed);
-
-        if (result.ok) {
-          toast.success(trashed ? t("restored") : t("trashed"));
-          router.push(trashed ? `/manage/albums/${albumId}` : "/manage/albums");
-          router.refresh();
-        } else {
-          toast.error(result.message);
+    <Button
+      variant={trashed ? "outline" : "destructive"}
+      disabled={pending}
+      onClick={async () => {
+        if (
+          !trashed &&
+          !(await dialogs.confirm({
+            title: t("trashTitle"),
+            description: t("trashText"),
+            confirmLabel: t("trash"),
+            destructive: true,
+          }))
+        ) {
+          return;
         }
-      });
-    }}>
-      {trashed ? <><ArchiveRestore /> {t("restore")}</> : <><Trash2 /> {t("trash")}</>}
+        start(async () => {
+          const result = await trashAlbumAction(albumId, !trashed);
+
+          if (result.ok) {
+            toast.success(trashed ? t("restored") : t("trashed"));
+            router.push(trashed ? `/manage/albums/${albumId}` : "/manage/albums");
+            router.refresh();
+          } else {
+            toast.error(result.message);
+          }
+        });
+      }}
+    >
+      {trashed ? (
+        <>
+          <ArchiveRestore /> {t("restore")}
+        </>
+      ) : (
+        <>
+          <Trash2 /> {t("trash")}
+        </>
+      )}
     </Button>
   );
 }

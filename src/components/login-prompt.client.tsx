@@ -18,14 +18,25 @@ export function LoginPrompt({ kind = "content", noAccess = false }: { kind?: "co
   const query = params.toString();
 
   return (
-    <div className="flex flex-1 items-center justify-center p-6" data-testid="login-prompt">
+    <div
+      className="flex flex-1 items-center justify-center p-6"
+      data-testid="login-prompt"
+    >
       <div className="mx-auto max-w-md space-y-4 text-center">
-        <Lock className="mx-auto size-10 text-muted-foreground" aria-hidden />
-        <h1 className="text-2xl font-bold tracking-tight">{noAccess ? t(`${kind}.noAccessTitle`) : t(`${kind}.title`)}</h1>
-        <p className="text-sm text-muted-foreground">{noAccess ? t(`${kind}.noAccessText`) : t(`${kind}.text`)}</p>
+        <Lock
+          className="text-muted-foreground mx-auto size-10"
+          aria-hidden
+        />
+        <h1 className="text-2xl font-bold tracking-tight">
+          {noAccess ? t(`${kind}.noAccessTitle`) : t(`${kind}.title`)}
+        </h1>
+        <p className="text-muted-foreground text-sm">{noAccess ? t(`${kind}.noAccessText`) : t(`${kind}.text`)}</p>
         {!noAccess && (
           <div className="flex justify-center pt-2">
-            <a href={loginHref(query ? `${pathname}?${query}` : pathname)} className={buttonVariants()}>
+            <a
+              href={loginHref(query ? `${pathname}?${query}` : pathname)}
+              className={buttonVariants()}
+            >
               <LogIn aria-hidden /> {t("login")}
             </a>
           </div>

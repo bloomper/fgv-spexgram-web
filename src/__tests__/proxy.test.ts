@@ -18,7 +18,9 @@ function request(path: string, { cookie = `${ACCOUNT_COOKIE}=abc`, headers = {} 
 
 beforeEach(() => {
   getAccessTokenMock.mockReset();
-  getAccessTokenMock.mockResolvedValue({ headers: new Headers({ "set-cookie": `${ACCOUNT_COOKIE}=refreshed; Path=/` }) });
+  getAccessTokenMock.mockResolvedValue({
+    headers: new Headers({ "set-cookie": `${ACCOUNT_COOKIE}=refreshed; Path=/` }),
+  });
 });
 
 describe("proxy", () => {
@@ -26,7 +28,7 @@ describe("proxy", () => {
     const response = await proxy(request("/albums"));
 
     expect(getAccessTokenMock).toHaveBeenCalledWith(
-      expect.objectContaining({ body: { useAccountCookie: true }, returnHeaders: true }),
+      expect.objectContaining({ body: { useAccountCookie: true }, returnHeaders: true })
     );
     expect(response.headers.getSetCookie()).toContain(`${ACCOUNT_COOKIE}=refreshed; Path=/`);
   });
@@ -39,7 +41,9 @@ describe("proxy", () => {
       ]),
     });
 
-    const response = await proxy(request("/albums", { cookie: `${ACCOUNT_COOKIE}.0=old; ${ACCOUNT_COOKIE}.1=stale; other=kept` }));
+    const response = await proxy(
+      request("/albums", { cookie: `${ACCOUNT_COOKIE}.0=old; ${ACCOUNT_COOKIE}.1=stale; other=kept` })
+    );
     const forwarded = response.headers.get("x-middleware-request-cookie") ?? "";
 
     expect(forwarded).toContain(`${ACCOUNT_COOKIE}.0=rotated`);
@@ -49,17 +53,15 @@ describe("proxy", () => {
 
   // Better Auth rewrites the session and account cookies on these routes itself; a second set of cookies on the same
   // response could undo a sign-out or pair a new session with the previous user's tokens
-  it.each([
-    "/api/auth/callback/keycloak",
-    "/api/auth/sign-out",
-    "/api/auth/get-session",
-    "/api/auth/login",
-  ])("leaves Better Auth's own route %s alone", async path => {
-    const response = await proxy(request(path));
+  it.each(["/api/auth/callback/keycloak", "/api/auth/sign-out", "/api/auth/get-session", "/api/auth/login"])(
+    "leaves Better Auth's own route %s alone",
+    async (path) => {
+      const response = await proxy(request(path));
 
-    expect(getAccessTokenMock).not.toHaveBeenCalled();
-    expect(response.headers.getSetCookie()).toEqual([]);
-  });
+      expect(getAccessTokenMock).not.toHaveBeenCalled();
+      expect(response.headers.getSetCookie()).toEqual([]);
+    }
+  );
 
   it("skips speculative prefetches and anonymous requests", async () => {
     await proxy(request("/albums", { headers: { "next-router-prefetch": "1" } }));
@@ -79,7 +81,9 @@ describe("proxy", () => {
 
   it("gives pages their Content Security Policy, signed in or not, and leaves the API routes to set their own", async () => {
     expect((await proxy(request("/albums"))).headers.get("Content-Security-Policy")).toContain("default-src 'self'");
-    expect((await proxy(request("/albums", { cookie: "" }))).headers.get("Content-Security-Policy")).toContain("frame-ancestors 'none'");
+    expect((await proxy(request("/albums", { cookie: "" }))).headers.get("Content-Security-Policy")).toContain(
+      "frame-ancestors 'none'"
+    );
     expect((await proxy(request("/api/anything"))).headers.get("Content-Security-Policy")).toBeNull();
   });
 });

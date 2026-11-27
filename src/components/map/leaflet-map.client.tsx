@@ -23,7 +23,7 @@ type LeafletMapProps = {
 
 const markerIcon = L.divIcon({
   className: "",
-  html: "<span class=\"block h-3.5 w-3.5 rounded-full border-2 border-white bg-primary shadow\"></span>",
+  html: '<span class="block h-3.5 w-3.5 rounded-full border-2 border-white bg-primary shadow"></span>',
   iconSize: [14, 14],
   iconAnchor: [7, 7],
 });
@@ -70,14 +70,15 @@ export default function LeafletMap({ points, onOpen, attribution, clusterLabel }
         zoomToBoundsOnClick: false,
       });
 
-      cluster.on("clusterclick", event => {
-        const ids = (event as unknown as { layer: L.MarkerCluster }).layer.getAllChildMarkers()
-          .map(marker => (marker.options as { itemId?: string }).itemId)
+      cluster.on("clusterclick", (event) => {
+        const ids = (event as unknown as { layer: L.MarkerCluster }).layer
+          .getAllChildMarkers()
+          .map((marker) => (marker.options as { itemId?: string }).itemId)
           .filter((id): id is string => Boolean(id));
 
         onOpenRef.current(ids.slice(0, 200));
       });
-      cluster.on("clustermouseover", event => {
+      cluster.on("clustermouseover", (event) => {
         const layer = (event as unknown as { layer: L.MarkerCluster }).layer;
 
         layer.getElement()?.setAttribute("aria-label", clusterLabelRef.current(layer.getChildCount()));
@@ -105,13 +106,16 @@ export default function LeafletMap({ points, onOpen, attribution, clusterLabel }
       return;
     }
     cluster.clearLayers();
-    cluster.addLayers(points.map(point => L.marker([point.latitude, point.longitude], {
-      icon: markerIcon,
-      keyboard: true,
-      title: point.label,
-      itemId: point.id,
-    } as L.MarkerOptions)
-      .on("click", () => onOpenRef.current([point.id]))));
+    cluster.addLayers(
+      points.map((point) =>
+        L.marker([point.latitude, point.longitude], {
+          icon: markerIcon,
+          keyboard: true,
+          title: point.label,
+          itemId: point.id,
+        } as L.MarkerOptions).on("click", () => onOpenRef.current([point.id]))
+      )
+    );
 
     if (!fittedRef.current && points.length > 0) {
       map.fitBounds(cluster.getBounds(), { padding: [24, 24], maxZoom: 14 });
@@ -119,5 +123,11 @@ export default function LeafletMap({ points, onOpen, attribution, clusterLabel }
     }
   }, [ready, points]);
 
-  return <div ref={containerRef} className="isolate h-[70vh] w-full rounded-md border" data-testid="item-map" />;
+  return (
+    <div
+      ref={containerRef}
+      className="isolate h-[70vh] w-full rounded-md border"
+      data-testid="item-map"
+    />
+  );
 }

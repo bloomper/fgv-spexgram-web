@@ -63,8 +63,9 @@ function changed(albumIds: (string | null | undefined)[] = []) {
   }
 }
 
-const editor = <T, >(work: () => Promise<T>) => withPolicyAction(Policies.editor.requireEditor, () => toActionResult(work));
-const admin = <T, >(work: () => Promise<T>) => withPolicyAction(Policies.admin.requireAdmin, () => toActionResult(work));
+const editor = <T>(work: () => Promise<T>) =>
+  withPolicyAction(Policies.editor.requireEditor, () => toActionResult(work));
+const admin = <T>(work: () => Promise<T>) => withPolicyAction(Policies.admin.requireAdmin, () => toActionResult(work));
 
 function cleanAlbum(input: AlbumInput): AlbumInput {
   (input.spexIds ?? []).forEach(requireId);
@@ -118,7 +119,11 @@ export async function updateAlbumAction(id: string, input: AlbumInput): Promise<
 /**
  * The data is how many items kept their visibility because an open report hides them.
  */
-export async function setAlbumVisibilityAction(id: string, visibility: Visibility, items: boolean): Promise<ActionResult<number>> {
+export async function setAlbumVisibilityAction(
+  id: string,
+  visibility: Visibility,
+  items: boolean
+): Promise<ActionResult<number>> {
   requireId(id);
   requireVisibility(visibility);
   return editor(async () => {
@@ -159,7 +164,11 @@ export async function deleteAlbumAction(id: string, keepItems: boolean): Promise
   });
 }
 
-export async function updateItemAction(id: string, albumId: string | null, input: ItemInput): Promise<ActionResult<null>> {
+export async function updateItemAction(
+  id: string,
+  albumId: string | null,
+  input: ItemInput
+): Promise<ActionResult<null>> {
   requireId(id);
   if (input.takenAt && !LOCAL_TIME.test(input.takenAt)) {
     throw new Error("Invalid date");
@@ -185,7 +194,11 @@ export async function updateItemAction(id: string, albumId: string | null, input
  * Changes many items at once: caption, credit, visibility or album (which also sorts unsorted items). The data is how
  * many items kept their visibility because an open report hides them.
  */
-export async function updateItemsAction(ids: string[], input: ItemsInput, albumIds: string[] = []): Promise<ActionResult<number>> {
+export async function updateItemsAction(
+  ids: string[],
+  input: ItemsInput,
+  albumIds: string[] = []
+): Promise<ActionResult<number>> {
   requireIds(ids);
   requireVisibility(input.visibility);
   if (input.takenDate && !DAY.test(input.takenDate)) {
@@ -197,7 +210,10 @@ export async function updateItemsAction(ids: string[], input: ItemsInput, albumI
   return editor(async () => {
     const skipped = await itemsUpdate(ids, {
       caption: input.caption === undefined || input.caption === null ? null : input.caption.trim().slice(0, 2000),
-      photographer: input.photographer === undefined || input.photographer === null ? null : input.photographer.trim().slice(0, 200),
+      photographer:
+        input.photographer === undefined || input.photographer === null
+          ? null
+          : input.photographer.trim().slice(0, 200),
       visibility: input.visibility ?? null,
       albumId: input.albumId ?? null,
       takenDate: input.takenDate ?? null,
@@ -208,7 +224,11 @@ export async function updateItemsAction(ids: string[], input: ItemsInput, albumI
   });
 }
 
-export async function trashItemsAction(ids: string[], trashed: boolean, albumIds: string[] = []): Promise<ActionResult<null>> {
+export async function trashItemsAction(
+  ids: string[],
+  trashed: boolean,
+  albumIds: string[] = []
+): Promise<ActionResult<null>> {
   requireIds(ids);
   return editor(async () => {
     await (trashed ? itemsTrash(ids) : itemsRestore(ids));
@@ -237,7 +257,11 @@ export async function emptyTrashAction(): Promise<ActionResult<null>> {
 /**
  * Creates an album from unsorted items: the album, then the items moved into it. The data is the album's id.
  */
-export async function albumFromItemsAction(title: string, dateFrom: string | null, ids: string[]): Promise<ActionResult<string | undefined>> {
+export async function albumFromItemsAction(
+  title: string,
+  dateFrom: string | null,
+  ids: string[]
+): Promise<ActionResult<string | undefined>> {
   requireIds(ids);
   if (dateFrom && !DAY.test(dateFrom)) {
     throw new Error("Invalid date");
@@ -253,7 +277,11 @@ export async function albumFromItemsAction(title: string, dateFrom: string | nul
   });
 }
 
-export async function reviewContributionsAction(itemIds: string[], accept: boolean, message: string | null): Promise<ActionResult<null>> {
+export async function reviewContributionsAction(
+  itemIds: string[],
+  accept: boolean,
+  message: string | null
+): Promise<ActionResult<null>> {
   requireIds(itemIds);
   return editor(async () => {
     await contributionsReview(itemIds, accept, message?.trim().slice(0, 2000) || null);
@@ -262,7 +290,11 @@ export async function reviewContributionsAction(itemIds: string[], accept: boole
   });
 }
 
-export async function reviewSuggestionAction(id: string, accept: boolean, message: string | null): Promise<ActionResult<null>> {
+export async function reviewSuggestionAction(
+  id: string,
+  accept: boolean,
+  message: string | null
+): Promise<ActionResult<null>> {
   requireId(id);
   return editor(async () => {
     await albumSuggestionReview(id, accept, message?.trim().slice(0, 2000) || null);
@@ -271,7 +303,11 @@ export async function reviewSuggestionAction(id: string, accept: boolean, messag
   });
 }
 
-export async function handleReportAction(id: string, outcome: ReportOutcome, message: string | null): Promise<ActionResult<null>> {
+export async function handleReportAction(
+  id: string,
+  outcome: ReportOutcome,
+  message: string | null
+): Promise<ActionResult<null>> {
   requireId(id);
   if (!OUTCOMES.has(outcome)) {
     throw new Error("Invalid outcome");

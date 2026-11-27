@@ -27,38 +27,53 @@ const LIMITS: Record<NumberField, [number, number]> = {
  */
 export function SettingsForm({ initial }: { initial: SettingsInput }) {
   const t = useTranslations("AdminSettings");
-  const [values, setValues] = useServerState(initial, value => JSON.stringify(value));
+  const [values, setValues] = useServerState(initial, (value) => JSON.stringify(value));
   const [pending, startTransition] = useTransition();
   const text = (field: "welcomeSv" | "welcomeEn" | "publicWelcomeSv" | "publicWelcomeEn") => (
     <div className="space-y-1.5">
       <Label htmlFor={field}>{t(field)}</Label>
-      <Textarea id={field} rows={3} value={values[field] ?? ""} onChange={event => setValues({ ...values, [field]: event.target.value })} />
+      <Textarea
+        id={field}
+        rows={3}
+        value={values[field] ?? ""}
+        onChange={(event) => setValues({ ...values, [field]: event.target.value })}
+      />
     </div>
   );
   const number = (field: NumberField) => (
     <div className="space-y-1.5">
       <Label htmlFor={field}>{t(field)}</Label>
-      <Input id={field} type="number" min={LIMITS[field][0]} max={LIMITS[field][1]} required value={values[field]}
-             onChange={event => setValues({ ...values, [field]: Number(event.target.value) })} />
+      <Input
+        id={field}
+        type="number"
+        min={LIMITS[field][0]}
+        max={LIMITS[field][1]}
+        required
+        value={values[field]}
+        onChange={(event) => setValues({ ...values, [field]: Number(event.target.value) })}
+      />
     </div>
   );
 
   return (
-    <form className="max-w-2xl space-y-6" onSubmit={event => {
-      event.preventDefault();
-      startTransition(async () => {
-        const result = await saveSettingsAction({
-          ...values,
-          contactEmail: values.contactEmail?.trim() || null,
-        });
+    <form
+      className="max-w-2xl space-y-6"
+      onSubmit={(event) => {
+        event.preventDefault();
+        startTransition(async () => {
+          const result = await saveSettingsAction({
+            ...values,
+            contactEmail: values.contactEmail?.trim() || null,
+          });
 
-        if (result.ok) {
-          toast.success(t("saved"));
-        } else {
-          toast.error(result.message);
-        }
-      });
-    }}>
+          if (result.ok) {
+            toast.success(t("saved"));
+          } else {
+            toast.error(result.message);
+          }
+        });
+      }}
+    >
       <fieldset className="space-y-3">
         <legend className="text-lg font-semibold">{t("startPage")}</legend>
         {text("welcomeSv")}
@@ -67,8 +82,12 @@ export function SettingsForm({ initial }: { initial: SettingsInput }) {
         {text("publicWelcomeEn")}
         <div className="space-y-1.5">
           <Label htmlFor="contactEmail">{t("contactEmail")}</Label>
-          <Input id="contactEmail" type="email" value={values.contactEmail ?? ""}
-                 onChange={event => setValues({ ...values, contactEmail: event.target.value })} />
+          <Input
+            id="contactEmail"
+            type="email"
+            value={values.contactEmail ?? ""}
+            onChange={(event) => setValues({ ...values, contactEmail: event.target.value })}
+          />
         </div>
       </fieldset>
       <fieldset className="grid gap-3 sm:grid-cols-2">
@@ -81,22 +100,32 @@ export function SettingsForm({ initial }: { initial: SettingsInput }) {
       <fieldset className="space-y-3">
         <legend className="mb-2 text-lg font-semibold">{t("members")}</legend>
         <label className="flex items-center gap-3">
-          <Switch checked={values.userDownloadsOriginals}
-                  onCheckedChange={checked => setValues({ ...values, userDownloadsOriginals: checked })} />
+          <Switch
+            checked={values.userDownloadsOriginals}
+            onCheckedChange={(checked) => setValues({ ...values, userDownloadsOriginals: checked })}
+          />
           <span>
             <span className="block">{t("userDownloadsOriginals")}</span>
-            <span className="block text-xs text-muted-foreground">{t("userDownloadsOriginalsText")}</span>
+            <span className="text-muted-foreground block text-xs">{t("userDownloadsOriginalsText")}</span>
           </span>
         </label>
         <label className="flex items-center gap-3">
-          <Switch checked={values.showPositions} onCheckedChange={checked => setValues({ ...values, showPositions: checked })} />
+          <Switch
+            checked={values.showPositions}
+            onCheckedChange={(checked) => setValues({ ...values, showPositions: checked })}
+          />
           <span>
             <span className="block">{t("showPositions")}</span>
-            <span className="block text-xs text-muted-foreground">{t("showPositionsText")}</span>
+            <span className="text-muted-foreground block text-xs">{t("showPositionsText")}</span>
           </span>
         </label>
       </fieldset>
-      <Button type="submit" disabled={pending}>{t("save")}</Button>
+      <Button
+        type="submit"
+        disabled={pending}
+      >
+        {t("save")}
+      </Button>
     </form>
   );
 }

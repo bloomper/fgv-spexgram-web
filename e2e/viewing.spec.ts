@@ -40,7 +40,10 @@ test.describe("Viewing, for members", () => {
     await expect(page.getByText("Foto: Anna Andersson")).toBeVisible();
   });
 
-  test("a members' item in a public album is shown to members, and the album to them is not indexed", async ({ page, loginAs }) => {
+  test("a members' item in a public album is shown to members, and the album to them is not indexed", async ({
+    page,
+    loginAs,
+  }) => {
     await loginAs("viewer");
     await page.goto(`/albums/${ids.publicAlbum}`);
     await expect(page.getByRole("button", { name: "Bakom scenen" })).toBeVisible();
@@ -54,7 +57,10 @@ test.describe("Viewing, for members", () => {
     await loginAs("viewer");
     await page.goto(`/albums/${ids.membersAlbum}`);
 
-    await expect(page.getByRole("button", { name: "Ladda ner albumet" })).toHaveAttribute("href", `/api/albums/${ids.membersAlbum}/zip`);
+    await expect(page.getByRole("button", { name: "Ladda ner albumet" })).toHaveAttribute(
+      "href",
+      `/api/albums/${ids.membersAlbum}/zip`
+    );
     const response = await page.request.get(`/api/albums/${ids.membersAlbum}/zip`);
 
     expect(response.status()).toBe(200);
@@ -81,7 +87,10 @@ test.describe("Viewing, for members", () => {
     await expect(page.getByRole("link", { name: "Fel bildtext eller fel album" })).toBeVisible();
   });
 
-  test("an empty search explains itself, and a too short word is pointed out at the field", async ({ page, loginAs }) => {
+  test("an empty search explains itself, and a too short word is pointed out at the field", async ({
+    page,
+    loginAs,
+  }) => {
     await loginAs("viewer");
     await page.goto("/search");
     await expect(page.getByText("Vad letar du efter?")).toBeVisible();

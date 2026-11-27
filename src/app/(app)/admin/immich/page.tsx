@@ -23,19 +23,39 @@ export default async function ImmichPage() {
 
     return (
       <Page variant="content">
-        <PageHeader title={t("title")} description={t("text")}/>
+        <PageHeader
+          title={t("title")}
+          description={t("text")}
+        />
         {!status?.available ? (
-          <p className="text-destructive" role="alert">{t("unavailable")}</p>
+          <p
+            className="text-destructive"
+            role="alert"
+          >
+            {t("unavailable")}
+          </p>
         ) : (
           <>
             <dl className="grid max-w-xl grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-sm">
-              <dt className="text-muted-foreground">{t("version")}</dt><dd>{status.version ?? "–"}</dd>
-              <dt className="text-muted-foreground">{t("used")}</dt><dd>{formatBytes(status.usedBytes, locale)}</dd>
-              <dt className="text-muted-foreground">{t("free")}</dt><dd>{formatBytes(status.availableBytes, locale)}</dd>
-              <dt className="text-muted-foreground">{t("size")}</dt><dd>{formatBytes(status.sizeBytes, locale)}</dd>
+              <dt className="text-muted-foreground">{t("version")}</dt>
+              <dd>{status.version ?? "–"}</dd>
+              <dt className="text-muted-foreground">{t("used")}</dt>
+              <dd>{formatBytes(status.usedBytes, locale)}</dd>
+              <dt className="text-muted-foreground">{t("free")}</dt>
+              <dd>{formatBytes(status.availableBytes, locale)}</dd>
+              <dt className="text-muted-foreground">{t("size")}</dt>
+              <dd>{formatBytes(status.sizeBytes, locale)}</dd>
             </dl>
-            <section aria-labelledby="queues" className="space-y-2">
-              <h2 id="queues" className="text-lg font-semibold">{t("queues")}</h2>
+            <section
+              aria-labelledby="queues"
+              className="space-y-2"
+            >
+              <h2
+                id="queues"
+                className="text-lg font-semibold"
+              >
+                {t("queues")}
+              </h2>
               <div className="overflow-x-auto rounded-lg border">
                 <Table className="max-sm:text-xs">
                   <TableHeader>
@@ -47,15 +67,24 @@ export default async function ImmichPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {status.queues.map(queue => (
+                    {status.queues.map((queue) => (
                       <TableRow key={queue.name}>
                         <TableCell className="whitespace-normal">
                           {t.has(`queueNames.${queue.name}`) ? t(`queueNames.${queue.name}`) : queue.name}
-                          {queue.paused && <Badge variant="outline" className="ml-2">{t("paused")}</Badge>}
+                          {queue.paused && (
+                            <Badge
+                              variant="outline"
+                              className="ml-2"
+                            >
+                              {t("paused")}
+                            </Badge>
+                          )}
                         </TableCell>
                         <TableCell className="text-right tabular-nums">{queue.active}</TableCell>
                         <TableCell className="text-right tabular-nums">{queue.waiting}</TableCell>
-                        <TableCell className={`text-right tabular-nums ${queue.failed > 0 ? "text-destructive" : ""}`}>{queue.failed}</TableCell>
+                        <TableCell className={`text-right tabular-nums ${queue.failed > 0 ? "text-destructive" : ""}`}>
+                          {queue.failed}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -64,21 +93,47 @@ export default async function ImmichPage() {
             </section>
           </>
         )}
-        <section aria-labelledby="failed" className="space-y-3">
-          <h2 id="failed" className="text-lg font-semibold">{t("failedItems", { count: status?.failedItems.length ?? 0 })}</h2>
+        <section
+          aria-labelledby="failed"
+          className="space-y-3"
+        >
+          <h2
+            id="failed"
+            className="text-lg font-semibold"
+          >
+            {t("failedItems", { count: status?.failedItems.length ?? 0 })}
+          </h2>
           {status && status.failedItems.length > 0 ? (
             <>
-              <ImmichJobs itemIds={status.failedItems.map(item => item.id)} />
+              <ImmichJobs itemIds={status.failedItems.map((item) => item.id)} />
               <ul className="divide-y rounded-lg border">
-                {status.failedItems.map(item => (
-                  <li key={item.id} className="flex items-center gap-3 p-2 text-sm">
+                {status.failedItems.map((item) => (
+                  <li
+                    key={item.id}
+                    className="flex items-center gap-3 p-2 text-sm"
+                  >
                     <div className="size-12 shrink-0 overflow-hidden rounded">
-                      <ItemImage src={item.media?.thumbnailUrl} alt="" status={item.status} type={item.type} fill />
+                      <ItemImage
+                        src={item.media?.thumbnailUrl}
+                        alt=""
+                        status={item.status}
+                        type={item.type}
+                        fill
+                      />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{item.originalFileName ?? item.caption ?? item.id}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.album ? <Link href={`/manage/albums/${item.album.id}`} className="hover:text-link">{item.album.title}</Link> : t("unsorted")}
+                      <p className="text-muted-foreground text-xs">
+                        {item.album ? (
+                          <Link
+                            href={`/manage/albums/${item.album.id}`}
+                            className="hover:text-link"
+                          >
+                            {item.album.title}
+                          </Link>
+                        ) : (
+                          t("unsorted")
+                        )}
                         {item.failure && <> · {t(`failure.${item.failure}`)}</>}
                       </p>
                     </div>
@@ -86,7 +141,12 @@ export default async function ImmichPage() {
                 ))}
               </ul>
             </>
-          ) : <DataEmpty title={t("noFailed")} description={null} />}
+          ) : (
+            <DataEmpty
+              title={t("noFailed")}
+              description={null}
+            />
+          )}
         </section>
       </Page>
     );

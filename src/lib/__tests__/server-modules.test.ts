@@ -10,13 +10,19 @@ const mocks = vi.hoisted(() => ({
   authExchange: vi.fn((init: unknown) => init),
 }));
 
-vi.mock("@/utils/auth.server", () => ({ getAccessToken: mocks.getAccessToken, getSessionContext: mocks.getSessionContext }));
+vi.mock("@/utils/auth.server", () => ({
+  getAccessToken: mocks.getAccessToken,
+  getSessionContext: mocks.getSessionContext,
+}));
 vi.mock("next-intl/server", () => ({
   getLocale: async () => "sv",
   getTranslations: async () => (key: string) => key,
 }));
 vi.mock("next/headers", () => ({ headers: async () => new Headers({ "cf-connecting-ip": "192.0.2.7" }) }));
-vi.mock("@urql/core", async importOriginal => ({ ...(await importOriginal<typeof import("@urql/core")>()), createClient: mocks.createClient }));
+vi.mock("@urql/core", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@urql/core")>()),
+  createClient: mocks.createClient,
+}));
 vi.mock("@urql/exchange-auth", () => ({ authExchange: mocks.authExchange }));
 vi.mock("@urql/next/rsc", () => ({ registerUrql: (make: () => unknown) => ({ getClient: make }) }));
 
@@ -46,7 +52,9 @@ describe("the GraphQL client", () => {
     vi.stubEnv("API_GRAPHQL_ENDPOINT", "http://api/graphql");
     const { getClient } = await import("@/lib/urql.server");
     const options = getClient() as unknown as Options;
-    const init = options.exchanges[1] as (utils: { appendHeaders: (o: unknown, h: Record<string, string>) => unknown }) => Promise<Auth>;
+    const init = options.exchanges[1] as (utils: {
+      appendHeaders: (o: unknown, h: Record<string, string>) => unknown;
+    }) => Promise<Auth>;
     const appendHeaders = vi.fn((operation: unknown, headers: Record<string, string>) => ({ operation, headers }));
     const auth = await init({ appendHeaders });
 
@@ -57,8 +65,16 @@ describe("the GraphQL client", () => {
     await auth.refreshAuth();
     expect(auth.willAuthError()).toBe(false);
     expect(auth.addAuthToOperation("op")).toEqual({ operation: "op", headers: { Authorization: "Bearer token-1" } });
-    expect(auth.didAuthError(new CombinedError({ graphQLErrors: [new GraphQLError("no", { extensions: { code: "UNAUTHENTICATED" } })] }))).toBe(true);
-    expect(auth.didAuthError(new CombinedError({ graphQLErrors: [new GraphQLError("no", { extensions: { code: "NOT_FOUND" } })] }))).toBe(false);
+    expect(
+      auth.didAuthError(
+        new CombinedError({ graphQLErrors: [new GraphQLError("no", { extensions: { code: "UNAUTHENTICATED" } })] })
+      )
+    ).toBe(true);
+    expect(
+      auth.didAuthError(
+        new CombinedError({ graphQLErrors: [new GraphQLError("no", { extensions: { code: "NOT_FOUND" } })] })
+      )
+    ).toBe(false);
   });
 
   it("sends the language, and the visitor's address only together with the shared secret", async () => {
@@ -94,10 +110,14 @@ describe("the plain HTTP endpoints", () => {
 
     mocks.getAccessToken.mockResolvedValue("t");
     await apiFetch("/api/x");
-    expect(new Headers((fetchMock.mock.calls.at(-1) as unknown as [string, RequestInit])[1].headers).get("authorization")).toBe("Bearer t");
+    expect(
+      new Headers((fetchMock.mock.calls.at(-1) as unknown as [string, RequestInit])[1].headers).get("authorization")
+    ).toBe("Bearer t");
     mocks.getAccessToken.mockResolvedValue(null);
     await apiFetch("/api/x", { method: "POST" });
-    expect(new Headers((fetchMock.mock.calls.at(-1) as unknown as [string, RequestInit])[1].headers).get("authorization")).toBeNull();
+    expect(
+      new Headers((fetchMock.mock.calls.at(-1) as unknown as [string, RequestInit])[1].headers).get("authorization")
+    ).toBeNull();
   });
 });
 
@@ -109,12 +129,22 @@ describe("who is looking", () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "");
     vi.stubEnv("TURNSTILE_SITE_KEY", " key ");
     expect(await getViewer()).toEqual({
-      loggedIn: false, member: false, editor: false, admin: false, report: { visitor: true, turnstileSiteKey: "key" },
+      loggedIn: false,
+      member: false,
+      editor: false,
+      admin: false,
+      report: { visitor: true, turnstileSiteKey: "key" },
     });
 
     mocks.getSessionContext.mockResolvedValue({ session: {}, roles: ["USER", "EDITOR"] });
     vi.stubEnv("TURNSTILE_SITE_KEY", "");
-    expect(await getViewer()).toMatchObject({ loggedIn: true, member: true, editor: true, admin: false, report: { visitor: false, turnstileSiteKey: null } });
+    expect(await getViewer()).toMatchObject({
+      loggedIn: true,
+      member: true,
+      editor: true,
+      admin: false,
+      report: { visitor: false, turnstileSiteKey: null },
+    });
   });
 });
 
@@ -124,11 +154,17 @@ describe("metadata", () => {
 
     expect(await privateMetadata()).toEqual({ title: "title", robots: { index: false, follow: false } });
     expect(publicMetadata({ title: "Nobel", description: null })).toMatchObject({
-      title: "Nobel – Spexgram", robots: { index: true }, twitter: { card: "summary" }, openGraph: { images: undefined },
+      title: "Nobel – Spexgram",
+      robots: { index: true },
+      twitter: { card: "summary" },
+      openGraph: { images: undefined },
     });
-    expect(publicMetadata({ title: "Nobel", image: { url: "u", alt: "a", width: 10 }, type: "article" })).toMatchObject({
-      twitter: { card: "summary_large_image" }, openGraph: { type: "article", images: [{ url: "u", width: 10, height: undefined, alt: "a" }] },
-    });
+    expect(publicMetadata({ title: "Nobel", image: { url: "u", alt: "a", width: 10 }, type: "article" })).toMatchObject(
+      {
+        twitter: { card: "summary_large_image" },
+        openGraph: { type: "article", images: [{ url: "u", width: 10, height: undefined, alt: "a" }] },
+      }
+    );
   });
 });
 
@@ -137,8 +173,8 @@ describe("the applications", () => {
     const { getApplications } = await import("@/utils/applications.server");
 
     mocks.getSessionContext.mockResolvedValue({ accessToken: null });
-    expect((await getApplications()).map(app => app.id)).toEqual(["spexgram"]);
+    expect((await getApplications()).map((app) => app.id)).toEqual(["spexgram"]);
     mocks.getSessionContext.mockResolvedValue({ accessToken: tokenWithRoles(["USER"]) });
-    expect((await getApplications()).map(app => app.id)).toContain("spexgram");
+    expect((await getApplications()).map((app) => app.id)).toContain("spexgram");
   });
 });

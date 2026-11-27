@@ -46,7 +46,10 @@ describe("route.server", () => {
 
   it("shows the no-access notice to someone logged in without access", async () => {
     requireUserMock.mockResolvedValueOnce({ session: {}, roles: [] });
-    const result = await withPolicyPage(forbidden, async () => "x") as ReactElement<{ kind?: string; noAccess?: boolean }>;
+    const result = (await withPolicyPage(forbidden, async () => "x")) as ReactElement<{
+      kind?: string;
+      noAccess?: boolean;
+    }>;
 
     expect(result.type).toBe(LoginPrompt);
     expect(result.props.kind).toBe("page");

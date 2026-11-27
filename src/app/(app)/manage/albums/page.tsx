@@ -27,14 +27,46 @@ export default async function ManageAlbumsPage({ searchParams }: { searchParams:
 
     return (
       <Page variant="content">
-        <PageHeader title={t("title")} actions={<Button nativeButton={false} render={<Link href="/manage/albums/new" />}><Plus /> {t("new")}</Button>}/>
-        {data && <AlbumFilters path="/manage/albums" search={search} categories={data.categories} years={data.years}
-                               kinds={data.albumKinds} spex={data.spexWithAlbums} editor />}
-        <p className="text-sm text-muted-foreground">{t("count", { count: data?.albums.totalCount ?? 0 })}</p>
-        {data && data.albums.albums.length > 0
-          ? <AlbumGrid albums={data.albums.albums} showVisibility hrefOf={album => `/manage/albums/${album.id}`} />
-          : <DataEmpty title={t("none")} description={null} />}
-        <Pager page={page} pages={pages} hrefOf={next => filterHref("/manage/albums", search, { page: String(next) })} />
+        <PageHeader
+          title={t("title")}
+          actions={
+            <Button
+              nativeButton={false}
+              render={<Link href="/manage/albums/new" />}
+            >
+              <Plus /> {t("new")}
+            </Button>
+          }
+        />
+        {data && (
+          <AlbumFilters
+            path="/manage/albums"
+            search={search}
+            categories={data.categories}
+            years={data.years}
+            kinds={data.albumKinds}
+            spex={data.spexWithAlbums}
+            editor
+          />
+        )}
+        <p className="text-muted-foreground text-sm">{t("count", { count: data?.albums.totalCount ?? 0 })}</p>
+        {data && data.albums.albums.length > 0 ? (
+          <AlbumGrid
+            albums={data.albums.albums}
+            showVisibility
+            hrefOf={(album) => `/manage/albums/${album.id}`}
+          />
+        ) : (
+          <DataEmpty
+            title={t("none")}
+            description={null}
+          />
+        )}
+        <Pager
+          page={page}
+          pages={pages}
+          hrefOf={(next) => filterHref("/manage/albums", search, { page: String(next) })}
+        />
       </Page>
     );
   });

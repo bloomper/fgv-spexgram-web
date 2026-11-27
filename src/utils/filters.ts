@@ -19,8 +19,12 @@ export type FilterSearch = {
  * The address's parameters with one value each: `?q=a&q=b` arrives as an array, which a page reading a string would
  * stumble over. The first value counts.
  */
-export function firstValues<T extends Record<string, string | undefined>>(search: T | Record<string, string | string[] | undefined>): T {
-  return Object.fromEntries(Object.entries(search).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value])) as T;
+export function firstValues<T extends Record<string, string | undefined>>(
+  search: T | Record<string, string | string[] | undefined>
+): T {
+  return Object.fromEntries(
+    Object.entries(search).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value])
+  ) as T;
 }
 
 const VISIBILITY: ReadonlySet<string> = new Set(["UNPUBLISHED", "MEMBERS", "PUBLIC"]);
@@ -39,7 +43,8 @@ export function toAlbumFilter(search: FilterSearch, editor = false): AlbumFilter
     spexId: search.spex && ID.test(search.spex) ? search.spex : null,
     decade: Number.isInteger(decade) && decade % 10 === 0 && decade > 1800 && decade < 3000 ? decade : null,
     place: search.place?.trim().slice(0, 255) || null,
-    visibility: editor && search.visibility && VISIBILITY.has(search.visibility) ? search.visibility as Visibility : null,
+    visibility:
+      editor && search.visibility && VISIBILITY.has(search.visibility) ? (search.visibility as Visibility) : null,
   };
 }
 
@@ -69,5 +74,5 @@ export function filterHref(path: string, search: FilterSearch, changes: Partial<
 
 /** The decades of the years, newest first, as their first years. */
 export function decadesOf(years: readonly number[]): number[] {
-  return [...new Set(years.map(year => Math.floor(year / 10) * 10))].sort((a, b) => b - a);
+  return [...new Set(years.map((year) => Math.floor(year / 10) * 10))].sort((a, b) => b - a);
 }

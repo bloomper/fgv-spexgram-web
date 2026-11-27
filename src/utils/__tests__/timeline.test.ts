@@ -21,8 +21,18 @@ const months = [
 
 describe("timeline", () => {
   it("groups a month's items by day in the order they come, the undated last", () => {
-    expect(groupByDay([{ takenAt: "1984-02-14T21:00:00" }, { takenAt: "1984-02-14T19:00:00" }, { takenAt: "1984-02-01T12:00:00" }, { takenAt: null }])
-      .map(day => [day.day, day.items.length])).toEqual([["1984-02-14", 2], ["1984-02-01", 1], [null, 1]]);
+    expect(
+      groupByDay([
+        { takenAt: "1984-02-14T21:00:00" },
+        { takenAt: "1984-02-14T19:00:00" },
+        { takenAt: "1984-02-01T12:00:00" },
+        { takenAt: null },
+      ]).map((day) => [day.day, day.items.length])
+    ).toEqual([
+      ["1984-02-14", 2],
+      ["1984-02-01", 1],
+      [null, 1],
+    ]);
     expect(monthKey(null)).toBe("undated");
     expect(monthKey("1984-02")).toBe("1984-02");
   });
@@ -31,11 +41,14 @@ describe("timeline", () => {
     expect(estimateHeight(0, 1000, 220)).toBe(48);
     expect(estimateHeight(30, 1000, 220)).toBeGreaterThan(estimateHeight(3, 1000, 220));
     expect(estimateHeight(30, 300, 120)).toBeGreaterThan(estimateHeight(30, 1200, 120));
-    expect([300, 600, 1200].map(width => rowHeightFor(width))).toEqual([120, 170, 220]);
+    expect([300, 600, 1200].map((width) => rowHeightFor(width))).toEqual([120, 170, 220]);
   });
 
   it("marks each year on the scrubber at its share of the timeline, and finds the month at a point", () => {
-    expect(scrubberMarks(months)).toEqual([{ year: "2024", month: "2024-03", at: 0 }, { year: "1984", month: "1984-02", at: 0.4 }]);
+    expect(scrubberMarks(months)).toEqual([
+      { year: "2024", month: "2024-03", at: 0 },
+      { year: "1984", month: "1984-02", at: 0.4 },
+    ]);
     expect(scrubberMarks([])).toEqual([]);
     expect(monthAt(months, 0)?.month).toBe("2024-03");
     expect(monthAt(months, 0.35)?.month).toBe("2024-02");

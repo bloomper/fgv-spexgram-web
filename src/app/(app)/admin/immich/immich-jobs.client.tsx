@@ -25,20 +25,38 @@ export function ImmichJobs({ itemIds }: { itemIds: string[] }) {
     <div className="flex flex-wrap items-end gap-2">
       <div className="space-y-1.5">
         <Label htmlFor="immich-job">{t("job")}</Label>
-        <NativeSelect id="immich-job" value={job} onChange={event => setJob(event.target.value as ImmichJob)}>
-          {JOBS.map(value => <NativeSelectOption key={value} value={value}>{t(`jobs.${value}`)}</NativeSelectOption>)}
+        <NativeSelect
+          id="immich-job"
+          value={job}
+          onChange={(event) => setJob(event.target.value as ImmichJob)}
+        >
+          {JOBS.map((value) => (
+            <NativeSelectOption
+              key={value}
+              value={value}
+            >
+              {t(`jobs.${value}`)}
+            </NativeSelectOption>
+          ))}
         </NativeSelect>
       </div>
-      <Button disabled={pending || itemIds.length === 0} onClick={() => start(async () => {
-        const result = await runImmichJobAction(itemIds, job);
+      <Button
+        disabled={pending || itemIds.length === 0}
+        onClick={() =>
+          start(async () => {
+            const result = await runImmichJobAction(itemIds, job);
 
-        if (result.ok) {
-          toast.success(t("started"));
-          router.refresh();
-        } else {
-          toast.error(result.message);
+            if (result.ok) {
+              toast.success(t("started"));
+              router.refresh();
+            } else {
+              toast.error(result.message);
+            }
+          })
         }
-      })}>{t("runFor", { count: itemIds.length })}</Button>
+      >
+        {t("runFor", { count: itemIds.length })}
+      </Button>
     </div>
   );
 }

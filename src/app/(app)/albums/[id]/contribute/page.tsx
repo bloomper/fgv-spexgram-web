@@ -27,21 +27,46 @@ export default async function ContributePage({ params }: { params: Promise<{ id:
     const open = album.visibility !== "UNPUBLISHED" || album.suggested;
 
     return (
-      <Page variant="content" className="mx-auto w-full max-w-3xl">
-        <nav className="text-sm text-muted-foreground">
-          <Link href={`/albums/${album.id}`} className="hover:text-link">{album.title}</Link>
+      <Page
+        variant="content"
+        className="mx-auto w-full max-w-3xl"
+      >
+        <nav className="text-muted-foreground text-sm">
+          <Link
+            href={`/albums/${album.id}`}
+            className="hover:text-link"
+          >
+            {album.title}
+          </Link>
         </nav>
-        <PageHeader title={t("title", { album: album.title })} description={t("text")}/>
-        <p className="text-sm text-muted-foreground">
+        <PageHeader
+          title={t("title", { album: album.title })}
+          description={t("text")}
+        />
+        <p className="text-muted-foreground text-sm">
           {t("limits", { items: data.limits.contributionMaxItems, gb: data.limits.contributionMaxGb })}
         </p>
         {open ? (
-          <UploadDropZone target={{ albumId: album.id, albumTitle: album.title, mode: "contribution", maxBytes: data.limits.maxUploadBytes }}
-                          hint={<SpexflixHint maxMinutes={data.limits.maxVideoMinutes} />} />
-        ) : <p className="text-destructive">{t("closed")}</p>}
+          <UploadDropZone
+            target={{
+              albumId: album.id,
+              albumTitle: album.title,
+              mode: "contribution",
+              maxBytes: data.limits.maxUploadBytes,
+            }}
+            hint={<SpexflixHint maxMinutes={data.limits.maxVideoMinutes} />}
+          />
+        ) : (
+          <p className="text-destructive">{t("closed")}</p>
+        )}
         <UploadList albumId={album.id} />
         <p className="text-sm">
-          <Link href="/contributions" className="text-link hover:text-link/80">{t("mine")}</Link>
+          <Link
+            href="/contributions"
+            className="text-link hover:text-link/80"
+          >
+            {t("mine")}
+          </Link>
         </p>
       </Page>
     );

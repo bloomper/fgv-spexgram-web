@@ -12,7 +12,10 @@ export default async function UnsortedPage() {
 
     return (
       <Page variant="content">
-        <PageHeader title={t("title")} description={t("text")}/>
+        <PageHeader
+          title={t("title")}
+          description={t("text")}
+        />
         <UnsortedSorter days={days} />
       </Page>
     );

@@ -34,10 +34,15 @@ function requireId(id: string) {
  * A further page of an album's items, for the grid that loads as the viewer scrolls. Anyone may ask; the server
  * returns only what the viewer may see.
  */
-export async function albumItemsAction(albumId: string, page: number): Promise<ActionResult<{
-  items: GalleryItem[];
-  totalCount: number
-}>> {
+export async function albumItemsAction(
+  albumId: string,
+  page: number
+): Promise<
+  ActionResult<{
+    items: GalleryItem[];
+    totalCount: number;
+  }>
+> {
   requireId(albumId);
   return toActionResult(async () => {
     const result = await getAlbumItems(albumId, Math.max(0, Math.floor(page)), PAGE_SIZE);
@@ -53,10 +58,16 @@ const TIMELINE_PAGE = 200;
  * A page of one month of the timeline (null for the items without a date), as the timeline loads months near the
  * screen. Anyone may ask; the favourites only members.
  */
-export async function timelineItemsAction(month: string | null, favourites: boolean, page: number): Promise<ActionResult<{
-  items: GalleryItem[];
-  totalCount: number
-}>> {
+export async function timelineItemsAction(
+  month: string | null,
+  favourites: boolean,
+  page: number
+): Promise<
+  ActionResult<{
+    items: GalleryItem[];
+    totalCount: number;
+  }>
+> {
   if (month !== null && !MONTH.test(month)) {
     throw new Error("Invalid month");
   }
@@ -75,12 +86,14 @@ export async function favouriteAction(ids: string[], favourite: boolean): Promis
   const wanted = [...new Set(ids)].slice(0, 1000);
 
   wanted.forEach(requireId);
-  return withPolicyAction(Policies.app.requireAccess, () => toActionResult(async () => {
-    const changed = await favouritesSet(wanted, favourite);
+  return withPolicyAction(Policies.app.requireAccess, () =>
+    toActionResult(async () => {
+      const changed = await favouritesSet(wanted, favourite);
 
-    revalidatePath("/favourites");
-    return changed.map(item => item.id);
-  }));
+      revalidatePath("/favourites");
+      return changed.map((item) => item.id);
+    })
+  );
 }
 
 /**
@@ -102,7 +115,7 @@ export async function reportAction(input: {
   reason: ReportReason;
   message: string;
   email?: string;
-  turnstileToken?: string
+  turnstileToken?: string;
 }): Promise<ActionResult<null>> {
   requireId(input.itemId);
   if (!REASONS.has(input.reason)) {
@@ -128,41 +141,49 @@ export async function reportAction(input: {
 /**
  * Sends finished tus uploads to an album: as items for editors, or as contributions waiting for review.
  */
-export async function addUploadsAction(albumId: string, mode: "items" | "contribution", uploadIds: string[]):
-  Promise<ActionResult<UploadResultView[]>> {
+export async function addUploadsAction(
+  albumId: string,
+  mode: "items" | "contribution",
+  uploadIds: string[]
+): Promise<ActionResult<UploadResultView[]>> {
   requireId(albumId);
-  if (uploadIds.length === 0 || uploadIds.length > 50 || !uploadIds.every(id => UPLOAD_ID.test(id))) {
+  if (uploadIds.length === 0 || uploadIds.length > 50 || !uploadIds.every((id) => UPLOAD_ID.test(id))) {
     throw new Error("Invalid upload");
   }
 
   const policy = mode === "items" ? Policies.editor.requireEditor : Policies.app.requireAccess;
 
-  return withPolicyAction(policy, () => toActionResult(async () => {
-    const results = mode === "items" ? await itemsAdd(albumId, uploadIds) : await contributionsAdd(albumId, uploadIds);
+  return withPolicyAction(policy, () =>
+    toActionResult(async () => {
+      const results =
+        mode === "items" ? await itemsAdd(albumId, uploadIds) : await contributionsAdd(albumId, uploadIds);
 
-    revalidatePath(`/albums/${albumId}`);
-    revalidatePath(`/manage/albums/${albumId}`);
-    revalidatePath("/contributions");
-    return results.map(result => ({
-      uploadId: result.uploadId,
-      fileName: result.fileName,
-      outcome: result.outcome,
-      message: result.message ?? null,
-      itemId: result.item?.id ?? null,
-      existingItemId: result.existingItem?.id ?? null,
-      existingAlbumId: result.existingItem?.album?.id ?? null,
-      existingAlbumTitle: result.existingItem?.album?.title ?? result.existingAlbumTitle ?? null,
-    }));
-  }));
+      revalidatePath(`/albums/${albumId}`);
+      revalidatePath(`/manage/albums/${albumId}`);
+      revalidatePath("/contributions");
+      return results.map((result) => ({
+        uploadId: result.uploadId,
+        fileName: result.fileName,
+        outcome: result.outcome,
+        message: result.message ?? null,
+        itemId: result.item?.id ?? null,
+        existingItemId: result.existingItem?.id ?? null,
+        existingAlbumId: result.existingItem?.album?.id ?? null,
+        existingAlbumTitle: result.existingItem?.album?.title ?? result.existingAlbumTitle ?? null,
+      }));
+    })
+  );
 }
 
 export async function withdrawContributionAction(itemId: string): Promise<ActionResult<null>> {
   requireId(itemId);
-  return withPolicyAction(Policies.app.requireAccess, () => toActionResult(async () => {
-    await contributionWithdraw(itemId);
-    revalidatePath("/contributions");
-    return null;
-  }));
+  return withPolicyAction(Policies.app.requireAccess, () =>
+    toActionResult(async () => {
+      await contributionWithdraw(itemId);
+      revalidatePath("/contributions");
+      return null;
+    })
+  );
 }
 
 /**
@@ -172,17 +193,19 @@ export async function suggestAlbumAction(input: AlbumSuggestionInput): Promise<A
   if (input.kindId) {
     requireId(input.kindId);
   }
-  return withPolicyAction(Policies.app.requireAccess, () => toActionResult(async () => {
-    const created = await albumSuggest({
-      title: input.title.trim().slice(0, 200),
-      dateFrom: input.dateFrom || null,
-      dateTo: input.dateTo || null,
-      place: input.place?.trim() || null,
-      description: input.description?.trim() || null,
-      kindId: input.kindId || null,
-    });
+  return withPolicyAction(Policies.app.requireAccess, () =>
+    toActionResult(async () => {
+      const created = await albumSuggest({
+        title: input.title.trim().slice(0, 200),
+        dateFrom: input.dateFrom || null,
+        dateTo: input.dateTo || null,
+        place: input.place?.trim() || null,
+        description: input.description?.trim() || null,
+        kindId: input.kindId || null,
+      });
 
-    revalidatePath("/suggestions");
-    return created?.album?.id ?? null;
-  }));
+      revalidatePath("/suggestions");
+      return created?.album?.id ?? null;
+    })
+  );
 }

@@ -14,7 +14,8 @@ import { Button } from "@bloomper/fgv-web-ui/ui/button";
 
 type GalleryPhoto = Photo & { item: GalleryItem };
 
-const serverKey = (items: readonly GalleryItem[]) => items.map(item => item.id + (item.media?.expiresAt ?? "")).join();
+const serverKey = (items: readonly GalleryItem[]) =>
+  items.map((item) => item.id + (item.media?.expiresAt ?? "")).join();
 
 const RENEW_CHUNK = 200;
 
@@ -23,13 +24,20 @@ const RENEW_CHUNK = 200;
  * (`albumId` and `totalCount`). Signed addresses are renewed when they are about to run out, when the page is looked
  * at again or the viewer opens, without rendering the page again.
  */
-export function Gallery({ items: initialItems, albumId, totalCount, pageSize = 60, options, rowHeight = 220 }: {
+export function Gallery({
+  items: initialItems,
+  albumId,
+  totalCount,
+  pageSize = 60,
+  options,
+  rowHeight = 220,
+}: {
   items: GalleryItem[];
   albumId?: string;
   totalCount?: number;
   pageSize?: number;
   options: ViewerOptions;
-  rowHeight?: number
+  rowHeight?: number;
 }) {
   const t = useTranslations("Gallery");
   const locale = useLocale();
@@ -42,7 +50,7 @@ export function Gallery({ items: initialItems, albumId, totalCount, pageSize = 6
   if (serverKey(initialItems) !== seen) {
     const merged = mergeShown(items, initialItems);
     const openId = open === null ? null : items[open]?.id;
-    const openAt = openId ? merged.findIndex(item => item.id === openId) : -1;
+    const openAt = openId ? merged.findIndex((item) => item.id === openId) : -1;
 
     setSeen(serverKey(initialItems));
     setItems(merged);
@@ -66,16 +74,16 @@ export function Gallery({ items: initialItems, albumId, totalCount, pageSize = 6
       if (result.ok) {
         setFailed(false);
 
-        const known = new Set(items.map(item => item.id));
-        const added = result.data.items.filter(item => !known.has(item.id));
+        const known = new Set(items.map((item) => item.id));
+        const added = result.data.items.filter((item) => !known.has(item.id));
 
         if (added.length === 0) {
           setExhausted(true);
         }
-        setItems(current => {
-          const present = new Set(current.map(item => item.id));
+        setItems((current) => {
+          const present = new Set(current.map((item) => item.id));
 
-          return [...current, ...added.filter(item => !present.has(item.id))];
+          return [...current, ...added.filter((item) => !present.has(item.id))];
         });
       } else {
         setFailed(true);
@@ -90,11 +98,14 @@ export function Gallery({ items: initialItems, albumId, totalCount, pageSize = 6
       return;
     }
 
-    const observer = new IntersectionObserver(entries => {
-      if (entries.some(entry => entry.isIntersecting)) {
-        loadMore();
-      }
-    }, { rootMargin: "800px" });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          loadMore();
+        }
+      },
+      { rootMargin: "800px" }
+    );
 
     observer.observe(element);
     return () => observer.disconnect();
@@ -105,13 +116,13 @@ export function Gallery({ items: initialItems, albumId, totalCount, pageSize = 6
       return;
     }
 
-    const ids = items.filter(item => item.media).map(item => item.id);
+    const ids = items.filter((item) => item.media).map((item) => item.id);
 
     for (let start = 0; start < ids.length; start += RENEW_CHUNK) {
       const result = await renewItemsAction(ids.slice(start, start + RENEW_CHUNK));
 
       if (result.ok) {
-        setItems(current => mergeRenewed(current, result.data));
+        setItems((current) => mergeRenewed(current, result.data));
       }
     }
   }, [items, setItems]);
@@ -128,7 +139,7 @@ export function Gallery({ items: initialItems, albumId, totalCount, pageSize = 6
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [open, renew]);
 
-  const photos: GalleryPhoto[] = items.map(item => ({
+  const photos: GalleryPhoto[] = items.map((item) => ({
     key: item.id,
     src: item.media?.thumbnailUrl ?? "",
     width: item.width && item.width > 0 ? item.width : 4,
@@ -153,42 +164,81 @@ export function Gallery({ items: initialItems, albumId, totalCount, pageSize = 6
     <div data-testid="gallery">
       <RowsPhotoAlbum
         photos={photos}
-        targetRowHeight={containerWidth => containerWidth < 480 ? 120 : containerWidth < 900 ? 170 : rowHeight}
+        targetRowHeight={(containerWidth) => (containerWidth < 480 ? 120 : containerWidth < 900 ? 170 : rowHeight)}
         spacing={4}
         defaultContainerWidth={1200}
         sizes={{ size: "calc(100vw - 32px)", sizes: [{ viewport: "(min-width: 768px)", size: "calc(100vw - 300px)" }] }}
         onClick={({ index }) => openAt(index)}
         render={{
           button: ({ children, ...props }, { photo }) => (
-            <button {...props} type="button" aria-label={photo.alt} data-testid="gallery-item"
-                    disabled={!isShowable(photo.item)}
-                    className={`${props.className ?? ""} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring`}>
+            <button
+              {...props}
+              type="button"
+              aria-label={photo.alt}
+              data-testid="gallery-item"
+              disabled={!isShowable(photo.item)}
+              className={`${props.className ?? ""} focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2`}
+            >
               {children}
             </button>
           ),
           image: (props, { photo }) => (
-            <ItemImage src={photo.item.media?.thumbnailUrl}
-                       srcSet={photo.item.media ? `${photo.item.media.thumbnailUrl} 250w, ${photo.item.media.previewUrl} 1440w` : undefined}
-                       sizes={props.sizes} alt={photo.alt ?? ""} status={photo.item.status} type={photo.item.type} fill />
+            <ItemImage
+              src={photo.item.media?.thumbnailUrl}
+              srcSet={
+                photo.item.media
+                  ? `${photo.item.media.thumbnailUrl} 250w, ${photo.item.media.previewUrl} 1440w`
+                  : undefined
+              }
+              sizes={props.sizes}
+              alt={photo.alt ?? ""}
+              status={photo.item.status}
+              type={photo.item.type}
+              fill
+            />
           ),
-          extras: (_, { photo }) => photo.item.contributionStatus === "WAITING" ? (
-            <span className="pointer-events-none absolute bottom-1 left-1 inline-flex items-center gap-1 rounded bg-black/65 px-1.5 py-0.5 text-xs text-white">
-              <Hourglass className="size-3" aria-hidden /> {t("waiting")}
-            </span>
-          ) : null,
+          extras: (_, { photo }) =>
+            photo.item.contributionStatus === "WAITING" ? (
+              <span className="pointer-events-none absolute bottom-1 left-1 inline-flex items-center gap-1 rounded bg-black/65 px-1.5 py-0.5 text-xs text-white">
+                <Hourglass
+                  className="size-3"
+                  aria-hidden
+                />{" "}
+                {t("waiting")}
+              </span>
+            ) : null,
         }}
       />
       {hasMore && (
-        <div ref={sentinel} className="flex justify-center py-6" aria-live="polite">
-          {failed
-            ? <Button variant="outline" onClick={() => {
-              setFailed(false);
-              loadMore();
-            }}>{t("retry")}</Button>
-            : <span className="text-sm text-muted-foreground">{loading ? t("loading") : t("more", { shown: items.length, total: totalCount ?? 0 })}</span>}
+        <div
+          ref={sentinel}
+          className="flex justify-center py-6"
+          aria-live="polite"
+        >
+          {failed ? (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setFailed(false);
+                loadMore();
+              }}
+            >
+              {t("retry")}
+            </Button>
+          ) : (
+            <span className="text-muted-foreground text-sm">
+              {loading ? t("loading") : t("more", { shown: items.length, total: totalCount ?? 0 })}
+            </span>
+          )}
         </div>
       )}
-      <ItemViewer items={items} index={open} onIndexChange={setOpen} onClose={() => setOpen(null)} options={options} />
+      <ItemViewer
+        items={items}
+        index={open}
+        onIndexChange={setOpen}
+        onClose={() => setOpen(null)}
+        options={options}
+      />
     </div>
   );
 }

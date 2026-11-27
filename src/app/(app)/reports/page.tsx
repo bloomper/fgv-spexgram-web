@@ -23,22 +23,50 @@ export default async function ReportsPage() {
 
     return (
       <Page variant="content">
-        <PageHeader title={t("title")} description={t("text")}/>
-        {reports.length === 0 ? <DataEmpty title={t("none")} description={t("noneText")} /> : (
+        <PageHeader
+          title={t("title")}
+          description={t("text")}
+        />
+        {reports.length === 0 ? (
+          <DataEmpty
+            title={t("none")}
+            description={t("noneText")}
+          />
+        ) : (
           <ul className="divide-y overflow-hidden rounded-lg border">
-            {reports.map(report => (
-              <li key={report.id} className="link-row flex flex-wrap items-start gap-3 p-3">
+            {reports.map((report) => (
+              <li
+                key={report.id}
+                className="link-row flex flex-wrap items-start gap-3 p-3"
+              >
                 <div className="size-14 shrink-0 overflow-hidden rounded">
-                  <ItemImage src={report.item?.media?.thumbnailUrl} alt={report.item?.caption ?? ""} type={report.item?.type} fill />
+                  <ItemImage
+                    src={report.item?.media?.thumbnailUrl}
+                    alt={report.item?.caption ?? ""}
+                    type={report.item?.type}
+                    fill
+                  />
                 </div>
                 <div className="min-w-0 flex-1 space-y-1">
                   <p className="font-medium">
-                    {report.item ? <Link href={`/items/${report.item.id}`} className="row-link">{r(`reasons.${report.reason}`)}</Link>
-                      : r(`reasons.${report.reason}`)}
+                    {report.item ? (
+                      <Link
+                        href={`/items/${report.item.id}`}
+                        className="row-link"
+                      >
+                        {r(`reasons.${report.reason}`)}
+                      </Link>
+                    ) : (
+                      r(`reasons.${report.reason}`)
+                    )}
                   </p>
-                  <p className="text-xs text-muted-foreground">{formatInstant(report.createdAt)}</p>
+                  <p className="text-muted-foreground text-xs">{formatInstant(report.createdAt)}</p>
                   {report.message && <p className="text-sm">{report.message}</p>}
-                  {report.outcomeMessage && <p className="text-sm"><span className="text-muted-foreground">{t("answer")}</span> {report.outcomeMessage}</p>}
+                  {report.outcomeMessage && (
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">{t("answer")}</span> {report.outcomeMessage}
+                    </p>
+                  )}
                 </div>
                 <Badge variant={report.status === "OPEN" ? "secondary" : "default"}>
                   {report.status === "OPEN" ? t("open") : t(`outcome.${report.outcome ?? "KEPT"}`)}
