@@ -20,7 +20,7 @@ export default async function FavouritesPage() {
     const options = { canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report, editor: viewer.editor };
 
     return (
-      <Page className="md:p-6">
+      <Page>
         <PageHeader title={t("title")} description={t("description")} />
         {months && months.length > 0
           ? <Timeline months={months} favourites options={options} member editor={viewer.editor} />

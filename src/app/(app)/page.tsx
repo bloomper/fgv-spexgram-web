@@ -36,7 +36,7 @@ export default async function HomePage() {
   ];
 
   return (
-    <Page variant="content" className="md:p-6">
+    <Page variant="content">
       <section className="space-y-2">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("title")}</h1>
         <p className="max-w-4xl whitespace-pre-line text-pretty text-muted-foreground">

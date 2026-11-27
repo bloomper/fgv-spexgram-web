@@ -7,7 +7,7 @@ test.describe("The public side, for visitors who are not logged in", () => {
     await acceptCookies(page);
 
     await expect(page.getByRole("link", { name: "Logga in" }).first()).toBeVisible();
-    await expect(page.getByTestId("timeline")).toBeVisible();
+    await expect(page.getByRole("main").getByTestId("timeline")).toBeVisible();
     await expect(page.getByRole("button", { name: "Finalen med hela ensemblen" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Bakom scenen" })).toHaveCount(0);
 
