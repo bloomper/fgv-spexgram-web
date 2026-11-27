@@ -78,12 +78,12 @@ test.describe("Editing", () => {
     await expect(page.getByText("Bilderna har själva: 0 opublicerade, 2 för medlemmar, 1 publika.")).toBeVisible();
     await page.getByRole("radio", { name: /Publik/ }).check();
     await page.getByRole("button", { name: "Ändra synligheten" }).click();
-    await expect(page.getByRole("dialog")).toContainText("med 1 bild eller film");
-    await page.getByRole("dialog").getByRole("button", { name: "Avbryt" }).click();
+    await expect(page.getByRole("alertdialog")).toContainText("med 1 bild eller film");
+    await page.getByRole("alertdialog").getByRole("button", { name: "Avbryt" }).click();
 
     await page.getByRole("checkbox", { name: /Sätt också albumets 3 bilder och filmer/ }).check();
     await page.getByRole("button", { name: "Ändra synligheten" }).click();
-    await expect(page.getByRole("dialog")).toContainText("med 3 bilder och filmer");
+    await expect(page.getByRole("alertdialog")).toContainText("med 3 bilder och filmer");
     await answerDialog(page, "Ändra synligheten");
 
     await expect(page.getByText("Synligheten är ändrad")).toBeVisible();
