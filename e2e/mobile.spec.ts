@@ -42,6 +42,8 @@ async function fits(page: Page, path: string) {
  * Every control in the box lies inside the screen; none is pushed out or covered by its neighbour.
  */
 async function controlsInSight(page: Page, selector: string, what: string) {
+  // The header's controls appear once the page has hydrated; measured before that, there are none
+  await expect(page.locator(selector).filter({ visible: true }).first(), what).toBeVisible();
   const boxes = await page.locator(selector).evaluateAll(elements => elements
     .map(element => element.getBoundingClientRect())
     .filter(rect => rect.width > 0)
