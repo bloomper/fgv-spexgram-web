@@ -23,28 +23,67 @@ export default async function SuggestionsPage() {
 
     return (
       <Page variant="content">
-        <PageHeader title={t("title")} description={t("text")}/>
+        <PageHeader
+          title={t("title")}
+          description={t("text")}
+        />
         <SuggestForm kinds={data.kinds} />
-        <section aria-labelledby="my-suggestions" className="space-y-2">
-          <h2 id="my-suggestions" className="text-lg font-semibold">{t("mine")}</h2>
-          {suggestions.length === 0 ? <DataEmpty title={t("none")} description={null} /> : (
+        <section
+          aria-labelledby="my-suggestions"
+          className="space-y-2"
+        >
+          <h2
+            id="my-suggestions"
+            className="text-lg font-semibold"
+          >
+            {t("mine")}
+          </h2>
+          {suggestions.length === 0 ? (
+            <DataEmpty
+              title={t("none")}
+              description={null}
+            />
+          ) : (
             <ul className="divide-y overflow-hidden rounded-lg border">
-              {suggestions.map(suggestion => (
-                <li key={suggestion.id} className="link-row flex flex-wrap items-center gap-3 p-3">
+              {suggestions.map((suggestion) => (
+                <li
+                  key={suggestion.id}
+                  className="link-row flex flex-wrap items-center gap-3 p-3"
+                >
                   <div className="min-w-0 flex-1">
                     <p className="font-medium">
-                      {suggestion.album
-                        ? <Link href={`/albums/${suggestion.album.id}`} className="row-link">{suggestion.title}</Link>
-                        : suggestion.title}
+                      {suggestion.album ? (
+                        <Link
+                          href={`/albums/${suggestion.album.id}`}
+                          className="row-link"
+                        >
+                          {suggestion.title}
+                        </Link>
+                      ) : (
+                        suggestion.title
+                      )}
                     </p>
-                    <p className="text-xs text-muted-foreground">{formatInstant(suggestion.createdAt)}</p>
+                    <p className="text-muted-foreground text-xs">{formatInstant(suggestion.createdAt)}</p>
                     {suggestion.message && <p className="text-sm">{suggestion.message}</p>}
                   </div>
-                  <Badge variant={suggestion.status === "REJECTED" ? "destructive" : suggestion.status === "ACCEPTED" ? "default" : "secondary"}>
+                  <Badge
+                    variant={
+                      suggestion.status === "REJECTED"
+                        ? "destructive"
+                        : suggestion.status === "ACCEPTED"
+                          ? "default"
+                          : "secondary"
+                    }
+                  >
                     {t(`status.${suggestion.status}`)}
                   </Badge>
                   {suggestion.status === "OPEN" && suggestion.album && (
-                    <Link href={`/albums/${suggestion.album.id}/contribute`} className="text-sm text-link hover:text-link/80">{t("contribute")}</Link>
+                    <Link
+                      href={`/albums/${suggestion.album.id}/contribute`}
+                      className="text-link hover:text-link/80 text-sm"
+                    >
+                      {t("contribute")}
+                    </Link>
                   )}
                 </li>
               ))}

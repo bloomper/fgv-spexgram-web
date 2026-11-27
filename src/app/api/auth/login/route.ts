@@ -13,7 +13,7 @@ export const GET = async (req: NextRequest) => {
   const silent = req.nextUrl.searchParams.get("silent") === "1";
   const back = returnPath(req.nextUrl.searchParams.get("returnTo"));
 
-  if (silent && await auth.api.getSession({ headers: req.headers })) {
+  if (silent && (await auth.api.getSession({ headers: req.headers }))) {
     redirect(back);
   }
 

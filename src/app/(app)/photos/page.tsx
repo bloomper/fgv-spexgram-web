@@ -18,14 +18,28 @@ export default async function PhotosPage() {
   const t = await getTranslations("Home");
   const [months, viewer] = await Promise.all([getTimeline(false), getViewer()]);
   const me = viewer.member ? await getMe() : undefined;
-  const options = { canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report, editor: viewer.editor };
+  const options = {
+    canDownloadOriginals: me?.limits.canDownloadOriginals ?? false,
+    report: viewer.report,
+    editor: viewer.editor,
+  };
 
   return (
     <Page variant="content">
       <h1 className="sr-only">{t("photos")}</h1>
-      {months && months.length > 0
-        ? <Timeline months={months} options={options} member={viewer.member} editor={viewer.editor} />
-        : <DataEmpty title={t("empty")} description={viewer.member ? t("emptyText") : t("emptyVisitor")} />}
+      {months && months.length > 0 ? (
+        <Timeline
+          months={months}
+          options={options}
+          member={viewer.member}
+          editor={viewer.editor}
+        />
+      ) : (
+        <DataEmpty
+          title={t("empty")}
+          description={viewer.member ? t("emptyText") : t("emptyVisitor")}
+        />
+      )}
     </Page>
   );
 }

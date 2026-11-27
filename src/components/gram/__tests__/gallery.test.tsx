@@ -14,16 +14,28 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("next-intl", () => ({
-  useTranslations: () => Object.assign((key: string, values?: Record<string, unknown>) => (values ? `${key}:${JSON.stringify(values)}` : key),
-    { has: () => false, raw: (key: string) => key }),
+  useTranslations: () =>
+    Object.assign(
+      (key: string, values?: Record<string, unknown>) => (values ? `${key}:${JSON.stringify(values)}` : key),
+      { has: () => false, raw: (key: string) => key }
+    ),
   useLocale: () => "sv",
 }));
-vi.mock("@/app/(app)/actions.server", () => ({ albumItemsAction: mocks.albumItemsAction, renewItemsAction: mocks.renewItemsAction, reportAction: vi.fn() }));
+vi.mock("@/app/(app)/actions.server", () => ({
+  albumItemsAction: mocks.albumItemsAction,
+  renewItemsAction: mocks.renewItemsAction,
+  reportAction: vi.fn(),
+}));
 vi.mock("@/components/gram/download.client", () => ({ downloadFile: mocks.downloadFile }));
 vi.mock("@/utils/umami", () => ({ track: mocks.track }));
 // jsdom has no layout, so the justified grid would place nothing: a plain list calls the gallery's own render functions
 vi.mock("react-photo-album", () => ({
-  RowsPhotoAlbum: ({ photos, onClick, render, targetRowHeight }: {
+  RowsPhotoAlbum: ({
+    photos,
+    onClick,
+    render,
+    targetRowHeight,
+  }: {
     photos: { key: string }[];
     onClick: (event: { index: number }) => void;
     targetRowHeight: (width: number) => number;
@@ -36,7 +48,10 @@ vi.mock("react-photo-album", () => ({
     <div data-heights={[300, 600, 1200].map(targetRowHeight).join()}>
       {photos.map((photo, index) => (
         <div key={photo.key}>
-          {render.button({ onClick: () => onClick({ index }), children: render.image({ sizes: "100vw" }, { photo }) }, { photo })}
+          {render.button(
+            { onClick: () => onClick({ index }), children: render.image({ sizes: "100vw" }, { photo }) },
+            { photo }
+          )}
           {render.extras({}, { photo })}
         </div>
       ))}
@@ -44,8 +59,13 @@ vi.mock("react-photo-album", () => ({
   ),
 }));
 
-const options = { canDownloadOriginals: true, report: { visitor: false, turnstileSiteKey: null }, albumTitle: "Nobel 1975" };
-const page = (from: number, count: number) => Array.from({ length: count }, (_, i) => item(`i${from + i}`, { caption: `Bild ${from + i}` }));
+const options = {
+  canDownloadOriginals: true,
+  report: { visitor: false, turnstileSiteKey: null },
+  albumTitle: "Nobel 1975",
+};
+const page = (from: number, count: number) =>
+  Array.from({ length: count }, (_, i) => item(`i${from + i}`, { caption: `Bild ${from + i}` }));
 const soon = new Date(Date.now() + 60_000).toISOString();
 
 describe("Gallery", () => {
@@ -55,7 +75,12 @@ describe("Gallery", () => {
   });
 
   it("renders nothing without items", () => {
-    const { container } = render(<Gallery items={[]} options={options} />);
+    const { container } = render(
+      <Gallery
+        items={[]}
+        options={options}
+      />
+    );
 
     expect(container).toBeEmptyDOMElement();
   });
@@ -65,7 +90,15 @@ describe("Gallery", () => {
       .mockResolvedValueOnce({ ok: false, message: "Nej" })
       .mockResolvedValueOnce({ ok: true, data: { items: page(3, 2), totalCount: 6 } })
       .mockResolvedValueOnce({ ok: true, data: { items: page(3, 2), totalCount: 6 } });
-    render(<Gallery items={page(1, 2)} albumId="a1" totalCount={6} pageSize={2} options={options} />);
+    render(
+      <Gallery
+        items={page(1, 2)}
+        albumId="a1"
+        totalCount={6}
+        pageSize={2}
+        options={options}
+      />
+    );
     expect(screen.getByText(`more:${JSON.stringify({ shown: 2, total: 6 })}`)).toBeInTheDocument();
 
     act(() => MockIntersectionObserver.instances.at(-1)!.trigger(true));
@@ -79,12 +112,22 @@ describe("Gallery", () => {
   });
 
   it("opens the viewer, renews addresses that run out, downloads and goes to the item's page", async () => {
-    const items = [item("i1", { caption: "Finalen", media: { ...item("i1").media!, expiresAt: soon, originalUrl: "https://media/i1/o" } }),
+    const items = [
+      item("i1", {
+        caption: "Finalen",
+        media: { ...item("i1").media!, expiresAt: soon, originalUrl: "https://media/i1/o" },
+      }),
       item("i2", { type: "VIDEO", media: { ...item("i2").media!, videoUrl: "https://media/i2/v" } }),
-      item("i3", { status: "PROCESSING", media: null })];
+      item("i3", { status: "PROCESSING", media: null }),
+    ];
 
     mocks.renewItemsAction.mockResolvedValue({ ok: true, data: [items[0]] });
-    render(<Gallery items={items} options={options} />);
+    render(
+      <Gallery
+        items={items}
+        options={options}
+      />
+    );
     expect(screen.getAllByTestId("gallery-item")[2]).toBeDisabled();
 
     await userEvent.click(screen.getAllByTestId("gallery-item")[0]);
@@ -107,12 +150,28 @@ describe("Gallery", () => {
 
   it("keeps what it shows when the page is rendered again, and adds what is new", async () => {
     const first = page(1, 2);
-    const { rerender } = render(<Gallery items={first} options={options} />);
+    const { rerender } = render(
+      <Gallery
+        items={first}
+        options={options}
+      />
+    );
 
     await userEvent.click(screen.getAllByTestId("gallery-item")[1]);
-    const again = [item("i0", { caption: "Ny" }), ...page(1, 2).map(shown => ({ ...shown, media: { ...shown.media!, previewUrl: "https://other", expiresAt: "2100-01-02T00:00:00Z" } }))];
+    const again = [
+      item("i0", { caption: "Ny" }),
+      ...page(1, 2).map((shown) => ({
+        ...shown,
+        media: { ...shown.media!, previewUrl: "https://other", expiresAt: "2100-01-02T00:00:00Z" },
+      })),
+    ];
 
-    rerender(<Gallery items={again} options={options} />);
+    rerender(
+      <Gallery
+        items={again}
+        options={options}
+      />
+    );
     expect(screen.getAllByTestId("gallery-item")).toHaveLength(3);
     expect(document.querySelector("img[src='https://other']")).toBeNull();
   });

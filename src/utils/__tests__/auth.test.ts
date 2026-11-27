@@ -1,21 +1,16 @@
 import { describe, expect, it } from "vitest";
-import {
-  appendLogoutParams,
-  extractRolesFromClaims,
-  hasAccess,
-  isAdmin,
-  isEditor,
-  normalizeTheme,
-} from "@/utils/auth";
+import { appendLogoutParams, extractRolesFromClaims, hasAccess, isAdmin, isEditor, normalizeTheme } from "@/utils/auth";
 
 describe("extractRolesFromClaims", () => {
   it("reads the fgv-spexgram client roles only", () => {
-    expect(extractRolesFromClaims({
-      resource_access: {
-        "fgv-spexgram": { roles: ["USER", "editor", "ADMIN", "USER", "SPEXGRAM"] },
-        "fgv-spexregister": { roles: ["ADMIN"] },
-      },
-    })).toEqual(["USER", "EDITOR", "ADMIN"]);
+    expect(
+      extractRolesFromClaims({
+        resource_access: {
+          "fgv-spexgram": { roles: ["USER", "editor", "ADMIN", "USER", "SPEXGRAM"] },
+          "fgv-spexregister": { roles: ["ADMIN"] },
+        },
+      })
+    ).toEqual(["USER", "EDITOR", "ADMIN"]);
   });
 
   it("gives no roles without the claim", () => {

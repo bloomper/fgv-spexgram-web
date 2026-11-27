@@ -29,9 +29,7 @@ const makeClient = () => {
 
           didAuthError(error) {
             return error.graphQLErrors.some(
-              (e) =>
-                e.extensions?.code === "UNAUTHENTICATED" ||
-                e.extensions?.code === "UNAUTHORIZED",
+              (e) => e.extensions?.code === "UNAUTHENTICATED" || e.extensions?.code === "UNAUTHORIZED"
             );
           },
 

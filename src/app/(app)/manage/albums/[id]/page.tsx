@@ -29,9 +29,12 @@ const ITEMS_PAGE = 200;
  * `?page=`), its visibility, its fields, the trash and its latest changes. `?item=` opens an item of the album, also one
  * on another page.
  */
-export default async function ManageAlbumPage({ params, searchParams }: {
+export default async function ManageAlbumPage({
+  params,
+  searchParams,
+}: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ item?: string; page?: string }>
+  searchParams: Promise<{ item?: string; page?: string }>;
 }) {
   return withPolicyPage(Policies.editor.requireEditor, async () => {
     const { id } = await params;
@@ -55,7 +58,7 @@ export default async function ManageAlbumPage({ params, searchParams }: {
     const spexflixUrl = process.env.SPEXFLIX_WEB_URL?.trim().replace(/\/+$/, "") || null;
     const items = album.items.items;
     const wanted = openItemId && ID.test(openItemId) ? openItemId : null;
-    const onPage = wanted ? items.find(item => item.id === wanted) : undefined;
+    const onPage = wanted ? items.find((item) => item.id === wanted) : undefined;
     const fetched = wanted && !onPage ? (await getItem(wanted))?.item : null;
     const openItem = onPage ?? (fetched?.album?.id === album.id ? fetched : null);
     const pageHref = (next: number) => `/manage/albums/${album.id}${next > 0 ? `?page=${next}` : ""}`;
@@ -64,58 +67,137 @@ export default async function ManageAlbumPage({ params, searchParams }: {
       <Page variant="content">
         <PageHeader
           title={album.title}
-          eyebrow={<nav><Link href="/manage/albums" className="hover:text-link">{t("albums")}</Link></nav>}
-          badges={<>
-            <VisibilityBadge visibility={album.visibility} />
-            {album.suggested && <span className="text-sm text-muted-foreground">{t("suggested")}</span>}
-            {album.trashedAt && <span className="text-sm text-destructive">{t("inTrash")}</span>}
-          </>}
+          eyebrow={
+            <nav>
+              <Link
+                href="/manage/albums"
+                className="hover:text-link"
+              >
+                {t("albums")}
+              </Link>
+            </nav>
+          }
+          badges={
+            <>
+              <VisibilityBadge visibility={album.visibility} />
+              {album.suggested && <span className="text-muted-foreground text-sm">{t("suggested")}</span>}
+              {album.trashedAt && <span className="text-destructive text-sm">{t("inTrash")}</span>}
+            </>
+          }
           actions={
-            <Button variant="outline" nativeButton={false} render={<Link href={`/albums/${album.id}`} />}>
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link href={`/albums/${album.id}`} />}
+            >
               <ExternalLink /> {t("view")}
             </Button>
           }
         />
 
         {!album.trashedAt && (
-          <section aria-labelledby="upload" className="space-y-3">
-            <h2 id="upload" className="text-lg font-semibold">{t("upload")}</h2>
-            <UploadDropZone target={{ albumId: album.id, albumTitle: album.title, mode: "items", maxBytes: data.limits.maxUploadBytes }}
-                            hint={<SpexflixHint maxMinutes={data.limits.maxVideoMinutes} />} />
+          <section
+            aria-labelledby="upload"
+            className="space-y-3"
+          >
+            <h2
+              id="upload"
+              className="text-lg font-semibold"
+            >
+              {t("upload")}
+            </h2>
+            <UploadDropZone
+              target={{
+                albumId: album.id,
+                albumTitle: album.title,
+                mode: "items",
+                maxBytes: data.limits.maxUploadBytes,
+              }}
+              hint={<SpexflixHint maxMinutes={data.limits.maxVideoMinutes} />}
+            />
             <UploadList albumId={album.id} />
           </section>
         )}
 
-        <section aria-labelledby="items" className="space-y-3">
-          <h2 id="items" className="text-lg font-semibold">{t("items", { count: album.items.totalCount })}</h2>
-          <ItemsManager albumId={album.id} albumTitle={album.title} items={items} coverId={album.cover?.id}
-                        spexflixUrl={spexflixUrl} openItem={openItem} />
-          <Pager page={page} pages={pages} hrefOf={pageHref} />
+        <section
+          aria-labelledby="items"
+          className="space-y-3"
+        >
+          <h2
+            id="items"
+            className="text-lg font-semibold"
+          >
+            {t("items", { count: album.items.totalCount })}
+          </h2>
+          <ItemsManager
+            albumId={album.id}
+            albumTitle={album.title}
+            items={items}
+            coverId={album.cover?.id}
+            spexflixUrl={spexflixUrl}
+            openItem={openItem}
+          />
+          <Pager
+            page={page}
+            pages={pages}
+            hrefOf={pageHref}
+          />
         </section>
 
-        <VisibilityControl albumId={album.id} visibility={album.visibility} counts={album.visibilityCounts} />
+        <VisibilityControl
+          albumId={album.id}
+          visibility={album.visibility}
+          counts={album.visibilityCounts}
+        />
 
-        <section aria-labelledby="details" className="space-y-3">
-          <h2 id="details" className="text-lg font-semibold">{t("details")}</h2>
-          <AlbumForm kinds={data.albumKinds} spexipediaUrl={process.env.SPEXIPEDIA_WEB_URL?.trim().replace(/\/+$/, "") || null} album={{
-            id: album.id,
-            title: album.title,
-            kindId: album.kind.id,
-            spex: album.spex,
-            dateFrom: album.dateFrom,
-            dateTo: album.dateTo,
-            place: album.place,
-            description: album.description,
-          }} />
+        <section
+          aria-labelledby="details"
+          className="space-y-3"
+        >
+          <h2
+            id="details"
+            className="text-lg font-semibold"
+          >
+            {t("details")}
+          </h2>
+          <AlbumForm
+            kinds={data.albumKinds}
+            spexipediaUrl={process.env.SPEXIPEDIA_WEB_URL?.trim().replace(/\/+$/, "") || null}
+            album={{
+              id: album.id,
+              title: album.title,
+              kindId: album.kind.id,
+              spex: album.spex,
+              dateFrom: album.dateFrom,
+              dateTo: album.dateTo,
+              place: album.place,
+              description: album.description,
+            }}
+          />
         </section>
 
-        <section aria-labelledby="trash" className="space-y-3">
-          <h2 id="trash" className="text-lg font-semibold">{t("trashHeading")}</h2>
-          <p className="text-sm text-muted-foreground">{album.trashedAt ? t("restoreText") : t("trashText")}</p>
-          <TrashAlbum albumId={album.id} trashed={Boolean(album.trashedAt)} />
+        <section
+          aria-labelledby="trash"
+          className="space-y-3"
+        >
+          <h2
+            id="trash"
+            className="text-lg font-semibold"
+          >
+            {t("trashHeading")}
+          </h2>
+          <p className="text-muted-foreground text-sm">{album.trashedAt ? t("restoreText") : t("trashText")}</p>
+          <TrashAlbum
+            albumId={album.id}
+            trashed={Boolean(album.trashedAt)}
+          />
         </section>
 
-        <RecordHistory entityId={album.id} path="/manage/audit" linkOf={auditLink} />
+        <RecordHistory
+          entityId={album.id}
+          path="/manage/audit"
+          linkOf={auditLink}
+        />
       </Page>
     );
   });

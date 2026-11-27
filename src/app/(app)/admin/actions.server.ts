@@ -17,33 +17,40 @@ import { withPolicyAction } from "@/utils/route.server";
 import { Policies } from "@/utils/policy.server";
 
 export async function saveSettingsAction(input: SettingsInput): Promise<ActionResult<null>> {
-  return withPolicyAction(Policies.admin.requireAdmin, () => toActionResult(async () => {
-    await settingsUpdate(input);
-    revalidatePath("/admin/settings");
-    revalidatePath("/");
-    revalidatePath("/photos");
-    return null;
-  }));
+  return withPolicyAction(Policies.admin.requireAdmin, () =>
+    toActionResult(async () => {
+      await settingsUpdate(input);
+      revalidatePath("/admin/settings");
+      revalidatePath("/");
+      revalidatePath("/photos");
+      return null;
+    })
+  );
 }
 
 /**
  * Starts a maintenance job in the background. The data is false when it is already running.
  */
 export async function runMaintenanceJobAction(job: MaintenanceJob): Promise<ActionResult<boolean>> {
-  return withPolicyAction(Policies.admin.requireAdmin, () => toActionResult(async () => {
-    const started = await maintenanceJobRun(job);
-    revalidatePath("/admin/maintenance");
-    return started;
-  }));
+  return withPolicyAction(Policies.admin.requireAdmin, () =>
+    toActionResult(async () => {
+      const started = await maintenanceJobRun(job);
+      revalidatePath("/admin/maintenance");
+      return started;
+    })
+  );
 }
 
-const kinds = <T, >(work: () => Promise<T>) => withPolicyAction(Policies.admin.requireAdmin, () => toActionResult(async () => {
-  const result = await work();
+const kinds = <T>(work: () => Promise<T>) =>
+  withPolicyAction(Policies.admin.requireAdmin, () =>
+    toActionResult(async () => {
+      const result = await work();
 
-  revalidatePath("/admin/kinds");
-  revalidatePath("/", "layout");
-  return result;
-}));
+      revalidatePath("/admin/kinds");
+      revalidatePath("/", "layout");
+      return result;
+    })
+  );
 
 export async function createKindAction(input: AlbumKindInput): Promise<ActionResult<null>> {
   return kinds(async () => {
@@ -82,12 +89,14 @@ const IMMICH_JOBS: ReadonlySet<string> = new Set(["REGENERATE_THUMBNAIL", "REFRE
  * Starts one of Immich's jobs again for the items, e.g. thumbnails for items that failed.
  */
 export async function runImmichJobAction(itemIds: string[], job: ImmichJob): Promise<ActionResult<null>> {
-  if (!IMMICH_JOBS.has(job) || itemIds.length === 0 || itemIds.length > 500 || !itemIds.every(id => ID.test(id))) {
+  if (!IMMICH_JOBS.has(job) || itemIds.length === 0 || itemIds.length > 500 || !itemIds.every((id) => ID.test(id))) {
     throw new Error("Invalid request");
   }
-  return withPolicyAction(Policies.admin.requireAdmin, () => toActionResult(async () => {
-    await immichJobRun(itemIds, job);
-    revalidatePath("/admin/immich");
-    return null;
-  }));
+  return withPolicyAction(Policies.admin.requireAdmin, () =>
+    toActionResult(async () => {
+      await immichJobRun(itemIds, job);
+      revalidatePath("/admin/immich");
+      return null;
+    })
+  );
 }

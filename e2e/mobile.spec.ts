@@ -8,13 +8,45 @@ const SCREENS = [
   { width: 768, height: 1024 },
 ];
 
-const PUBLIC_PAGES = ["/", "/photos", "/explore", "/albums", `/albums/${ids.publicAlbum}`, `/items/${ids.publicItemInMembersAlbum}`,
-  `/spex/${ids.spex}`, "/search?q=nobel", `/albums/${ids.membersAlbum}`, "/about", "/support"];
-const MEMBER_PAGES = ["/", "/favourites", `/albums/${ids.membersAlbum}`, `/albums/${ids.membersAlbum}/contribute`, "/contributions",
-  "/suggestions", "/reports", "/map", "/search?q=talet&smart=1", `/items/${ids.publicItem}`];
-const EDITOR_PAGES = ["/manage/albums", `/manage/albums/${ids.membersAlbum}`, "/manage/albums/new", "/manage/contributions",
-  "/manage/reports", "/manage/unsorted", "/manage/trash", "/manage/audit", "/admin/settings", "/admin/kinds",
-  "/admin/immich", "/admin/maintenance"];
+const PUBLIC_PAGES = [
+  "/",
+  "/photos",
+  "/explore",
+  "/albums",
+  `/albums/${ids.publicAlbum}`,
+  `/items/${ids.publicItemInMembersAlbum}`,
+  `/spex/${ids.spex}`,
+  "/search?q=nobel",
+  `/albums/${ids.membersAlbum}`,
+  "/about",
+  "/support",
+];
+const MEMBER_PAGES = [
+  "/",
+  "/favourites",
+  `/albums/${ids.membersAlbum}`,
+  `/albums/${ids.membersAlbum}/contribute`,
+  "/contributions",
+  "/suggestions",
+  "/reports",
+  "/map",
+  "/search?q=talet&smart=1",
+  `/items/${ids.publicItem}`,
+];
+const EDITOR_PAGES = [
+  "/manage/albums",
+  `/manage/albums/${ids.membersAlbum}`,
+  "/manage/albums/new",
+  "/manage/contributions",
+  "/manage/reports",
+  "/manage/unsorted",
+  "/manage/trash",
+  "/manage/audit",
+  "/admin/settings",
+  "/admin/kinds",
+  "/admin/immich",
+  "/admin/maintenance",
+];
 
 /**
  * The page does not scroll sideways, and a table fits its frame, so that its last column is in sight.
@@ -26,7 +58,7 @@ async function fits(page: Page, path: string) {
   const { scrollWidth, width, tables } = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     width: document.documentElement.clientWidth,
-    tables: [...document.querySelectorAll("table")].map(table => ({
+    tables: [...document.querySelectorAll("table")].map((table) => ({
       table: Math.ceil(table.getBoundingClientRect().width),
       frame: Math.ceil(table.parentElement!.getBoundingClientRect().width),
     })),
@@ -44,10 +76,12 @@ async function fits(page: Page, path: string) {
 async function controlsInSight(page: Page, selector: string, what: string) {
   // The header's controls appear once the page has hydrated; measured before that, there are none
   await expect(page.locator(selector).filter({ visible: true }).first(), what).toBeVisible();
-  const boxes = await page.locator(selector).evaluateAll(elements => elements
-    .map(element => element.getBoundingClientRect())
-    .filter(rect => rect.width > 0)
-    .map(rect => ({ left: rect.left, right: rect.right })));
+  const boxes = await page.locator(selector).evaluateAll((elements) =>
+    elements
+      .map((element) => element.getBoundingClientRect())
+      .filter((rect) => rect.width > 0)
+      .map((rect) => ({ left: rect.left, right: rect.right }))
+  );
   const width = await page.evaluate(() => document.documentElement.clientWidth);
 
   expect(boxes.length, what).toBeGreaterThan(0);
@@ -113,7 +147,10 @@ for (const screen of SCREENS) {
       const dialog = page.getByRole("dialog");
 
       await expect(dialog.getByTestId("turnstile")).toBeVisible();
-      expect(await dialog.evaluate(element => element.scrollWidth - element.clientWidth), "the dialog scrolls sideways").toBeLessThanOrEqual(0);
+      expect(
+        await dialog.evaluate((element) => element.scrollWidth - element.clientWidth),
+        "the dialog scrolls sideways"
+      ).toBeLessThanOrEqual(0);
     });
   });
 }

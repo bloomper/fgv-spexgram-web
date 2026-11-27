@@ -30,27 +30,69 @@ export default async function AlbumsPage({ searchParams }: { searchParams: Promi
 
   return (
     <Page variant="content">
-      <PageHeader title={t("title")}/>
+      <PageHeader title={t("title")} />
       {data && (
-        <KindChips kinds={data.albumKinds} search={search} />
+        <KindChips
+          kinds={data.albumKinds}
+          search={search}
+        />
       )}
       {search.place && <p className="text-sm">{t("atPlace", { place: search.place })}</p>}
       {data && (
-        <AlbumFilters path="/albums" search={search} categories={data.categories} years={data.years} kinds={data.albumKinds}
-                      spex={data.spexWithAlbums} editor={viewer.editor} />
+        <AlbumFilters
+          path="/albums"
+          search={search}
+          categories={data.categories}
+          years={data.years}
+          kinds={data.albumKinds}
+          spex={data.spexWithAlbums}
+          editor={viewer.editor}
+        />
       )}
-      <p className="text-sm text-muted-foreground" aria-live="polite">{t("count", { count: data?.albums.totalCount ?? 0 })}</p>
-      {albums.length > 0
-        ? <AlbumGrid albums={albums} showVisibility={viewer.editor} />
-        : <DataEmpty title={t("none")} description={viewer.member ? t("noneText") : t("noneVisitor")} />}
-      <Pager page={page} pages={pages} hrefOf={next => filterHref("/albums", search, { page: String(next) })} />
+      <p
+        className="text-muted-foreground text-sm"
+        aria-live="polite"
+      >
+        {t("count", { count: data?.albums.totalCount ?? 0 })}
+      </p>
+      {albums.length > 0 ? (
+        <AlbumGrid
+          albums={albums}
+          showVisibility={viewer.editor}
+        />
+      ) : (
+        <DataEmpty
+          title={t("none")}
+          description={viewer.member ? t("noneText") : t("noneVisitor")}
+        />
+      )}
+      <Pager
+        page={page}
+        pages={pages}
+        hrefOf={(next) => filterHref("/albums", search, { page: String(next) })}
+      />
       {data && data.spexWithAlbums.length > 0 && (
-        <section id="spex" aria-labelledby="spex-heading" className="space-y-2 pt-4">
-          <h2 id="spex-heading" className="text-lg font-semibold">{t("bySpex")}</h2>
+        <section
+          id="spex"
+          aria-labelledby="spex-heading"
+          className="space-y-2 pt-4"
+        >
+          <h2
+            id="spex-heading"
+            className="text-lg font-semibold"
+          >
+            {t("bySpex")}
+          </h2>
           <ul className="columns-2 gap-6 text-sm sm:columns-3 lg:columns-4">
-            {data.spexWithAlbums.map(spex => (
-              <li key={spex.id} className="break-inside-avoid py-0.5">
-                <Link href={`/spex/${spex.id}`} className="hover:text-link">
+            {data.spexWithAlbums.map((spex) => (
+              <li
+                key={spex.id}
+                className="break-inside-avoid py-0.5"
+              >
+                <Link
+                  href={`/spex/${spex.id}`}
+                  className="hover:text-link"
+                >
                   {[spex.title, spex.year].filter(Boolean).join(" ")}
                 </Link>
                 {spex.revival && <span className="text-muted-foreground"> ({t("revival")})</span>}

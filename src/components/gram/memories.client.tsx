@@ -28,12 +28,17 @@ type Memory = {
  * The strip at the top of the timeline: *this day* in earlier years, one card a year, and the albums of the spex
  * whose premiere is near today's date. A card opens a slideshow.
  */
-export function Memories({ thisDay, premiereAlbums, options, now }: {
+export function Memories({
+  thisDay,
+  premiereAlbums,
+  options,
+  now,
+}: {
   thisDay: GalleryItem[];
   premiereAlbums: AlbumCardFieldsFragment[];
   options: ViewerOptions;
   /** Today, from the server, so that the years ago are the same in both renders. */
-  now: string
+  now: string;
 }) {
   const t = useTranslations("Memories");
   const [playing, setPlaying] = useState<{ items: GalleryItem[]; index: number; albumTitle?: string } | null>(null);
@@ -47,7 +52,7 @@ export function Memories({ thisDay, premiereAlbums, options, now }: {
       const year = item.takenAt?.slice(0, 4);
 
       if (year) {
-        byYear.set(year, [...byYear.get(year) ?? [], item]);
+        byYear.set(year, [...(byYear.get(year) ?? []), item]);
       }
     }
 
@@ -59,13 +64,15 @@ export function Memories({ thisDay, premiereAlbums, options, now }: {
       thumbhash: items[0].thumbhash,
       items,
     }));
-    const premieres: Memory[] = premiereAlbums.map(album => {
-      const premiere = album.spex.find(spex => spex.premiere)?.premiere;
+    const premieres: Memory[] = premiereAlbums.map((album) => {
+      const premiere = album.spex.find((spex) => spex.premiere)?.premiere;
 
       return {
         key: `album-${album.id}`,
         title: album.title,
-        subtitle: premiere ? t("premiere", { count: yearsAgo(premiere, today) }) : t("photos", { count: album.itemCount }),
+        subtitle: premiere
+          ? t("premiere", { count: yearsAgo(premiere, today) })
+          : t("photos", { count: album.itemCount }),
         cover: album.cover?.media ? { ...album.cover.media, type: album.cover.type } : null,
         albumId: album.id,
         albumTitle: album.title,
@@ -97,30 +104,66 @@ export function Memories({ thisDay, premiereAlbums, options, now }: {
   }
 
   return (
-    <section aria-labelledby="memories" className="space-y-2">
-      <h2 id="memories" className="text-lg font-semibold">{t("title")}</h2>
+    <section
+      aria-labelledby="memories"
+      className="space-y-2"
+    >
+      <h2
+        id="memories"
+        className="text-lg font-semibold"
+      >
+        {t("title")}
+      </h2>
       <ul className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2">
-        {memories.map(memory => (
-          <li key={memory.key} className="shrink-0 snap-start">
-            <button type="button" onClick={() => play(memory)} disabled={pending}
-                    className="group relative block h-44 w-32 overflow-hidden rounded-xl bg-muted text-left focus-visible:ring-2 focus-visible:ring-ring sm:h-52 sm:w-40">
-              <ItemImage src={memory.cover?.thumbnailUrl} srcSet={memory.cover?.thumbnailUrl && memory.cover.previewUrl
-                ? `${memory.cover.thumbnailUrl} 250w, ${memory.cover.previewUrl} 1440w` : undefined} sizes="160px"
-                         alt="" type={memory.cover?.type ?? "PHOTO"} thumbhash={memory.thumbhash} fill
-                         className="transition-transform group-hover:scale-105" />
+        {memories.map((memory) => (
+          <li
+            key={memory.key}
+            className="shrink-0 snap-start"
+          >
+            <button
+              type="button"
+              onClick={() => play(memory)}
+              disabled={pending}
+              className="group bg-muted focus-visible:ring-ring relative block h-44 w-32 overflow-hidden rounded-xl text-left focus-visible:ring-2 sm:h-52 sm:w-40"
+            >
+              <ItemImage
+                src={memory.cover?.thumbnailUrl}
+                srcSet={
+                  memory.cover?.thumbnailUrl && memory.cover.previewUrl
+                    ? `${memory.cover.thumbnailUrl} 250w, ${memory.cover.previewUrl} 1440w`
+                    : undefined
+                }
+                sizes="160px"
+                alt=""
+                type={memory.cover?.type ?? "PHOTO"}
+                thumbhash={memory.thumbhash}
+                fill
+                className="transition-transform group-hover:scale-105"
+              />
               <span className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/75 via-black/10 to-transparent" />
               <span className="pointer-events-none absolute inset-x-0 bottom-0 space-y-0.5 p-2 text-white">
-                <span className="line-clamp-2 block text-sm font-semibold leading-tight">{memory.title}</span>
-                <span className="flex items-center gap-1 text-xs text-white/80"><Play className="size-3 fill-current" aria-hidden /> {memory.subtitle}</span>
+                <span className="line-clamp-2 block text-sm leading-tight font-semibold">{memory.title}</span>
+                <span className="flex items-center gap-1 text-xs text-white/80">
+                  <Play
+                    className="size-3 fill-current"
+                    aria-hidden
+                  />{" "}
+                  {memory.subtitle}
+                </span>
               </span>
             </button>
           </li>
         ))}
       </ul>
       {playing && (
-        <ItemViewer items={playing.items} index={playing.index} slideshow
-                    onIndexChange={index => setPlaying(current => current && { ...current, index })}
-                    onClose={() => setPlaying(null)} options={{ ...options, albumTitle: playing.albumTitle }} />
+        <ItemViewer
+          items={playing.items}
+          index={playing.index}
+          slideshow
+          onIndexChange={(index) => setPlaying((current) => current && { ...current, index })}
+          onClose={() => setPlaying(null)}
+          options={{ ...options, albumTitle: playing.albumTitle }}
+        />
       )}
     </section>
   );

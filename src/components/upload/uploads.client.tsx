@@ -75,78 +75,91 @@ export function UploadsProvider({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   const update = useCallback((key: string, change: Partial<UploadEntry>) => {
-    setEntries(current => current.map(entry => entry.key === key ? { ...entry, ...change } : entry));
+    setEntries((current) => current.map((entry) => (entry.key === key ? { ...entry, ...change } : entry)));
   }, []);
 
-  const run = useCallback(async (entry: UploadEntry) => {
-    const file = files.current.get(entry.key);
+  const run = useCallback(
+    async (entry: UploadEntry) => {
+      const file = files.current.get(entry.key);
 
-    if (!file) {
-      return;
-    }
-    update(entry.key, { state: "uploading" });
-    try {
-      const uploadId = await uploadFile(file, fraction => update(entry.key, { progress: fraction }));
-
-      update(entry.key, { state: "adding", progress: 1 });
-
-      const result = await addUploadsAction(entry.albumId, entry.mode, [uploadId]);
-
-      if (!result.ok) {
-        update(entry.key, { state: "failed", error: result.message });
-      } else {
-        update(entry.key, { state: "done", result: result.data[0] });
-        track(entry.mode === "items" ? "item-upload" : "contribution-upload", { outcome: result.data[0]?.outcome ?? "NONE" });
-        // The album's page shows the new item; other pages, e.g. one playing a video, are left alone
-        if (pathnameRef.current.includes(entry.albumId)) {
-          router.refresh();
-        }
+      if (!file) {
+        return;
       }
-    } catch {
-      update(entry.key, { state: "failed", error: t("failed") });
-    } finally {
-      files.current.delete(entry.key);
-    }
-  }, [router, t, update]);
+      update(entry.key, { state: "uploading" });
+      try {
+        const uploadId = await uploadFile(file, (fraction) => update(entry.key, { progress: fraction }));
+
+        update(entry.key, { state: "adding", progress: 1 });
+
+        const result = await addUploadsAction(entry.albumId, entry.mode, [uploadId]);
+
+        if (!result.ok) {
+          update(entry.key, { state: "failed", error: result.message });
+        } else {
+          update(entry.key, { state: "done", result: result.data[0] });
+          track(entry.mode === "items" ? "item-upload" : "contribution-upload", {
+            outcome: result.data[0]?.outcome ?? "NONE",
+          });
+          // The album's page shows the new item; other pages, e.g. one playing a video, are left alone
+          if (pathnameRef.current.includes(entry.albumId)) {
+            router.refresh();
+          }
+        }
+      } catch {
+        update(entry.key, { state: "failed", error: t("failed") });
+      } finally {
+        files.current.delete(entry.key);
+      }
+    },
+    [router, t, update]
+  );
 
   // Starts queued files while fewer than PARALLEL are on their way
   useEffect(() => {
-    const active = entries.filter(entry => entry.state === "uploading" || entry.state === "adding"
-      || (entry.state === "queued" && started.current.has(entry.key))).length;
+    const active = entries.filter(
+      (entry) =>
+        entry.state === "uploading" ||
+        entry.state === "adding" ||
+        (entry.state === "queued" && started.current.has(entry.key))
+    ).length;
 
-    for (const entry of entries.filter(candidate => candidate.state === "queued" && !started.current.has(candidate.key))
+    for (const entry of entries
+      .filter((candidate) => candidate.state === "queued" && !started.current.has(candidate.key))
       .slice(0, Math.max(0, PARALLEL - active))) {
       started.current.add(entry.key);
       void run(entry);
     }
   }, [entries, run, update]);
 
-  const enqueue = useCallback((list: File[], target: UploadTarget) => {
-    const added = list.map((file): UploadEntry => {
-      const key = `upload-${++counter}`;
-      const tooLarge = file.size > target.maxBytes;
+  const enqueue = useCallback(
+    (list: File[], target: UploadTarget) => {
+      const added = list.map((file): UploadEntry => {
+        const key = `upload-${++counter}`;
+        const tooLarge = file.size > target.maxBytes;
 
-      if (!tooLarge) {
-        files.current.set(key, file);
-      }
-      return {
-        key,
-        fileName: file.name,
-        size: file.size,
-        albumId: target.albumId,
-        albumTitle: target.albumTitle,
-        mode: target.mode,
-        state: tooLarge ? "failed" : "queued",
-        progress: 0,
-        error: tooLarge ? t("tooLarge") : undefined,
-      };
-    });
+        if (!tooLarge) {
+          files.current.set(key, file);
+        }
+        return {
+          key,
+          fileName: file.name,
+          size: file.size,
+          albumId: target.albumId,
+          albumTitle: target.albumTitle,
+          mode: target.mode,
+          state: tooLarge ? "failed" : "queued",
+          progress: 0,
+          error: tooLarge ? t("tooLarge") : undefined,
+        };
+      });
 
-    setEntries(current => [...current, ...added]);
-  }, [t]);
+      setEntries((current) => [...current, ...added]);
+    },
+    [t]
+  );
 
   const clearFinished = useCallback(() => {
-    setEntries(current => current.filter(entry => entry.state !== "done" && entry.state !== "failed"));
+    setEntries((current) => current.filter((entry) => entry.state !== "done" && entry.state !== "failed"));
   }, []);
 
   return <UploadsContext.Provider value={{ entries, enqueue, clearFinished }}>{children}</UploadsContext.Provider>;
@@ -161,7 +174,8 @@ export function useUploads(): Uploads {
   return uploads;
 }
 
-const isActive = (entry: UploadEntry) => entry.state === "queued" || entry.state === "uploading" || entry.state === "adding";
+const isActive = (entry: UploadEntry) =>
+  entry.state === "queued" || entry.state === "uploading" || entry.state === "adding";
 
 /**
  * One upload: its name, progress, and what became of it, with a link to the file that was already in Spexgram.
@@ -171,16 +185,36 @@ function UploadRow({ entry }: { entry: UploadEntry }) {
   const outcome = entry.result?.outcome;
 
   return (
-    <li className="flex items-start gap-2 py-1.5 text-sm" data-testid="upload-row">
+    <li
+      className="flex items-start gap-2 py-1.5 text-sm"
+      data-testid="upload-row"
+    >
       <span className="mt-0.5 shrink-0">
-        {isActive(entry) ? <Loader2 className="size-4 animate-spin" aria-hidden />
-          : outcome === "CREATED" ? <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" aria-hidden />
-            : outcome === "DUPLICATE" ? <Copy className="size-4 text-amber-600 dark:text-amber-400" aria-hidden />
-              : <CircleAlert className="size-4 text-destructive" aria-hidden />}
+        {isActive(entry) ? (
+          <Loader2
+            className="size-4 animate-spin"
+            aria-hidden
+          />
+        ) : outcome === "CREATED" ? (
+          <CheckCircle2
+            className="size-4 text-green-600 dark:text-green-400"
+            aria-hidden
+          />
+        ) : outcome === "DUPLICATE" ? (
+          <Copy
+            className="size-4 text-amber-600 dark:text-amber-400"
+            aria-hidden
+          />
+        ) : (
+          <CircleAlert
+            className="text-destructive size-4"
+            aria-hidden
+          />
+        )}
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate font-medium">{entry.fileName}</span>
-        <span className="block text-xs text-muted-foreground">
+        <span className="text-muted-foreground block text-xs">
           {entry.state === "queued" && t("queued")}
           {entry.state === "uploading" && t("uploading", { percent: Math.round(entry.progress * 100) })}
           {entry.state === "adding" && t("adding")}
@@ -189,16 +223,32 @@ function UploadRow({ entry }: { entry: UploadEntry }) {
           {outcome === "REJECTED" && t("rejected", { message: entry.result?.message ?? "" })}
           {outcome === "DUPLICATE" && (
             <>
-              {entry.result?.existingAlbumTitle ? t("duplicateIn", { album: entry.result.existingAlbumTitle }) : t("duplicate")}
+              {entry.result?.existingAlbumTitle
+                ? t("duplicateIn", { album: entry.result.existingAlbumTitle })
+                : t("duplicate")}
               {entry.result?.existingItemId && (
-                <>{" "}<Link href={`/items/${entry.result.existingItemId}`} className="text-link hover:text-link/80">{t("showExisting")}</Link></>
+                <>
+                  {" "}
+                  <Link
+                    href={`/items/${entry.result.existingItemId}`}
+                    className="text-link hover:text-link/80"
+                  >
+                    {t("showExisting")}
+                  </Link>
+                </>
               )}
             </>
           )}
         </span>
         {entry.state === "uploading" && (
-          <span className="mt-1 block h-1 w-full overflow-hidden rounded bg-muted" aria-hidden>
-            <span className="block h-full bg-primary transition-[width]" style={{ width: `${Math.round(entry.progress * 100)}%` }} />
+          <span
+            className="bg-muted mt-1 block h-1 w-full overflow-hidden rounded"
+            aria-hidden
+          >
+            <span
+              className="bg-primary block h-full transition-[width]"
+              style={{ width: `${Math.round(entry.progress * 100)}%` }}
+            />
           </span>
         )}
       </span>
@@ -212,19 +262,44 @@ function UploadRow({ entry }: { entry: UploadEntry }) {
 export function UploadList({ albumId }: { albumId: string }) {
   const t = useTranslations("Uploads");
   const { entries, clearFinished } = useUploads();
-  const mine = entries.filter(entry => entry.albumId === albumId);
+  const mine = entries.filter((entry) => entry.albumId === albumId);
 
   if (mine.length === 0) {
     return null;
   }
   return (
-    <section aria-labelledby="upload-list" className="space-y-2 rounded-lg border p-3">
+    <section
+      aria-labelledby="upload-list"
+      className="space-y-2 rounded-lg border p-3"
+    >
       <div className="flex items-center justify-between gap-2">
-        <h2 id="upload-list" className="text-sm font-semibold">{t("title")}</h2>
-        {mine.some(entry => !isActive(entry)) &&
-          <Button variant="ghost" size="sm" onClick={clearFinished}>{t("clearFinished")}</Button>}
+        <h2
+          id="upload-list"
+          className="text-sm font-semibold"
+        >
+          {t("title")}
+        </h2>
+        {mine.some((entry) => !isActive(entry)) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFinished}
+          >
+            {t("clearFinished")}
+          </Button>
+        )}
       </div>
-      <ul className="divide-y" aria-live="polite">{mine.map(entry => <UploadRow key={entry.key} entry={entry} />)}</ul>
+      <ul
+        className="divide-y"
+        aria-live="polite"
+      >
+        {mine.map((entry) => (
+          <UploadRow
+            key={entry.key}
+            entry={entry}
+          />
+        ))}
+      </ul>
     </section>
   );
 }
@@ -242,26 +317,49 @@ export function UploadIndicator() {
   }
 
   const progress = active.length
-    ? Math.round(active.reduce((sum, entry) => sum + entry.progress, 0) / active.length * 100)
+    ? Math.round((active.reduce((sum, entry) => sum + entry.progress, 0) / active.length) * 100)
     : 100;
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={
-        <Button variant="ghost" size="sm" aria-label={active.length ? t("activeLabel", { count: active.length, percent: progress }) : t("doneLabel")} />
-      }>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label={active.length ? t("activeLabel", { count: active.length, percent: progress }) : t("doneLabel")}
+          />
+        }
+      >
         {active.length ? <Loader2 className="animate-spin" /> : <Upload />}
         <span className="tabular-nums">{active.length ? `${progress} %` : entries.length}</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 max-w-[calc(100vw-2rem)]">
+      <DropdownMenuContent
+        align="end"
+        className="w-80 max-w-[calc(100vw-2rem)]"
+      >
         <DropdownMenuGroup>
           <DropdownMenuLabel>{t("title")}</DropdownMenuLabel>
         </DropdownMenuGroup>
         <ul className="max-h-80 divide-y overflow-y-auto px-2">
-          {entries.map(entry => <UploadRow key={entry.key} entry={entry} />)}
+          {entries.map((entry) => (
+            <UploadRow
+              key={entry.key}
+              entry={entry}
+            />
+          ))}
         </ul>
-        {entries.some(entry => !isActive(entry)) && (
-          <div className="p-2"><Button variant="outline" size="sm" className="w-full" onClick={clearFinished}>{t("clearFinished")}</Button></div>
+        {entries.some((entry) => !isActive(entry)) && (
+          <div className="p-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={clearFinished}
+            >
+              {t("clearFinished")}
+            </Button>
+          </div>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
@@ -286,29 +384,41 @@ export function UploadDropZone({ target, hint }: { target: UploadTarget; hint?: 
   return (
     <div
       className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${over ? "border-primary bg-primary/5" : ""}`}
-      onDragOver={event => {
+      onDragOver={(event) => {
         event.preventDefault();
         setOver(true);
       }}
       onDragLeave={() => setOver(false)}
-      onDrop={event => {
+      onDrop={(event) => {
         event.preventDefault();
         setOver(false);
         add(event.dataTransfer.files);
       }}
       data-testid="upload-drop-zone"
     >
-      <Upload className="mx-auto mb-2 size-8 text-muted-foreground" aria-hidden />
+      <Upload
+        className="text-muted-foreground mx-auto mb-2 size-8"
+        aria-hidden
+      />
       <p className="text-sm">{t("drop")}</p>
-      <label htmlFor={inputId} className="mt-3 inline-flex cursor-pointer items-center rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent focus-within:ring-2 focus-within:ring-ring">
+      <label
+        htmlFor={inputId}
+        className="hover:bg-accent focus-within:ring-ring mt-3 inline-flex cursor-pointer items-center rounded-md border px-3 py-1.5 text-sm font-medium focus-within:ring-2"
+      >
         {t("choose")}
-        <input id={inputId} type="file" multiple accept="image/*,video/*,.heic,.heif,.dng,.cr2,.cr3,.nef,.arw,.orf,.raf,.rw2"
-               className="sr-only" onChange={event => {
-          add(event.target.files);
-          event.target.value = "";
-        }} />
+        <input
+          id={inputId}
+          type="file"
+          multiple
+          accept="image/*,video/*,.heic,.heif,.dng,.cr2,.cr3,.nef,.arw,.orf,.raf,.rw2"
+          className="sr-only"
+          onChange={(event) => {
+            add(event.target.files);
+            event.target.value = "";
+          }}
+        />
       </label>
-      {hint && <div className="mt-3 text-xs text-muted-foreground">{hint}</div>}
+      {hint && <div className="text-muted-foreground mt-3 text-xs">{hint}</div>}
     </div>
   );
 }

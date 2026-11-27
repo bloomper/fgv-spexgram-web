@@ -12,7 +12,9 @@ export function monthKey(month: string | null): string {
  * The items of a month by the day they were taken, in the order they come (newest first); undated items are one
  * group with day null.
  */
-export function groupByDay<T extends { takenAt?: string | null }>(items: readonly T[]): { day: string | null; items: T[] }[] {
+export function groupByDay<T extends { takenAt?: string | null }>(
+  items: readonly T[]
+): { day: string | null; items: T[] }[] {
   const days: { day: string | null; items: T[] }[] = [];
 
   for (const item of items) {
@@ -33,7 +35,7 @@ export function groupByDay<T extends { takenAt?: string | null }>(items: readonl
  * once and the scrubber can jump anywhere: rows of photos of about 4:3 at the row height, plus a header per few rows.
  */
 export function estimateHeight(count: number, width: number, rowHeight: number): number {
-  const perRow = Math.max(1, Math.floor(Math.max(width, 1) / (rowHeight * 4 / 3)));
+  const perRow = Math.max(1, Math.floor(Math.max(width, 1) / ((rowHeight * 4) / 3)));
   const rows = Math.ceil(count / perRow);
 
   return 48 + rows * (rowHeight + 4) + Math.ceil(rows / 3) * 32;
@@ -114,7 +116,7 @@ export function thumbhashUrl(hash: string | null | undefined): string | null {
   let url: string | null;
 
   try {
-    const bytes = Uint8Array.from(atob(hash), char => char.charCodeAt(0));
+    const bytes = Uint8Array.from(atob(hash), (char) => char.charCodeAt(0));
 
     url = thumbHashToDataURL(bytes);
   } catch {
@@ -131,11 +133,15 @@ export function thumbhashUrl(hash: string | null | undefined): string | null {
  * The OpenStreetMap tile at the zoom that holds the position, and where in it (0–256) the position is, for a small
  * map without a map library.
  */
-export function tileOf(latitude: number, longitude: number, zoom: number): { x: number; y: number; left: number; top: number } {
+export function tileOf(
+  latitude: number,
+  longitude: number,
+  zoom: number
+): { x: number; y: number; left: number; top: number } {
   const n = 2 ** zoom;
-  const lat = Math.max(Math.min(latitude, 85.0511), -85.0511) * Math.PI / 180;
-  const fx = (longitude + 180) / 360 * n;
-  const fy = (1 - Math.log(Math.tan(lat) + 1 / Math.cos(lat)) / Math.PI) / 2 * n;
+  const lat = (Math.max(Math.min(latitude, 85.0511), -85.0511) * Math.PI) / 180;
+  const fx = ((longitude + 180) / 360) * n;
+  const fy = ((1 - Math.log(Math.tan(lat) + 1 / Math.cos(lat)) / Math.PI) / 2) * n;
   const x = Math.floor(fx);
   const y = Math.floor(fy);
 

@@ -8,14 +8,21 @@ test.describe("Contributions", () => {
     await page.goto(`/albums/${ids.membersAlbum}`);
     await page.getByRole("button", { name: "Lägg till dina bilder" }).click();
 
-    await expect(page.getByRole("heading", { level: 1, name: "Lägg till dina bilder i Sittning efter premiären" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Lägg till dina bilder i Sittning efter premiären" })
+    ).toBeVisible();
     await hydrated(page, "input[type=file]");
     await page.locator("input[type=file]").setInputFiles([photo("min-bild-1.jpg"), photo("min-bild-2.jpg")]);
     await expect(page.getByTestId("upload-row").filter({ hasText: "Tillagd, väntar på granskning" })).toHaveCount(2);
 
-    const mine = (await mock.state()).items.filter(item => item.owner === "p-viewer" && item.albumId === ids.membersAlbum);
+    const mine = (await mock.state()).items.filter(
+      (item) => item.owner === "p-viewer" && item.albumId === ids.membersAlbum
+    );
 
-    expect(mine.map(item => [item.visibility, item.contributionStatus])).toEqual([["UNPUBLISHED", "WAITING"], ["UNPUBLISHED", "WAITING"]]);
+    expect(mine.map((item) => [item.visibility, item.contributionStatus])).toEqual([
+      ["UNPUBLISHED", "WAITING"],
+      ["UNPUBLISHED", "WAITING"],
+    ]);
 
     await page.getByRole("link", { name: "Mina bidrag" }).first().click();
     const row = page.getByTestId("contribution").filter({ hasText: "min-bild-1.jpg" });
@@ -36,8 +43,10 @@ test.describe("Contributions", () => {
     await expect(row).toContainText("Tina Tittare");
     await row.getByRole("button", { name: "Godkänn", exact: true }).click();
     await expect(page.getByText("Bidraget är godkänt")).toBeVisible();
-    expect((await mock.state()).items.find(item => item.originalFileName === "mitt-foto.jpg"))
-      .toMatchObject({ contributionStatus: "ACCEPTED", visibility: "MEMBERS" });
+    expect((await mock.state()).items.find((item) => item.originalFileName === "mitt-foto.jpg")).toMatchObject({
+      contributionStatus: "ACCEPTED",
+      visibility: "MEMBERS",
+    });
   });
 
   test("a member suggests an album and can contribute to it at once", async ({ page, loginAs, mock }) => {
@@ -47,7 +56,9 @@ test.describe("Contributions", () => {
     await pickDate(page, "Datum", "1975-08-20");
     await page.getByRole("button", { name: "Föreslå" }).click();
 
-    await expect(page.getByRole("heading", { level: 1, name: "Lägg till dina bilder i Kräftskivan 1975" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Lägg till dina bilder i Kräftskivan 1975" })
+    ).toBeVisible();
     expect((await mock.state()).suggestions.at(-1)).toMatchObject({ title: "Kräftskivan 1975", status: "OPEN" });
   });
 

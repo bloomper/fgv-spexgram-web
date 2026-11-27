@@ -8,7 +8,12 @@ import { dialogs as makeDialogs } from "./fixtures";
 const mocks = vi.hoisted(() => ({
   router: { refresh: vi.fn(), push: vi.fn() },
   toast: { success: vi.fn(), error: vi.fn(), warning: vi.fn() },
-  actions: { createAlbumAction: vi.fn(), updateAlbumAction: vi.fn(), setAlbumVisibilityAction: vi.fn(), searchSpexAction: vi.fn() },
+  actions: {
+    createAlbumAction: vi.fn(),
+    updateAlbumAction: vi.fn(),
+    setAlbumVisibilityAction: vi.fn(),
+    searchSpexAction: vi.fn(),
+  },
   dialogs: undefined as unknown as ReturnType<typeof makeDialogs>,
 }));
 
@@ -18,7 +23,10 @@ vi.mock("@/utils/umami", () => ({ track: vi.fn() }));
 vi.mock("@/app/(app)/manage/actions.server", () => mocks.actions);
 vi.mock("@bloomper/fgv-web-ui/shell/dialogs", () => ({ useDialogs: () => mocks.dialogs }));
 
-const kinds = [{ id: "k1", nameSv: "Föreställning", nameEn: "Show", isDefault: false }, { id: "k2", nameSv: "Fest", nameEn: "Party", isDefault: true }];
+const kinds = [
+  { id: "k1", nameSv: "Föreställning", nameEn: "Show", isDefault: false },
+  { id: "k2", nameSv: "Fest", nameEn: "Party", isDefault: true },
+];
 const spex = { id: "s1", title: "Nobel", year: 1975, revival: false, parentId: null, categoryName: "Chalmersspexet" };
 
 describe("AlbumForm", () => {
@@ -40,18 +48,40 @@ describe("AlbumForm", () => {
   });
 
   it("saves an album's changes and refuses dates out of order", async () => {
-    const album = { id: "a1", title: "Sittning", kindId: "k1", spex: [], dateFrom: "2026-10-02", dateTo: "2026-10-01", place: null, description: null };
+    const album = {
+      id: "a1",
+      title: "Sittning",
+      kindId: "k1",
+      spex: [],
+      dateFrom: "2026-10-02",
+      dateTo: "2026-10-01",
+      place: null,
+      description: null,
+    };
 
-    render(<AlbumForm album={album} kinds={kinds} />);
+    render(
+      <AlbumForm
+        album={album}
+        kinds={kinds}
+      />
+    );
     await userEvent.click(screen.getByRole("button", { name: "save" }));
     expect(mocks.toast.error).toHaveBeenCalledWith("dateOrder");
 
     await userEvent.click(screen.getAllByRole("button", { name: "clearDate" })[1]);
     await userEvent.type(screen.getByLabelText("place"), "Kårhuset");
     await userEvent.click(screen.getByRole("button", { name: "save" }));
-    await waitFor(() => expect(mocks.actions.updateAlbumAction).toHaveBeenCalledWith("a1", {
-      spexIds: [], title: "Sittning", kindId: "k1", dateFrom: "2026-10-02", dateTo: null, place: "Kårhuset", description: null,
-    }));
+    await waitFor(() =>
+      expect(mocks.actions.updateAlbumAction).toHaveBeenCalledWith("a1", {
+        spexIds: [],
+        title: "Sittning",
+        kindId: "k1",
+        dateFrom: "2026-10-02",
+        dateTo: null,
+        place: "Kårhuset",
+        description: null,
+      })
+    );
     await waitFor(() => expect(mocks.router.refresh).toHaveBeenCalled());
 
     mocks.actions.updateAlbumAction.mockResolvedValueOnce({ ok: false, message: "Fel" });
@@ -60,11 +90,28 @@ describe("AlbumForm", () => {
   });
 
   it("creates an album for a spex and opens it", async () => {
-    const album = { title: "", kindId: null, spex: [spex], dateFrom: null, dateTo: null, place: null, description: null };
+    const album = {
+      title: "",
+      kindId: null,
+      spex: [spex],
+      dateFrom: null,
+      dateTo: null,
+      place: null,
+      description: null,
+    };
 
-    render(<AlbumForm album={album} kinds={kinds} />);
+    render(
+      <AlbumForm
+        album={album}
+        kinds={kinds}
+      />
+    );
     await userEvent.click(screen.getByRole("button", { name: "create" }));
-    await waitFor(() => expect(mocks.actions.createAlbumAction).toHaveBeenCalledWith(expect.objectContaining({ spexIds: ["s1"], title: null })));
+    await waitFor(() =>
+      expect(mocks.actions.createAlbumAction).toHaveBeenCalledWith(
+        expect.objectContaining({ spexIds: ["s1"], title: null })
+      )
+    );
     await waitFor(() => expect(mocks.router.push).toHaveBeenCalledWith("/manage/albums/a9"));
 
     mocks.actions.createAlbumAction.mockResolvedValueOnce({ ok: false, message: "Fel" });
@@ -74,7 +121,11 @@ describe("AlbumForm", () => {
 });
 
 describe("VisibilityControl", () => {
-  const counts = [{ visibility: "UNPUBLISHED" as const, count: 1 }, { visibility: "MEMBERS" as const, count: 2 }, { visibility: "PUBLIC" as const, count: 3 }];
+  const counts = [
+    { visibility: "UNPUBLISHED" as const, count: 1 },
+    { visibility: "MEMBERS" as const, count: 2 },
+    { visibility: "PUBLIC" as const, count: 3 },
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -83,7 +134,13 @@ describe("VisibilityControl", () => {
   });
 
   it("changes the album's visibility, and its items' too, once confirmed", async () => {
-    render(<VisibilityControl albumId="a1" visibility="MEMBERS" counts={counts} />);
+    render(
+      <VisibilityControl
+        albumId="a1"
+        visibility="MEMBERS"
+        counts={counts}
+      />
+    );
     expect(screen.getByRole("button", { name: "apply" })).toBeDisabled();
 
     await userEvent.click(screen.getByRole("radio", { name: /^PUBLIC/ }));

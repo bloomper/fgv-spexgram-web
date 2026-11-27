@@ -17,11 +17,16 @@ export async function privateMetadata(): Promise<Metadata> {
  * Metadata for a public album or item: indexable, with Open Graph tags whose image is a preview (which carries no
  * metadata). The signed preview address runs out after some hours; crawlers fetch it when the link is shared.
  */
-export function publicMetadata({ title, description, image, type = "website" }: {
+export function publicMetadata({
+  title,
+  description,
+  image,
+  type = "website",
+}: {
   title: string;
   description?: string | null;
   image?: { url: string; width?: number | null; height?: number | null; alt: string } | null;
-  type?: "website" | "article"
+  type?: "website" | "article";
 }): Metadata {
   return {
     title: `${title} – Spexgram`,
@@ -32,7 +37,9 @@ export function publicMetadata({ title, description, image, type = "website" }: 
       description: description ?? undefined,
       type,
       siteName: "Spexgram",
-      images: image ? [{ url: image.url, width: image.width ?? undefined, height: image.height ?? undefined, alt: image.alt }] : undefined,
+      images: image
+        ? [{ url: image.url, width: image.width ?? undefined, height: image.height ?? undefined, alt: image.alt }]
+        : undefined,
     },
     twitter: { card: image ? "summary_large_image" : "summary", title, description: description ?? undefined },
   };

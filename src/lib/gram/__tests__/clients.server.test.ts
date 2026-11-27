@@ -7,11 +7,14 @@ const { runQuery, runMutation } = vi.hoisted(() => ({ runQuery: vi.fn(), runMuta
 vi.mock("@/lib/graphql.server", () => ({ runQuery, runMutation }));
 
 /** An answer that has every field, however deep: each property is the answer again. */
-const full: unknown = new Proxy(() => undefined, { get: (_, key) => key === "then" ? undefined : full });
+const full: unknown = new Proxy(() => undefined, { get: (_, key) => (key === "then" ? undefined : full) });
 
 const clients = { gram, manage } as Record<string, Record<string, (...args: unknown[]) => Promise<unknown>>>;
 const calls = Object.entries(clients).flatMap(([module, exports]) =>
-  Object.entries(exports).filter(([, value]) => typeof value === "function").map(([name, fn]) => [`${module}.${name}`, fn] as const));
+  Object.entries(exports)
+    .filter(([, value]) => typeof value === "function")
+    .map(([name, fn]) => [`${module}.${name}`, fn] as const)
+);
 
 describe("the GraphQL clients", () => {
   beforeEach(() => {
@@ -27,7 +30,9 @@ describe("the GraphQL clients", () => {
     const empty = await fn(...args);
 
     expect(runQuery.mock.calls.length + runMutation.mock.calls.length).toBe(1);
-    expect(empty === undefined || empty === null || empty === 0 || Array.isArray(empty) || typeof empty === "object").toBe(true);
+    expect(
+      empty === undefined || empty === null || empty === 0 || Array.isArray(empty) || typeof empty === "object"
+    ).toBe(true);
 
     runQuery.mockResolvedValue(full);
     runMutation.mockResolvedValue(full);

@@ -12,11 +12,15 @@ describe("sameOrigin", () => {
   it("accepts a request without Origin, or from the same host", () => {
     expect(sameOrigin(request())).toBe(true);
     expect(sameOrigin(request({ origin: "https://spexify.test", host: "spexify.test" }))).toBe(true);
-    expect(sameOrigin(request({
-      origin: "https://spexify.test",
-      "x-forwarded-host": "spexify.test, proxy",
-      host: "internal",
-    }))).toBe(true);
+    expect(
+      sameOrigin(
+        request({
+          origin: "https://spexify.test",
+          "x-forwarded-host": "spexify.test, proxy",
+          host: "internal",
+        })
+      )
+    ).toBe(true);
   });
 
   it("refuses another site, a sibling subdomain and a malformed origin", () => {
@@ -42,15 +46,17 @@ describe("streamFromApi", () => {
   });
 
   it("passes the range to the server and its partial answer back, without other headers", async () => {
-    apiFetch.mockResolvedValue(new Response(new Uint8Array([1, 2]), {
-      status: 206,
-      headers: {
-        "content-type": "audio/flac",
-        "content-range": "bytes 0-1/10",
-        "set-cookie": "x=1",
-        "accept-ranges": "bytes",
-      },
-    }));
+    apiFetch.mockResolvedValue(
+      new Response(new Uint8Array([1, 2]), {
+        status: 206,
+        headers: {
+          "content-type": "audio/flac",
+          "content-range": "bytes 0-1/10",
+          "set-cookie": "x=1",
+          "accept-ranges": "bytes",
+        },
+      })
+    );
 
     const response = await streamFromApi(request({ range: "bytes=0-1" }), "/api/tracks/1/audio");
 
@@ -70,7 +76,7 @@ describe("streamFromApi", () => {
   });
 
   it("hides the server's error body and keeps its status", async () => {
-    apiFetch.mockResolvedValue(new Response("{\"message\":\"internal detail\"}", { status: 404 }));
+    apiFetch.mockResolvedValue(new Response('{"message":"internal detail"}', { status: 404 }));
 
     const response = await streamFromApi(request(), "/api/tracks/1/audio");
 

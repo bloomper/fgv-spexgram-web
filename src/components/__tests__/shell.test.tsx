@@ -34,30 +34,56 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams("q=finalen"),
 }));
 vi.mock("next/link", () => ({
-  default: ({ children, href, ...rest }: { children?: ReactNode; href: string }) => <a href={href} {...rest}>{children}</a>,
+  default: ({ children, href, ...rest }: { children?: ReactNode; href: string }) => (
+    <a
+      href={href}
+      {...rest}
+    >
+      {children}
+    </a>
+  ),
 }));
 vi.mock("next/script", () => ({ default: (props: { src: string }) => <script data-src={props.src} /> }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
 vi.mock("next-intl/server", () => ({
-  getTranslations: async () => (key: string, values?: Record<string, unknown>) => (values ? `${key}:${JSON.stringify(values)}` : key),
+  getTranslations: async () => (key: string, values?: Record<string, unknown>) =>
+    values ? `${key}:${JSON.stringify(values)}` : key,
   getLocale: async () => "sv",
 }));
 vi.mock("@bloomper/fgv-web-ui/hooks/use-is-client", () => ({ useIsClient: () => true }));
 vi.mock("@/components/nav-user.client", () => ({ NavUser: () => <span>nav-user</span> }));
-vi.mock("@bloomper/fgv-web-ui/shell/app-switcher", () => ({ AppSwitcher: ({ title }: { title: string }) => <span>{title}</span> }));
+vi.mock("@bloomper/fgv-web-ui/shell/app-switcher", () => ({
+  AppSwitcher: ({ title }: { title: string }) => <span>{title}</span>,
+}));
 vi.mock("@/components/upload/uploads.client", () => ({ UploadIndicator: () => null }));
 // The language menu is tested in @bloomper/fgv-web-ui, with the shell provider it needs
-vi.mock("@bloomper/fgv-web-ui/shell/toggles", async importOriginal => ({
-  ...await importOriginal<typeof import("@bloomper/fgv-web-ui/shell/toggles")>(),
+vi.mock("@bloomper/fgv-web-ui/shell/toggles", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@bloomper/fgv-web-ui/shell/toggles")>()),
   LanguageToggle: () => null,
 }));
 
-const album = (fields: Partial<AlbumCardFieldsFragment> = {}) => ({
-  id: "a1", title: "Nobel 1975", dateFrom: "1975-02-14", dateTo: null, place: "Kårhuset", visibility: "MEMBERS", itemCount: 12,
-  kind: { id: "k1", nameSv: "Föreställning", nameEn: "Show" }, spex: [],
-  cover: { id: "i1", caption: null, type: "PHOTO", width: 4, height: 3, effectiveVisibility: "MEMBERS", media: { thumbnailUrl: "t", previewUrl: "p", expiresAt: "2100-01-01T00:00:00Z" } },
-  ...fields,
-}) as unknown as AlbumCardFieldsFragment;
+const album = (fields: Partial<AlbumCardFieldsFragment> = {}) =>
+  ({
+    id: "a1",
+    title: "Nobel 1975",
+    dateFrom: "1975-02-14",
+    dateTo: null,
+    place: "Kårhuset",
+    visibility: "MEMBERS",
+    itemCount: 12,
+    kind: { id: "k1", nameSv: "Föreställning", nameEn: "Show" },
+    spex: [],
+    cover: {
+      id: "i1",
+      caption: null,
+      type: "PHOTO",
+      width: 4,
+      height: 3,
+      effectiveVisibility: "MEMBERS",
+      media: { thumbnailUrl: "t", previewUrl: "p", expiresAt: "2100-01-01T00:00:00Z" },
+    },
+    ...fields,
+  }) as unknown as AlbumCardFieldsFragment;
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -70,13 +96,18 @@ describe("the shell", () => {
   });
 
   it("shows each role the pages it opens, and visitors the public ones", () => {
-    const sidebar = (roles: ("USER" | "EDITOR" | "ADMIN")[], user: { name: string; email: string } | null) => render(
-      <TooltipProvider>
-        <SidebarProvider>
-          <AppSidebar roles={roles} accountUrl="https://auth/account" user={user as never} />
-        </SidebarProvider>
-      </TooltipProvider>,
-    );
+    const sidebar = (roles: ("USER" | "EDITOR" | "ADMIN")[], user: { name: string; email: string } | null) =>
+      render(
+        <TooltipProvider>
+          <SidebarProvider>
+            <AppSidebar
+              roles={roles}
+              accountUrl="https://auth/account"
+              user={user as never}
+            />
+          </SidebarProvider>
+        </TooltipProvider>
+      );
 
     const visitor = sidebar([], null);
     const visitorLinks = screen.getAllByRole("link").length;
@@ -89,7 +120,16 @@ describe("the shell", () => {
   });
 
   it("has a header with the menu button, search and login", async () => {
-    render(<TooltipProvider><SidebarProvider><SiteHeader applications={[]} loggedIn={false} /></SidebarProvider></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <SidebarProvider>
+          <SiteHeader
+            applications={[]}
+            loggedIn={false}
+          />
+        </SidebarProvider>
+      </TooltipProvider>
+    );
     await userEvent.click(screen.getByRole("button", { name: "showMenu" }));
     expect(screen.getAllByRole("link", { name: /login/i }).length).toBeGreaterThan(0);
   });
@@ -109,7 +149,15 @@ describe("the shell", () => {
 
   it("logs in back to the page", () => {
     mocks.pathname = "/albums/a1";
-    render(<><LoginButton /><LoginButton compact size="default" /></>);
+    render(
+      <>
+        <LoginButton />
+        <LoginButton
+          compact
+          size="default"
+        />
+      </>
+    );
     expect(screen.getAllByRole("link")[0].getAttribute("href")).toContain(encodeURIComponent("/albums/a1"));
   });
 
@@ -119,13 +167,34 @@ describe("the shell", () => {
         <AboutPage feedbackEmail="feedback@example.org" />
         <SupportPage supportEmail="support@example.org" />
         <NavSecondary items={[{ title: "Om", url: "/about", icon: Info }]} />
-        <LinkTabs label="Rankning" items={[{ href: "/a", label: "A", active: true }, { href: "/b", label: "B", active: false }]} />
-        <LinkSegments label="Typ" items={[{ href: "/c", label: "C", active: false }]} />
-        <DataEmpty title="Inget" description="Här finns inget" />
-        <HomeSection id="s" title="Senaste" more={{ href: "/albums", label: "Alla" }}>innehåll</HomeSection>
-        <Logo /><LogoText />
-        <VisibilityBadge visibility="PUBLIC" /><VisibilityBadge visibility="MEMBERS" /><VisibilityBadge visibility="UNPUBLISHED" />
-      </SidebarProvider>,
+        <LinkTabs
+          label="Rankning"
+          items={[
+            { href: "/a", label: "A", active: true },
+            { href: "/b", label: "B", active: false },
+          ]}
+        />
+        <LinkSegments
+          label="Typ"
+          items={[{ href: "/c", label: "C", active: false }]}
+        />
+        <DataEmpty
+          title="Inget"
+          description="Här finns inget"
+        />
+        <HomeSection
+          id="s"
+          title="Senaste"
+          more={{ href: "/albums", label: "Alla" }}
+        >
+          innehåll
+        </HomeSection>
+        <Logo />
+        <LogoText />
+        <VisibilityBadge visibility="PUBLIC" />
+        <VisibilityBadge visibility="MEMBERS" />
+        <VisibilityBadge visibility="UNPUBLISHED" />
+      </SidebarProvider>
     );
     expect(screen.getByRole("link", { name: "A" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("link", { name: "Alla" })).toHaveAttribute("href", "/albums");
@@ -133,10 +202,18 @@ describe("the shell", () => {
   });
 
   it("renders album cards", () => {
-    render(<>
-      <AlbumCard album={album()} showVisibility />
-      <AlbumGrid albums={[album({ id: "a2", cover: null, dateFrom: null, place: null } as never)]} hrefOf={a => `/manage/albums/${a.id}`} />
-    </>);
+    render(
+      <>
+        <AlbumCard
+          album={album()}
+          showVisibility
+        />
+        <AlbumGrid
+          albums={[album({ id: "a2", cover: null, dateFrom: null, place: null } as never)]}
+          hrefOf={(a) => `/manage/albums/${a.id}`}
+        />
+      </>
+    );
     expect(screen.getAllByRole("link")[0]).toHaveAttribute("href", "/albums/a1");
     expect(screen.getAllByRole("link")[1]).toHaveAttribute("href", "/manage/albums/a2");
   });
@@ -144,11 +221,18 @@ describe("the shell", () => {
 
 describe("server components", () => {
   it("filter albums and keep hidden fields", async () => {
-    render(await AlbumFilters({
-      path: "/albums", search: { category: "c1", year: "1975" }, categories: [{ id: "c1", name: "Chalmersspexet" }], years: [1975],
-      kinds: [{ id: "k1", nameSv: "Fest", nameEn: "Party" }], spex: [{ id: "s1", title: "Nobel", year: 1975, revival: true }],
-      editor: true, keep: { q: "kören", spex: undefined },
-    }));
+    render(
+      await AlbumFilters({
+        path: "/albums",
+        search: { category: "c1", year: "1975" },
+        categories: [{ id: "c1", name: "Chalmersspexet" }],
+        years: [1975],
+        kinds: [{ id: "k1", nameSv: "Fest", nameEn: "Party" }],
+        spex: [{ id: "s1", title: "Nobel", year: 1975, revival: true }],
+        editor: true,
+        keep: { q: "kören", spex: undefined },
+      })
+    );
     expect(screen.getByLabelText("category")).toHaveValue("c1");
     expect(screen.getAllByRole("link").length).toBeGreaterThan(0);
     expect(document.querySelector("input[type=hidden][name=q]")).toHaveValue("kören");
@@ -160,23 +244,30 @@ describe("server components", () => {
   });
 
   it("pick a kind of album as a chip, keeping the rest of the filter", async () => {
-    render(await KindChips({
-      kinds: [{ id: "k1", nameSv: "Fest", nameEn: "Party", albumCount: 1 }, { id: "k2", nameSv: "Tom", nameEn: "Empty", albumCount: 0 },
-        { id: "k3", nameSv: "Föreställning", nameEn: "Show", albumCount: 4 }],
-      search: { decade: "1980", kind: "k3", page: "2" },
-    }) as React.ReactElement);
+    render(
+      (await KindChips({
+        kinds: [
+          { id: "k1", nameSv: "Fest", nameEn: "Party", albumCount: 1 },
+          { id: "k2", nameSv: "Tom", nameEn: "Empty", albumCount: 0 },
+          { id: "k3", nameSv: "Föreställning", nameEn: "Show", albumCount: 4 },
+        ],
+        search: { decade: "1980", kind: "k3", page: "2" },
+      })) as React.ReactElement
+    );
     expect(screen.getByRole("link", { name: "Fest" })).toHaveAttribute("href", "/albums?decade=1980&kind=k1");
     expect(screen.getByRole("link", { name: "allKinds" })).toHaveAttribute("href", "/albums?decade=1980");
     expect(screen.getByRole("link", { name: "Föreställning" })).toHaveAttribute("aria-current", "page");
     expect(screen.queryByText("Tom")).not.toBeInTheDocument();
-    expect(await KindChips({ kinds: [{ id: "k1", nameSv: "Fest", nameEn: "Party", albumCount: 1 }], search: {} })).toBeNull();
+    expect(
+      await KindChips({ kinds: [{ id: "k1", nameSv: "Fest", nameEn: "Party", albumCount: 1 }], search: {} })
+    ).toBeNull();
   });
 
   it("page", async () => {
-    const { container } = render(<>{await Pager({ page: 0, pages: 1, hrefOf: page => `?page=${page}` })}</>);
+    const { container } = render(<>{await Pager({ page: 0, pages: 1, hrefOf: (page) => `?page=${page}` })}</>);
 
     expect(container).toBeEmptyDOMElement();
-    render(await Pager({ page: 1, pages: 3, hrefOf: page => `?page=${page}` }) as React.ReactElement);
+    render((await Pager({ page: 1, pages: 3, hrefOf: (page) => `?page=${page}` })) as React.ReactElement);
     expect(screen.getByRole("link", { name: "previousPage" })).toHaveAttribute("href", "?page=0");
     expect(screen.getByRole("link", { name: "nextPage" })).toHaveAttribute("href", "?page=2");
   });
@@ -191,7 +282,7 @@ describe("server components", () => {
     expect(await Umami()).toBeNull();
     vi.stubEnv("UMAMI_URL", "http://umami");
     vi.stubEnv("UMAMI_WEBSITE_ID", "w1");
-    render(await Umami() as React.ReactElement);
+    render((await Umami()) as React.ReactElement);
     expect(document.querySelector("script[data-src='/stats/script.js']")).not.toBeNull();
   });
 });

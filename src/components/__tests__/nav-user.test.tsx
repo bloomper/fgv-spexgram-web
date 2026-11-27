@@ -6,7 +6,7 @@ import { NavUser } from "@/components/nav-user.client";
 
 const auth = vi.hoisted(() => ({
   session: { user: { name: "Anna Andersson", email: "anna@example.com", image: null as string | null } } as null | {
-    user: { name: string; email: string; image: string | null }
+    user: { name: string; email: string; image: string | null };
   },
   signOut: vi.fn(),
 }));
@@ -20,7 +20,12 @@ vi.mock("sonner", () => ({ toast }));
 vi.mock("@bloomper/fgv-web-ui/ui/sidebar", () => ({
   SidebarMenu: ({ children }: { children?: ReactNode }) => <ul>{children}</ul>,
   SidebarMenuItem: ({ children }: { children?: ReactNode }) => <li>{children}</li>,
-  SidebarMenuButton: (props: object) => <button type="button" {...props} />,
+  SidebarMenuButton: (props: object) => (
+    <button
+      type="button"
+      {...props}
+    />
+  ),
   useSidebar: () => ({ isMobile: false }),
 }));
 
@@ -33,7 +38,12 @@ describe("NavUser", () => {
   });
 
   it("shows the user's name, e-mail and initials", () => {
-    render(<NavUser accountUrl="https://auth.example.com/account" user={auth.session!.user} />);
+    render(
+      <NavUser
+        accountUrl="https://auth.example.com/account"
+        user={auth.session!.user}
+      />
+    );
 
     expect(screen.getByText("Anna Andersson")).toBeInTheDocument();
     expect(screen.getByText("anna@example.com")).toBeInTheDocument();
@@ -41,21 +51,39 @@ describe("NavUser", () => {
   });
 
   it("falls back to the e-mail for initials and a question mark without either", () => {
-    const { unmount } = render(<NavUser accountUrl="/account" user={{ name: "", email: "kalle@example.com", image: null }} />);
+    const { unmount } = render(
+      <NavUser
+        accountUrl="/account"
+        user={{ name: "", email: "kalle@example.com", image: null }}
+      />
+    );
 
     expect(screen.getByText("KA")).toBeInTheDocument();
     unmount();
 
-    render(<NavUser accountUrl="/account" user={{ name: "", email: "", image: null }} />);
+    render(
+      <NavUser
+        accountUrl="/account"
+        user={{ name: "", email: "", image: null }}
+      />
+    );
     expect(screen.getByText("?")).toBeInTheDocument();
   });
 
   it("links to the account and logs out through Keycloak", async () => {
     auth.signOut.mockResolvedValue({ data: { url: "https://auth.example.com/logout" } });
-    render(<NavUser accountUrl="https://auth.example.com/account" user={auth.session!.user} />);
+    render(
+      <NavUser
+        accountUrl="https://auth.example.com/account"
+        user={auth.session!.user}
+      />
+    );
 
     await userEvent.click(screen.getByRole("button", { name: /Anna Andersson/ }));
-    expect(await screen.findByRole("link", { name: /Common.myFgvAccount/ })).toHaveAttribute("href", "https://auth.example.com/account");
+    expect(await screen.findByRole("link", { name: /Common.myFgvAccount/ })).toHaveAttribute(
+      "href",
+      "https://auth.example.com/account"
+    );
 
     await userEvent.click(screen.getByRole("menuitem", { name: "Common.logout" }));
 
@@ -66,7 +94,12 @@ describe("NavUser", () => {
 
   it("goes home when Keycloak gives no logout address", async () => {
     auth.signOut.mockResolvedValue({ data: null });
-    render(<NavUser accountUrl="/account" user={auth.session!.user} />);
+    render(
+      <NavUser
+        accountUrl="/account"
+        user={auth.session!.user}
+      />
+    );
 
     await userEvent.click(screen.getByRole("button", { name: /Anna Andersson/ }));
     await userEvent.click(await screen.findByRole("menuitem", { name: "Common.logout" }));

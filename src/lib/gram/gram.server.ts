@@ -266,7 +266,8 @@ const AlbumSuggestMutation = graphql(`
 
 export const getMe = async () => runQuery(MeQuery, {});
 export const getHome = async () => runQuery(HomeQuery, {});
-export const getTimeline = async (favourites: boolean) => (await runQuery(TimelineQuery, { favourites }))?.timeline ?? null;
+export const getTimeline = async (favourites: boolean) =>
+  (await runQuery(TimelineQuery, { favourites }))?.timeline ?? null;
 export const getTimelineItems = async (month: string | null, favourites: boolean, page: number, size: number) =>
   (await runQuery(TimelineItemsQuery, { month, favourites, page, size }))?.timelineItems ?? null;
 export const getMemories = async () => runQuery(MemoriesQuery, {});

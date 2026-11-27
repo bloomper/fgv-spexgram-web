@@ -14,8 +14,14 @@ export default async function KindsPage() {
     const kinds = await getAlbumKinds();
 
     return (
-      <Page variant="content" className="max-w-3xl">
-        <PageHeader title={t("title")} description={t("text")}/>
+      <Page
+        variant="content"
+        className="max-w-3xl"
+      >
+        <PageHeader
+          title={t("title")}
+          description={t("text")}
+        />
         <KindsEditor kinds={kinds} />
       </Page>
     );

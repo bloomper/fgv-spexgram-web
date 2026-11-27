@@ -15,9 +15,11 @@ describe("an album as a zip", () => {
   });
 
   it("streams the zip from the server, sandboxed and not sniffed", async () => {
-    apiFetch.mockResolvedValue(new Response("zip", {
-      headers: { "content-type": "application/zip", "content-disposition": "attachment; filename=\"album.zip\"" },
-    }));
+    apiFetch.mockResolvedValue(
+      new Response("zip", {
+        headers: { "content-type": "application/zip", "content-disposition": 'attachment; filename="album.zip"' },
+      })
+    );
 
     const response = await GET(new NextRequest(`http://gram.test/api/albums/${ID}/zip`), params(ID));
 

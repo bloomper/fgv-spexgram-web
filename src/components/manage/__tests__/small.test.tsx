@@ -25,17 +25,43 @@ vi.mock("@bloomper/fgv-web-ui/shell/dialogs", () => ({ useDialogs: () => mocks.d
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.dialogs = makeDialogs();
-  [...Object.values(mocks.manage), ...Object.values(mocks.app)].forEach(action => action.mockResolvedValue({ ok: true, data: null }));
+  [...Object.values(mocks.manage), ...Object.values(mocks.app)].forEach((action) =>
+    action.mockResolvedValue({ ok: true, data: null })
+  );
 });
 
 describe("ReportHandling", () => {
   const reports = [
-    { id: "r1", reason: "I_AM_IN_IT" as const, message: "Det är jag", status: "OPEN" as const, reporter: "besok@example.org", byVisitor: true,
+    {
+      id: "r1",
+      reason: "I_AM_IN_IT" as const,
+      message: "Det är jag",
+      status: "OPEN" as const,
+      reporter: "besok@example.org",
+      byVisitor: true,
       createdAt: "2026-11-01T10:00:00Z",
-      item: { id: "i1", caption: "Finalen", type: "PHOTO" as const, visibility: "PUBLIC" as const, effectiveVisibility: "MEMBERS" as const,
-        media: { thumbnailUrl: "t" }, album: { id: "a1", title: "Nobel 1975" } } },
-    { id: "r2", reason: "OTHER" as const, status: "HANDLED" as const, reporter: "Tina", byVisitor: false, outcome: null,
-      outcomeMessage: "Inget att göra", createdAt: "2026-11-01T10:00:00Z", handledAt: "2026-11-02T10:00:00Z", item: null },
+      item: {
+        id: "i1",
+        caption: "Finalen",
+        type: "PHOTO" as const,
+        visibility: "PUBLIC" as const,
+        effectiveVisibility: "MEMBERS" as const,
+        media: { thumbnailUrl: "t" },
+        album: { id: "a1", title: "Nobel 1975" },
+      },
+    },
+    {
+      id: "r2",
+      reason: "OTHER" as const,
+      status: "HANDLED" as const,
+      reporter: "Tina",
+      byVisitor: false,
+      outcome: null,
+      outcomeMessage: "Inget att göra",
+      createdAt: "2026-11-01T10:00:00Z",
+      handledAt: "2026-11-02T10:00:00Z",
+      item: null,
+    },
   ];
 
   it("says when there are no reports", () => {
@@ -64,7 +90,12 @@ describe("ReportHandling", () => {
 
 describe("TrashAlbum", () => {
   it("trashes once confirmed and restores without asking", async () => {
-    const { rerender } = render(<TrashAlbum albumId="a1" trashed={false} />);
+    const { rerender } = render(
+      <TrashAlbum
+        albumId="a1"
+        trashed={false}
+      />
+    );
 
     mocks.dialogs.confirm.mockResolvedValueOnce(false);
     await userEvent.click(screen.getByRole("button", { name: "trash" }));
@@ -72,7 +103,12 @@ describe("TrashAlbum", () => {
     await userEvent.click(screen.getByRole("button", { name: "trash" }));
     await waitFor(() => expect(mocks.router.push).toHaveBeenCalledWith("/manage/albums"));
 
-    rerender(<TrashAlbum albumId="a1" trashed />);
+    rerender(
+      <TrashAlbum
+        albumId="a1"
+        trashed
+      />
+    );
     mocks.manage.trashAlbumAction.mockResolvedValueOnce({ ok: false, message: "Fel" });
     await userEvent.click(screen.getByRole("button", { name: "restore" }));
     await waitFor(() => expect(mocks.toast.error).toHaveBeenCalledWith("Fel"));
@@ -89,9 +125,16 @@ describe("SuggestForm", () => {
     await userEvent.selectOptions(screen.getByLabelText("kind"), "k1");
     mocks.app.suggestAlbumAction.mockResolvedValueOnce({ ok: true, data: "a9" });
     await userEvent.click(screen.getByRole("button", { name: "send" }));
-    await waitFor(() => expect(mocks.app.suggestAlbumAction).toHaveBeenCalledWith({
-      title: "Sittning", dateFrom: null, dateTo: null, place: null, description: null, kindId: "k1",
-    }));
+    await waitFor(() =>
+      expect(mocks.app.suggestAlbumAction).toHaveBeenCalledWith({
+        title: "Sittning",
+        dateFrom: null,
+        dateTo: null,
+        place: null,
+        description: null,
+        kindId: "k1",
+      })
+    );
     await waitFor(() => expect(mocks.router.push).toHaveBeenCalledWith("/albums/a9/contribute"));
 
     await userEvent.type(screen.getByLabelText("titleLabel"), "Igen");
@@ -103,7 +146,12 @@ describe("SuggestForm", () => {
 
 describe("WithdrawButton", () => {
   it("withdraws a contribution once confirmed", async () => {
-    render(<WithdrawButton itemId="i1" name="a.jpg" />);
+    render(
+      <WithdrawButton
+        itemId="i1"
+        name="a.jpg"
+      />
+    );
     const button = screen.getByRole("button", { name: `withdrawOf:${JSON.stringify({ name: "a.jpg" })}` });
 
     mocks.dialogs.confirm.mockResolvedValueOnce(false);

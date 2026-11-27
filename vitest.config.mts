@@ -27,7 +27,14 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "html", "lcov", "json-summary", "json"],
       reportsDirectory: "./coverage",
-      include: ["src/utils/**", "src/hooks/**", "src/lib/**", "src/app/api/**", "src/app/stats/**", "src/components/**"],
+      include: [
+        "src/utils/**",
+        "src/hooks/**",
+        "src/lib/**",
+        "src/app/api/**",
+        "src/app/stats/**",
+        "src/components/**",
+      ],
       exclude: ["**/*.d.ts", "**/__tests__/**", "src/hooks/use-mobile.ts", "src/components/ui/**"],
       thresholds: {
         statements: 75,

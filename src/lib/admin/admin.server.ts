@@ -72,6 +72,7 @@ export const maintenanceJobRun = async (job: MaintenanceJob) =>
 export const getImmichStatus = async () => (await runQuery(ImmichStatusQuery, {}))?.immichStatus;
 export const immichJobRun = (itemIds: string[], job: ImmichJob) => runMutation(ImmichJobRunMutation, { itemIds, job });
 export const albumKindCreate = (input: AlbumKindInput) => runMutation(AlbumKindCreateMutation, { input });
-export const albumKindUpdate = (id: string, input: AlbumKindInput) => runMutation(AlbumKindUpdateMutation, { id, input });
+export const albumKindUpdate = (id: string, input: AlbumKindInput) =>
+  runMutation(AlbumKindUpdateMutation, { id, input });
 export const albumKindsReorder = (ids: string[]) => runMutation(AlbumKindsReorderMutation, { ids });
 export const albumKindDelete = (id: string) => runMutation(AlbumKindDeleteMutation, { id });

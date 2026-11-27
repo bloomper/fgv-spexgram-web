@@ -9,11 +9,13 @@ describe("Better Auth's routes", () => {
     const { auth } = await import("@/auth");
 
     for (const path of ["/get-access-token", "/refresh-token", "/account-info"]) {
-      const response = await auth.handler(new Request(`http://localhost:3004/api/auth${path}`, {
-        method: path === "/account-info" ? "GET" : "POST",
-        headers: { "content-type": "application/json", origin: "http://localhost:3004" },
-        body: path === "/account-info" ? undefined : JSON.stringify({ providerId: "keycloak" }),
-      }));
+      const response = await auth.handler(
+        new Request(`http://localhost:3004/api/auth${path}`, {
+          method: path === "/account-info" ? "GET" : "POST",
+          headers: { "content-type": "application/json", origin: "http://localhost:3004" },
+          body: path === "/account-info" ? undefined : JSON.stringify({ providerId: "keycloak" }),
+        })
+      );
 
       expect(response.status, path).toBe(404);
     }

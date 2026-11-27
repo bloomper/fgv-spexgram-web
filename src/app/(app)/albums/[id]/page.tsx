@@ -63,21 +63,34 @@ export default async function AlbumPage({ params }: Props) {
   return (
     <Page variant="content">
       <header className="space-y-3">
-        <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
-          <Link href="/albums" className="hover:text-link">{t("albums")}</Link>
+        <nav
+          aria-label={t("breadcrumb")}
+          className="text-muted-foreground text-sm"
+        >
+          <Link
+            href="/albums"
+            className="hover:text-link"
+          >
+            {t("albums")}
+          </Link>
         </nav>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{album.title}</h1>
-            <p className="text-sm text-muted-foreground">
-              {[period, album.place, kindName(album.kind, locale), t("itemCount", { count: album.itemCount })].filter(Boolean).join(" · ")}
+            <p className="text-muted-foreground text-sm">
+              {[period, album.place, kindName(album.kind, locale), t("itemCount", { count: album.itemCount })]
+                .filter(Boolean)
+                .join(" · ")}
             </p>
             {album.spex.length > 0 && (
               <p className="text-sm">
                 {album.spex.map((spex, index) => (
                   <span key={spex.id}>
                     {index > 0 && ", "}
-                    <Link href={`/spex/${spex.familyId}`} className="text-link hover:text-link/80">
+                    <Link
+                      href={`/spex/${spex.familyId}`}
+                      className="text-link hover:text-link/80"
+                    >
                       {[spex.title, spex.year].filter(Boolean).join(" ")}
                     </Link>
                     {spex.revival && <span className="text-muted-foreground"> ({t("revival")})</span>}
@@ -86,35 +99,68 @@ export default async function AlbumPage({ params }: Props) {
                 ))}
               </p>
             )}
-            {(viewer.editor || (viewer.member && album.visibility === "PUBLIC")) && <VisibilityBadge visibility={album.visibility} />}
+            {(viewer.editor || (viewer.member && album.visibility === "PUBLIC")) && (
+              <VisibilityBadge visibility={album.visibility} />
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             {canContribute && (
-              <Button variant="outline" size="sm" nativeButton={false} render={<Link href={`/albums/${album.id}/contribute`} />}>
+              <Button
+                variant="outline"
+                size="sm"
+                nativeButton={false}
+                render={<Link href={`/albums/${album.id}/contribute`} />}
+              >
                 <ImagePlus /> {t("contribute")}
               </Button>
             )}
             {canZip && (
-              <Button variant="outline" size="sm" nativeButton={false}
-                      render={<a href={`/api/albums/${album.id}/zip`} download />}>
+              <Button
+                variant="outline"
+                size="sm"
+                nativeButton={false}
+                render={
+                  <a
+                    href={`/api/albums/${album.id}/zip`}
+                    download
+                  />
+                }
+              >
                 <Download /> {t("zip")}
               </Button>
             )}
             {viewer.editor && (
-              <Button size="sm" nativeButton={false} render={<Link href={`/manage/albums/${album.id}`} />}>
+              <Button
+                size="sm"
+                nativeButton={false}
+                render={<Link href={`/manage/albums/${album.id}`} />}
+              >
                 <Pencil /> {t("edit")}
               </Button>
             )}
           </div>
         </div>
-        {album.description && <p className="max-w-4xl whitespace-pre-line text-pretty">{album.description}</p>}
+        {album.description && <p className="max-w-4xl text-pretty whitespace-pre-line">{album.description}</p>}
       </header>
 
       {album.items.items.length > 0 ? (
-        <Gallery items={album.items.items} albumId={album.id} totalCount={album.items.totalCount} pageSize={PAGE_SIZE}
-                 options={{ canDownloadOriginals: data?.limits.canDownloadOriginals ?? false, report: viewer.report, albumTitle: album.title }} />
-      ) : <DataEmpty title={t("empty")} description={canContribute ? t("emptyContribute") : t("emptyText")} />}
-
+        <Gallery
+          items={album.items.items}
+          albumId={album.id}
+          totalCount={album.items.totalCount}
+          pageSize={PAGE_SIZE}
+          options={{
+            canDownloadOriginals: data?.limits.canDownloadOriginals ?? false,
+            report: viewer.report,
+            albumTitle: album.title,
+          }}
+        />
+      ) : (
+        <DataEmpty
+          title={t("empty")}
+          description={canContribute ? t("emptyContribute") : t("emptyText")}
+        />
+      )}
     </Page>
   );
 }

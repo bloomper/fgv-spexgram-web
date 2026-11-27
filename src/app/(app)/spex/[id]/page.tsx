@@ -15,9 +15,9 @@ type Albums = Awaited<ReturnType<typeof getSpexAlbums>>;
 
 /** The spex the page is about, as the albums carry it. */
 function spexOf(albums: Albums, id: string) {
-  const all = albums.flatMap(album => album.spex);
+  const all = albums.flatMap((album) => album.spex);
 
-  return all.find(spex => spex.id === id) ?? all.find(spex => spex.familyId === id) ?? null;
+  return all.find((spex) => spex.id === id) ?? all.find((spex) => spex.familyId === id) ?? null;
 }
 
 const nameOf = (spex: { title?: string | null; year?: number | null } | null) =>
@@ -27,13 +27,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const albums = ID.test(id) ? await getSpexAlbums(id).catch(() => []) : [];
   // Built from public albums and public covers only: a member's page view must not put a members' photo in the tags
-  const publicAlbums = albums.filter(album => album.visibility === "PUBLIC");
+  const publicAlbums = albums.filter((album) => album.visibility === "PUBLIC");
 
   if (publicAlbums.length === 0) {
     return privateMetadata();
   }
 
-  const cover = publicAlbums.map(album => album.cover).find(candidate => candidate?.effectiveVisibility === "PUBLIC" && candidate.media);
+  const cover = publicAlbums
+    .map((album) => album.cover)
+    .find((candidate) => candidate?.effectiveVisibility === "PUBLIC" && candidate.media);
   const title = nameOf(spexOf(publicAlbums, id));
 
   return publicMetadata({
@@ -64,12 +66,17 @@ export default async function SpexPage({ params }: Props) {
     <Page variant="content">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{nameOf(spex) || t("title")}</h1>
-        <p className="text-sm text-muted-foreground">
-          {[spex?.categoryName, spex?.revival ? t("revival") : null, t("albumCount", { count: albums.length })].filter(Boolean).join(" · ")}
+        <p className="text-muted-foreground text-sm">
+          {[spex?.categoryName, spex?.revival ? t("revival") : null, t("albumCount", { count: albums.length })]
+            .filter(Boolean)
+            .join(" · ")}
         </p>
-        <p className="text-sm text-muted-foreground">{t("text")}</p>
+        <p className="text-muted-foreground text-sm">{t("text")}</p>
       </div>
-      <AlbumGrid albums={albums} showVisibility={viewer.editor} />
+      <AlbumGrid
+        albums={albums}
+        showVisibility={viewer.editor}
+      />
     </Page>
   );
 }

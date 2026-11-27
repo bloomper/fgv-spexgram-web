@@ -17,11 +17,17 @@ export default async function ManageReportsPage({ searchParams }: { searchParams
 
     return (
       <Page variant="content">
-        <PageHeader title={t("title")} description={t("text")}/>
-        <LinkTabs label={t("tabs")} items={[
-          { href: "/manage/reports", label: t("open"), active: !handled },
-          { href: "/manage/reports?handled=1", label: t("handledTab"), active: handled },
-        ]} />
+        <PageHeader
+          title={t("title")}
+          description={t("text")}
+        />
+        <LinkTabs
+          label={t("tabs")}
+          items={[
+            { href: "/manage/reports", label: t("open"), active: !handled },
+            { href: "/manage/reports?handled=1", label: t("handledTab"), active: handled },
+          ]}
+        />
         <ReportHandling reports={reports} />
       </Page>
     );

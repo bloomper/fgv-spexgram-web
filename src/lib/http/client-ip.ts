@@ -11,5 +11,5 @@ export function clientIp(headers: Headers): string | null {
     headers.get("x-real-ip"),
   ];
 
-  return candidates.map(value => value?.trim()).find(value => value && IP.test(value)) ?? null;
+  return candidates.map((value) => value?.trim()).find((value) => value && IP.test(value)) ?? null;
 }

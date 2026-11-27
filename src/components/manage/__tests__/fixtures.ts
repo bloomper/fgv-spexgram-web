@@ -23,7 +23,13 @@ export function item(id: string, fields: Partial<GalleryItem> & Record<string, u
     mine: false,
     uploadedBy: null,
     originalFileName: null,
-    media: { thumbnailUrl: `https://media/${id}/t`, previewUrl: `https://media/${id}/p`, videoUrl: null, originalUrl: null, expiresAt: "2100-01-01T00:00:00Z" },
+    media: {
+      thumbnailUrl: `https://media/${id}/t`,
+      previewUrl: `https://media/${id}/p`,
+      videoUrl: null,
+      originalUrl: null,
+      expiresAt: "2100-01-01T00:00:00Z",
+    },
     ...fields,
   } as unknown as GalleryItem;
 }

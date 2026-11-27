@@ -28,7 +28,8 @@ export async function getViewer(): Promise<ViewerContext> {
     report: {
       // Visitors report with an email address and Turnstile; someone logged in without USER is a visitor to the server
       visitor: !hasAccess(roles),
-      turnstileSiteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || process.env.TURNSTILE_SITE_KEY?.trim() || null,
+      turnstileSiteKey:
+        process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || process.env.TURNSTILE_SITE_KEY?.trim() || null,
     },
   };
 }

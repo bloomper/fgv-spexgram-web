@@ -18,10 +18,14 @@ export type EditableKind = { id: string; nameSv: string; nameEn: string; isDefau
 
 type Names = { nameSv: string; nameEn: string };
 
-function NameFields({ idPrefix, names, onChange }: {
+function NameFields({
+  idPrefix,
+  names,
+  onChange,
+}: {
   idPrefix: string;
   names: Names;
-  onChange: (names: Names) => void
+  onChange: (names: Names) => void;
 }) {
   const t = useTranslations("AdminKinds");
 
@@ -29,13 +33,23 @@ function NameFields({ idPrefix, names, onChange }: {
     <div className="grid flex-1 gap-3 sm:grid-cols-2">
       <div className="space-y-1.5">
         <Label htmlFor={`${idPrefix}-sv`}>{t("nameSv")}</Label>
-        <Input id={`${idPrefix}-sv`} value={names.nameSv} maxLength={100} required
-               onChange={event => onChange({ ...names, nameSv: event.target.value })} />
+        <Input
+          id={`${idPrefix}-sv`}
+          value={names.nameSv}
+          maxLength={100}
+          required
+          onChange={(event) => onChange({ ...names, nameSv: event.target.value })}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor={`${idPrefix}-en`}>{t("nameEn")}</Label>
-        <Input id={`${idPrefix}-en`} value={names.nameEn} maxLength={100} required
-               onChange={event => onChange({ ...names, nameEn: event.target.value })} />
+        <Input
+          id={`${idPrefix}-en`}
+          value={names.nameEn}
+          maxLength={100}
+          required
+          onChange={(event) => onChange({ ...names, nameEn: event.target.value })}
+        />
       </div>
     </div>
   );
@@ -70,7 +84,7 @@ export function KindsEditor({ kinds }: { kinds: EditableKind[] }) {
     });
 
   const move = (index: number, by: number) => {
-    const ids = kinds.map(kind => kind.id);
+    const ids = kinds.map((kind) => kind.id);
 
     [ids[index], ids[index + by]] = [ids[index + by], ids[index]];
     run(() => reorderKindsAction(ids), t("saved"));
@@ -83,17 +97,41 @@ export function KindsEditor({ kinds }: { kinds: EditableKind[] }) {
           const name = kindName(kind, locale);
 
           return (
-            <li key={kind.id} className="px-3 py-3">
+            <li
+              key={kind.id}
+              className="px-3 py-3"
+            >
               {editing === kind.id ? (
-                <form className="flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={event => {
-                  event.preventDefault();
-                  run(() => updateKindAction(kind.id, { nameSv: draft.nameSv.trim(), nameEn: draft.nameEn.trim() }),
-                    t("saved"), () => setEditing(null));
-                }}>
-                  <NameFields idPrefix={`kind-${kind.id}`} names={draft} onChange={setDraft} />
+                <form
+                  className="flex flex-col gap-3 sm:flex-row sm:items-end"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    run(
+                      () => updateKindAction(kind.id, { nameSv: draft.nameSv.trim(), nameEn: draft.nameEn.trim() }),
+                      t("saved"),
+                      () => setEditing(null)
+                    );
+                  }}
+                >
+                  <NameFields
+                    idPrefix={`kind-${kind.id}`}
+                    names={draft}
+                    onChange={setDraft}
+                  />
                   <div className="flex gap-2">
-                    <Button type="button" variant="outline" onClick={() => setEditing(null)}>{t("cancel")}</Button>
-                    <Button type="submit" disabled={pending || !valid(draft)}>{t("save")}</Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setEditing(null)}
+                    >
+                      {t("cancel")}
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={pending || !valid(draft)}
+                    >
+                      {t("save")}
+                    </Button>
                   </div>
                 </form>
               ) : (
@@ -101,37 +139,59 @@ export function KindsEditor({ kinds }: { kinds: EditableKind[] }) {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="font-medium">{kind.nameSv}</span>
-                      <span className="text-sm text-muted-foreground">/ {kind.nameEn}</span>
+                      <span className="text-muted-foreground text-sm">/ {kind.nameEn}</span>
                       {kind.isDefault && <Badge variant="secondary">{t("default")}</Badge>}
                     </div>
-                    <div className="text-xs text-muted-foreground">{t("albums", { count: kind.albumCount })}</div>
+                    <div className="text-muted-foreground text-xs">{t("albums", { count: kind.albumCount })}</div>
                   </div>
-                  <Button variant="ghost" size="icon" disabled={pending || i === 0}
-                          aria-label={t("moveUp", { name })} onClick={() => move(i, -1)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    disabled={pending || i === 0}
+                    aria-label={t("moveUp", { name })}
+                    onClick={() => move(i, -1)}
+                  >
                     <ArrowUp />
                   </Button>
-                  <Button variant="ghost" size="icon" disabled={pending || i === kinds.length - 1}
-                          aria-label={t("moveDown", { name })} onClick={() => move(i, 1)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    disabled={pending || i === kinds.length - 1}
+                    aria-label={t("moveDown", { name })}
+                    onClick={() => move(i, 1)}
+                  >
                     <ArrowDown />
                   </Button>
-                  <Button variant="ghost" size="icon" disabled={pending} aria-label={t("edit", { name })}
-                          onClick={() => {
-                            setDraft({ nameSv: kind.nameSv, nameEn: kind.nameEn });
-                            setEditing(kind.id);
-                          }}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    disabled={pending}
+                    aria-label={t("edit", { name })}
+                    onClick={() => {
+                      setDraft({ nameSv: kind.nameSv, nameEn: kind.nameEn });
+                      setEditing(kind.id);
+                    }}
+                  >
                     <Pencil />
                   </Button>
-                  <Button variant="ghost" size="icon" disabled={pending || kind.albumCount > 0 || kinds.length === 1}
-                          aria-label={t("deleteKind", { name })} title={kind.albumCount > 0 ? t("inUse") : undefined}
-                          onClick={async () => {
-                            if (await confirm({
-                              title: t("confirmDelete", { name }),
-                              confirmLabel: t("delete"),
-                              destructive: true,
-                            })) {
-                              run(() => deleteKindAction(kind.id), t("deleted"));
-                            }
-                          }}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    disabled={pending || kind.albumCount > 0 || kinds.length === 1}
+                    aria-label={t("deleteKind", { name })}
+                    title={kind.albumCount > 0 ? t("inUse") : undefined}
+                    onClick={async () => {
+                      if (
+                        await confirm({
+                          title: t("confirmDelete", { name }),
+                          confirmLabel: t("delete"),
+                          destructive: true,
+                        })
+                      ) {
+                        run(() => deleteKindAction(kind.id), t("deleted"));
+                      }
+                    }}
+                  >
                     <Trash2 />
                   </Button>
                 </div>
@@ -140,13 +200,29 @@ export function KindsEditor({ kinds }: { kinds: EditableKind[] }) {
           );
         })}
       </ol>
-      <form className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-end" onSubmit={event => {
-        event.preventDefault();
-        run(() => createKindAction({ nameSv: added.nameSv.trim(), nameEn: added.nameEn.trim() }), t("added"),
-          () => setAdded({ nameSv: "", nameEn: "" }));
-      }}>
-        <NameFields idPrefix="new-kind" names={added} onChange={setAdded} />
-        <Button type="submit" disabled={pending || !valid(added)}><Plus />{t("add")}</Button>
+      <form
+        className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-end"
+        onSubmit={(event) => {
+          event.preventDefault();
+          run(
+            () => createKindAction({ nameSv: added.nameSv.trim(), nameEn: added.nameEn.trim() }),
+            t("added"),
+            () => setAdded({ nameSv: "", nameEn: "" })
+          );
+        }}
+      >
+        <NameFields
+          idPrefix="new-kind"
+          names={added}
+          onChange={setAdded}
+        />
+        <Button
+          type="submit"
+          disabled={pending || !valid(added)}
+        >
+          <Plus />
+          {t("add")}
+        </Button>
       </form>
     </div>
   );

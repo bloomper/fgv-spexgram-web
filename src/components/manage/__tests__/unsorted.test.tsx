@@ -26,7 +26,10 @@ describe("UnsortedSorter", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.dialogs = makeDialogs();
-    mocks.actions.albumTitlesAction.mockResolvedValue({ ok: true, data: [{ id: "a1", title: "Nobel 1975", dateFrom: "1975-02-14" }] });
+    mocks.actions.albumTitlesAction.mockResolvedValue({
+      ok: true,
+      data: [{ id: "a1", title: "Nobel 1975", dateFrom: "1975-02-14" }],
+    });
     mocks.actions.updateItemsAction.mockResolvedValue({ ok: true, data: 0 });
     mocks.actions.albumFromItemsAction.mockResolvedValue({ ok: true, data: "a9" });
   });
@@ -62,7 +65,9 @@ describe("UnsortedSorter", () => {
     mocks.dialogs.choose.mockResolvedValueOnce("");
     mocks.actions.albumFromItemsAction.mockResolvedValueOnce({ ok: false, message: "Fel" });
     await userEvent.click(screen.getByRole("button", { name: "move" }));
-    await waitFor(() => expect(mocks.actions.albumFromItemsAction).toHaveBeenLastCalledWith("Svar", "2026-10-01", ["u1", "u2"]));
+    await waitFor(() =>
+      expect(mocks.actions.albumFromItemsAction).toHaveBeenLastCalledWith("Svar", "2026-10-01", ["u1", "u2"])
+    );
     await waitFor(() => expect(mocks.toast.error).toHaveBeenCalledWith("Fel"));
   });
 

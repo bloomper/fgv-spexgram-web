@@ -32,7 +32,16 @@ const items = [
 ];
 
 const manager = (props: Partial<Parameters<typeof ItemsManager>[0]> = {}) =>
-  render(<ItemsManager albumId="a1" albumTitle="Nobel 1975" items={items} coverId="i2" spexflixUrl="https://spexflix" {...props} />);
+  render(
+    <ItemsManager
+      albumId="a1"
+      albumTitle="Nobel 1975"
+      items={items}
+      coverId="i2"
+      spexflixUrl="https://spexflix"
+      {...props}
+    />
+  );
 
 const selectFirstTwo = async () => {
   await userEvent.click(screen.getByRole("checkbox", { name: /select.*Finalen/ }));
@@ -43,7 +52,7 @@ describe("ItemsManager", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.dialogs = makeDialogs();
-    Object.values(mocks.actions).forEach(action => action.mockResolvedValue({ ok: true, data: 0 }));
+    Object.values(mocks.actions).forEach((action) => action.mockResolvedValue({ ok: true, data: 0 }));
   });
 
   it("says when the album has no items", () => {
@@ -73,14 +82,18 @@ describe("ItemsManager", () => {
     manager();
     await selectFirstTwo();
     await userEvent.click(screen.getByRole("button", { name: "caption" }));
-    await waitFor(() => expect(mocks.actions.updateItemsAction).toHaveBeenCalledWith(["i1", "i2"], { caption: "Svar" }, ["a1"]));
+    await waitFor(() =>
+      expect(mocks.actions.updateItemsAction).toHaveBeenCalledWith(["i1", "i2"], { caption: "Svar" }, ["a1"])
+    );
     await waitFor(() => expect(mocks.refresh).toHaveBeenCalled());
     expect(mocks.track).toHaveBeenCalledWith("items-caption", { count: 2 });
 
     await selectFirstTwo();
     mocks.actions.updateItemsAction.mockResolvedValueOnce({ ok: true, data: 1 });
     await userEvent.click(screen.getByRole("button", { name: "photographer" }));
-    await waitFor(() => expect(mocks.actions.updateItemsAction).toHaveBeenLastCalledWith(["i1", "i2"], { photographer: "Svar" }, ["a1"]));
+    await waitFor(() =>
+      expect(mocks.actions.updateItemsAction).toHaveBeenLastCalledWith(["i1", "i2"], { photographer: "Svar" }, ["a1"])
+    );
     await waitFor(() => expect(mocks.toast.warning).toHaveBeenCalled());
 
     // Cancelled prompts change nothing
@@ -103,12 +116,16 @@ describe("ItemsManager", () => {
     mocks.dialogs.choose.mockResolvedValueOnce("PUBLIC");
     mocks.actions.updateItemsAction.mockResolvedValueOnce({ ok: false, message: "Nej" });
     await userEvent.click(screen.getByRole("button", { name: "visibility" }));
-    await waitFor(() => expect(mocks.actions.updateItemsAction).toHaveBeenCalledWith(["i1", "i2"], { visibility: "PUBLIC" }, []));
+    await waitFor(() =>
+      expect(mocks.actions.updateItemsAction).toHaveBeenCalledWith(["i1", "i2"], { visibility: "PUBLIC" }, [])
+    );
     await waitFor(() => expect(mocks.toast.error).toHaveBeenCalledWith("Nej"));
 
     mocks.dialogs.choose.mockResolvedValueOnce("UNPUBLISHED");
     await userEvent.click(screen.getByRole("button", { name: "visibility" }));
-    await waitFor(() => expect(mocks.actions.updateItemsAction).toHaveBeenLastCalledWith(["i1", "i2"], { visibility: "UNPUBLISHED" }, []));
+    await waitFor(() =>
+      expect(mocks.actions.updateItemsAction).toHaveBeenLastCalledWith(["i1", "i2"], { visibility: "UNPUBLISHED" }, [])
+    );
 
     await selectFirstTwo();
     await userEvent.click(screen.getByRole("button", { name: "visibility" }));
@@ -123,12 +140,18 @@ describe("ItemsManager", () => {
     await waitFor(() => expect(mocks.toast.error).toHaveBeenCalledWith("Borta"));
 
     mocks.actions.albumTitlesAction.mockResolvedValue({
-      ok: true, data: [{ id: "a1", title: "Nobel 1975", dateFrom: null }, { id: "a2", title: "Jubileum", dateFrom: "1998-05-01" }],
+      ok: true,
+      data: [
+        { id: "a1", title: "Nobel 1975", dateFrom: null },
+        { id: "a2", title: "Jubileum", dateFrom: "1998-05-01" },
+      ],
     });
     mocks.dialogs.choose.mockResolvedValueOnce("a2");
     await userEvent.click(screen.getByRole("button", { name: "move" }));
-    await waitFor(() => expect(mocks.actions.updateItemsAction).toHaveBeenCalledWith(["i1", "i2"], { albumId: "a2" }, ["a1"]));
-    expect(mocks.dialogs.choose.mock.calls[0][0].items?.map(choice => choice.id)).toEqual(["a2"]);
+    await waitFor(() =>
+      expect(mocks.actions.updateItemsAction).toHaveBeenCalledWith(["i1", "i2"], { albumId: "a2" }, ["a1"])
+    );
+    expect(mocks.dialogs.choose.mock.calls[0][0].items?.map((choice) => choice.id)).toEqual(["a2"]);
 
     await selectFirstTwo();
     await userEvent.click(screen.getByRole("button", { name: "move" }));
@@ -148,16 +171,31 @@ describe("ItemsManager", () => {
     await userEvent.type(screen.getByLabelText("latitude"), "57.7");
     await userEvent.type(screen.getByLabelText("longitude"), "11.9");
     await userEvent.click(screen.getByRole("button", { name: "save" }));
-    await waitFor(() => expect(mocks.actions.updateItemAction).toHaveBeenCalledWith("i1", "a1", expect.objectContaining({
-      caption: "Ny text", latitude: 57.7, longitude: 11.9, takenAt: "1975-02-14T20:00:00",
-    })));
+    await waitFor(() =>
+      expect(mocks.actions.updateItemAction).toHaveBeenCalledWith(
+        "i1",
+        "a1",
+        expect.objectContaining({
+          caption: "Ny text",
+          latitude: 57.7,
+          longitude: 11.9,
+          takenAt: "1975-02-14T20:00:00",
+        })
+      )
+    );
     await waitFor(() => expect(screen.queryByRole("heading", { name: "editTitle" })).not.toBeInTheDocument());
 
     await userEvent.click(screen.getByRole("button", { name: /editOf.*Finalen/ }));
     await userEvent.click(screen.getByRole("checkbox", { name: "removePosition" }));
     mocks.actions.updateItemAction.mockResolvedValueOnce({ ok: false, message: "Fel" });
     await userEvent.click(screen.getByRole("button", { name: "save" }));
-    await waitFor(() => expect(mocks.actions.updateItemAction).toHaveBeenLastCalledWith("i1", "a1", expect.objectContaining({ latitude: null, longitude: null })));
+    await waitFor(() =>
+      expect(mocks.actions.updateItemAction).toHaveBeenLastCalledWith(
+        "i1",
+        "a1",
+        expect.objectContaining({ latitude: null, longitude: null })
+      )
+    );
     await waitFor(() => expect(mocks.toast.error).toHaveBeenCalledWith("Fel"));
 
     await userEvent.click(screen.getByRole("button", { name: "makeCover" }));

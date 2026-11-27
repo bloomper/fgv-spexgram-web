@@ -11,8 +11,10 @@ export function VisibilityBadge({ visibility, className }: { visibility: Visibil
   const Icon = visibility === "PUBLIC" ? Globe : visibility === "MEMBERS" ? Users : Lock;
 
   return (
-    <Badge variant={visibility === "UNPUBLISHED" ? "destructive" : visibility === "PUBLIC" ? "default" : "secondary"}
-           className={className}>
+    <Badge
+      variant={visibility === "UNPUBLISHED" ? "destructive" : visibility === "PUBLIC" ? "default" : "secondary"}
+      className={className}
+    >
       <Icon aria-hidden /> {t(visibility)}
     </Badge>
   );

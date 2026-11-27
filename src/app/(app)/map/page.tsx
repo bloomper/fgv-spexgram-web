@@ -19,15 +19,31 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
     const t = await getTranslations("Map");
     const search = firstValues(await searchParams);
     const [items, filters, me, viewer] = await Promise.all([
-      getMapItems(toAlbumFilter(search)), getSearchFilters(), getMe(), getViewer(),
+      getMapItems(toAlbumFilter(search)),
+      getSearchFilters(),
+      getMe(),
+      getViewer(),
     ]);
 
     return (
       <Page>
-        <PageHeader title={t("title")} description={t("text")}/>
-        {filters && <AlbumFilters path="/map" search={search} categories={filters.categories} years={filters.years}
-                                  kinds={filters.albumKinds} />}
-        <ItemMap items={items} options={{ canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report }} />
+        <PageHeader
+          title={t("title")}
+          description={t("text")}
+        />
+        {filters && (
+          <AlbumFilters
+            path="/map"
+            search={search}
+            categories={filters.categories}
+            years={filters.years}
+            kinds={filters.albumKinds}
+          />
+        )}
+        <ItemMap
+          items={items}
+          options={{ canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report }}
+        />
       </Page>
     );
   });

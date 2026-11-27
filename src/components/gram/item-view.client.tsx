@@ -18,14 +18,18 @@ import { track } from "@/utils/umami";
  * address has run out (the page was left open for hours), loading fails and the item asks once for a new one, without
  * rendering the page again.
  */
-export function ItemView({ item: initial, canDownloadOriginals, report }: {
+export function ItemView({
+  item: initial,
+  canDownloadOriginals,
+  report,
+}: {
   item: GalleryItem;
   canDownloadOriginals: boolean;
-  report: ReportViewer
+  report: ReportViewer;
 }) {
   const t = useTranslations("Viewer");
   const locale = useLocale();
-  const [item, setItem] = useServerState(initial, value => value.id);
+  const [item, setItem] = useServerState(initial, (value) => value.id);
   const [reporting, setReporting] = useState(false);
   const renewed = useRef(false);
   const alt = altText(item, locale);
@@ -47,41 +51,81 @@ export function ItemView({ item: initial, canDownloadOriginals, report }: {
     <div className="space-y-3">
       <div className="flex max-h-[80vh] justify-center overflow-hidden rounded-lg bg-black">
         {isShowable(item) && item.type === "VIDEO" && item.media?.videoUrl ? (
-          <video key={item.media.videoUrl} controls playsInline preload="metadata" poster={item.media.previewUrl}
-                 className="max-h-[80vh] w-full" aria-label={alt} onError={() => void renew()} data-testid="item-video">
-            <source src={item.media.videoUrl} type="video/mp4" />
+          <video
+            key={item.media.videoUrl}
+            controls
+            playsInline
+            preload="metadata"
+            poster={item.media.previewUrl}
+            className="max-h-[80vh] w-full"
+            aria-label={alt}
+            onError={() => void renew()}
+            data-testid="item-video"
+          >
+            <source
+              src={item.media.videoUrl}
+              type="video/mp4"
+            />
           </video>
         ) : isShowable(item) && item.media ? (
           // eslint-disable-next-line @next/next/no-img-element -- signed addresses on the media server, never next/image
-          <img src={item.media.previewUrl} alt={alt} width={item.width ?? undefined} height={item.height ?? undefined}
-               className="h-auto max-h-[80vh] w-full object-contain"
-               onError={() => void renew()} data-testid="item-photo" />
+          <img
+            src={item.media.previewUrl}
+            alt={alt}
+            width={item.width ?? undefined}
+            height={item.height ?? undefined}
+            className="h-auto max-h-[80vh] w-full object-contain"
+            onError={() => void renew()}
+            data-testid="item-photo"
+          />
         ) : (
-          <ItemImage src={null} alt={alt} status={item.status} className="aspect-[4/3] w-full max-w-xl" />
+          <ItemImage
+            src={null}
+            alt={alt}
+            status={item.status}
+            className="aspect-[4/3] w-full max-w-xl"
+          />
         )}
       </div>
       <div className="flex flex-wrap gap-2">
         {item.media && item.type === "PHOTO" && (
-          <Button variant="outline" size="sm" onClick={() => {
-            track("item-download", { original: false });
-            void downloadFile(item.media!.previewUrl, downloadName(item, "preview"));
-          }}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              track("item-download", { original: false });
+              void downloadFile(item.media!.previewUrl, downloadName(item, "preview"));
+            }}
+          >
             <Download /> {t("downloadPreview")}
           </Button>
         )}
         {canDownloadOriginals && item.media?.originalUrl && (
-          <Button variant="outline" size="sm" onClick={() => {
-            track("item-download", { original: true });
-            void downloadFile(item.media!.originalUrl!, item.originalFileName ?? downloadName(item, "original"));
-          }}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              track("item-download", { original: true });
+              void downloadFile(item.media!.originalUrl!, item.originalFileName ?? downloadName(item, "original"));
+            }}
+          >
             <HardDriveDownload /> {t("downloadOriginal")}
           </Button>
         )}
-        <Button variant="outline" size="sm" onClick={() => setReporting(true)}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setReporting(true)}
+        >
           <Flag /> {t("report")}
         </Button>
       </div>
-      <ReportDialog itemId={item.id} open={reporting} onOpenChange={setReporting} viewer={report} />
+      <ReportDialog
+        itemId={item.id}
+        open={reporting}
+        onOpenChange={setReporting}
+        viewer={report}
+      />
     </div>
   );
 }

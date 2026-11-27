@@ -17,14 +17,32 @@ export default async function FavouritesPage() {
   return withPolicyPage(Policies.app.requireAccess, async () => {
     const t = await getTranslations("Favourites");
     const [months, viewer, me] = await Promise.all([getTimeline(true), getViewer(), getMe()]);
-    const options = { canDownloadOriginals: me?.limits.canDownloadOriginals ?? false, report: viewer.report, editor: viewer.editor };
+    const options = {
+      canDownloadOriginals: me?.limits.canDownloadOriginals ?? false,
+      report: viewer.report,
+      editor: viewer.editor,
+    };
 
     return (
       <Page>
-        <PageHeader title={t("title")} description={t("description")} />
-        {months && months.length > 0
-          ? <Timeline months={months} favourites options={options} member editor={viewer.editor} />
-          : <DataEmpty title={t("none")} description={t("noneText")} />}
+        <PageHeader
+          title={t("title")}
+          description={t("description")}
+        />
+        {months && months.length > 0 ? (
+          <Timeline
+            months={months}
+            favourites
+            options={options}
+            member
+            editor={viewer.editor}
+          />
+        ) : (
+          <DataEmpty
+            title={t("none")}
+            description={t("noneText")}
+          />
+        )}
       </Page>
     );
   });

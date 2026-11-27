@@ -33,7 +33,7 @@ type Report = {
     visibility: Visibility;
     effectiveVisibility: Visibility;
     media?: { thumbnailUrl: string } | null;
-    album?: { id: string; title: string } | null
+    album?: { id: string; title: string } | null;
   } | null;
 };
 
@@ -75,37 +75,69 @@ export function ReportHandling({ reports }: { reports: Report[] }) {
   };
 
   if (reports.length === 0) {
-    return <DataEmpty title={t("none")} description={null} />;
+    return (
+      <DataEmpty
+        title={t("none")}
+        description={null}
+      />
+    );
   }
   return (
     <ul className="divide-y rounded-lg border">
-      {reports.map(report => (
-        <li key={report.id} className="flex flex-wrap items-start gap-3 p-3" data-testid="report">
+      {reports.map((report) => (
+        <li
+          key={report.id}
+          className="flex flex-wrap items-start gap-3 p-3"
+          data-testid="report"
+        >
           <div className="size-20 shrink-0 overflow-hidden rounded">
-            {report.item
-              ? <Link href={`/items/${report.item.id}`}><ItemImage src={report.item.media?.thumbnailUrl} alt={report.item.caption ?? ""} type={report.item.type} fill /></Link>
-              : <ItemImage src={null} alt={t("itemGone")} fill />}
+            {report.item ? (
+              <Link href={`/items/${report.item.id}`}>
+                <ItemImage
+                  src={report.item.media?.thumbnailUrl}
+                  alt={report.item.caption ?? ""}
+                  type={report.item.type}
+                  fill
+                />
+              </Link>
+            ) : (
+              <ItemImage
+                src={null}
+                alt={t("itemGone")}
+                fill
+              />
+            )}
           </div>
           <div className="min-w-0 flex-1 space-y-1 text-sm">
             <p className="font-medium">{r(`reasons.${report.reason}`)}</p>
-            <p className="text-xs text-muted-foreground">
-              {[report.byVisitor ? t("visitor", { email: report.reporter ?? "" }) : report.reporter, formatInstant(report.createdAt),
-                report.item?.album?.title].filter(Boolean).join(" · ")}
+            <p className="text-muted-foreground text-xs">
+              {[
+                report.byVisitor ? t("visitor", { email: report.reporter ?? "" }) : report.reporter,
+                formatInstant(report.createdAt),
+                report.item?.album?.title,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
             </p>
             {report.message && <p className="whitespace-pre-line">{report.message}</p>}
             {report.item && <VisibilityBadge visibility={report.item.effectiveVisibility} />}
             {report.status === "HANDLED" && (
               <p className="text-xs">
-                <Badge variant="outline">{t(`outcome.${report.outcome ?? "KEPT"}`)}</Badge>{" "}
-                {report.outcomeMessage} <span className="text-muted-foreground">{formatInstant(report.handledAt)}</span>
+                <Badge variant="outline">{t(`outcome.${report.outcome ?? "KEPT"}`)}</Badge> {report.outcomeMessage}{" "}
+                <span className="text-muted-foreground">{formatInstant(report.handledAt)}</span>
               </p>
             )}
           </div>
           {report.status === "OPEN" && (
             <div className="flex flex-wrap gap-1">
-              {OUTCOMES.map(outcome => (
-                <Button key={outcome} size="sm" variant={outcome === "REMOVED" ? "destructive" : "outline"} disabled={pending}
-                        onClick={() => handle(report, outcome)}>
+              {OUTCOMES.map((outcome) => (
+                <Button
+                  key={outcome}
+                  size="sm"
+                  variant={outcome === "REMOVED" ? "destructive" : "outline"}
+                  disabled={pending}
+                  onClick={() => handle(report, outcome)}
+                >
                   {t(`action.${outcome}`)}
                 </Button>
               ))}

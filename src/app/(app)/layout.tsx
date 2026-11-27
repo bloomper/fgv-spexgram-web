@@ -21,19 +21,32 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const accountUrl = `${(process.env.KEYCLOAK_ISSUER ?? "").replace(/\/$/, "")}/account`;
   const applications = await getApplications();
   const loggedIn = session !== null;
-  const user = session ? { name: session.user.name, email: session.user.email, image: session.user.image ?? null } : null;
+  const user = session
+    ? { name: session.user.name, email: session.user.email, image: session.user.image ?? null }
+    : null;
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
       <DialogsProvider>
         <UploadsProvider>
           <SidebarProvider className="flex flex-col">
-            <SiteHeader applications={applications} loggedIn={loggedIn} />
+            <SiteHeader
+              applications={applications}
+              loggedIn={loggedIn}
+            />
             <div className="flex flex-1">
-              <AppSidebar roles={roles} accountUrl={accountUrl} user={user} />
+              <AppSidebar
+                roles={roles}
+                accountUrl={accountUrl}
+                user={user}
+              />
               <SidebarInset className="min-w-0">
                 {loggedIn && !hasAccess(roles) && (
-                  <div role="status" className="border-b bg-muted px-4 py-2 text-sm" data-testid="no-access-notice">
+                  <div
+                    role="status"
+                    className="bg-muted border-b px-4 py-2 text-sm"
+                    data-testid="no-access-notice"
+                  >
                     {t("notice", { email: session.user.email })}
                   </div>
                 )}

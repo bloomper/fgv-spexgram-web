@@ -56,7 +56,7 @@ endpoints for tus uploads and albums as zips; the files themselves come from the
 
 ## The public side
 
-Login is **not** required at the root. The `(app)` layout works with and without a session: visitors get *Logga in*
+Login is **not** required at the root. The `(app)` layout works with and without a session: visitors get _Logga in_
 (`LoginButton`, back to the page they were on through `/api/auth/login?returnTo=`), members their menu, and the sidebar
 shows only the pages each role opens (visitors: home, albums, search; a members' page typed in shows `LoginPrompt`
 with `kind="page"`). Nothing a visitor sees calls Keycloak: without a session cookie Better Auth does not
@@ -125,7 +125,7 @@ The theme, the shadcn components and the application shell come from `@bloomper/
   header that takes its estimated height (`estimateHeight`) until it comes near the screen and loads its items
   (`timelineItemsAction`, 200 a page), then days with sticky headers and a justified grid. The scrubber at the side
   jumps to a year and month. Thumbnails show Immich's thumbhash (`thumbhashUrl`, `src/utils/timeline.ts`) until they
-  load. `/favourites` is the same timeline with `favourites`. **Memories** (`Memories`) above it: *this day* a card a
+  load. `/favourites` is the same timeline with `favourites`. **Memories** (`Memories`) above it: _this day_ a card a
   year, and `premiereAlbums`; a card opens the viewer as a slideshow.
 - **Selecting** in the timeline: a check mark on hover, a long press on touch, a tap once something is selected,
   shift-click for a range, dragging over check marks; a day's header selects the day. `SelectionBar` downloads
@@ -153,12 +153,12 @@ The theme, the shadcn components and the application shell come from `@bloomper/
   viewer stays on its item, so a video playing there goes on.
 - **Editing** (`/manage/albums/[id]`, 200 items a page with `?page=`; `?item=` opens an item, also one on another page):
   drop zone, `ItemsManager` (check boxes; caption, photographer, visibility, move,
-  trash for the selection; an item's fields, position and *make cover* in `ItemEditor`), `VisibilityControl` (the
+  trash for the selection; an item's fields, position and _make cover_ in `ItemEditor`), `VisibilityControl` (the
   confirmation says how many items visitors will see: `publicAfter()`), `AlbumForm` with the shared `SpexPicker`, the
   trash and `RecordHistory`. Making items public in bulk is confirmed with their count.
 - **Review** (`/manage/contributions`): contributions per album (accept, accept and edit, reject with a message), with
   the photographer (the contributor's name by default) shown and editable, and album suggestions.
-- **Open reports win over bulk changes**: `albumSetVisibility` and `itemsUpdate` leave items an open *I am in it*
+- **Open reports win over bulk changes**: `albumSetVisibility` and `itemsUpdate` leave items an open _I am in it_
   report hides as they are and answer how many they `skipped`; the editor is told in a toast. **Reports** (`/manage/reports`): remove, corrected or keep, with a message to the reporter.
   **Unsorted** (`/manage/unsorted`): grouped by day; move the selection to an album or a new one
   (`albumFromItemsAction`). **Trash**: restore; admins delete for good, an album with or without its items.

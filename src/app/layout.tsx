@@ -27,7 +27,10 @@ async function RootProvider({ children }: { children: React.ReactNode }) {
   const messages = withFgvMessages(locale, (await import(`../../messages/${locale}.json`)).default);
 
   return (
-    <Provider locale={locale} messages={messages}>
+    <Provider
+      locale={locale}
+      messages={messages}
+    >
       {children}
     </Provider>
   );
@@ -44,23 +47,24 @@ export const metadata: Metadata = metaByLocale[defaultLocale] ?? metaByLocale.sv
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang={defaultLocale} suppressHydrationWarning>
-    <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-    <Suspense
-      fallback={
-        <div className="fixed inset-0 flex items-center justify-center">
-          <Spinner className="size-8" />
-        </div>
-      }
+    <html
+      lang={defaultLocale}
+      suppressHydrationWarning
     >
-      <RootProvider>
-        {children}
-      </RootProvider>
-    </Suspense>
-    <Suspense>
-      <Umami />
-    </Suspense>
-    </body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 flex items-center justify-center">
+              <Spinner className="size-8" />
+            </div>
+          }
+        >
+          <RootProvider>{children}</RootProvider>
+        </Suspense>
+        <Suspense>
+          <Umami />
+        </Suspense>
+      </body>
     </html>
   );
 }

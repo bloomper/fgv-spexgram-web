@@ -39,26 +39,42 @@ export default async function HomePage() {
     <Page variant="content">
       <section className="space-y-2">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("title")}</h1>
-        <p className="max-w-4xl whitespace-pre-line text-pretty text-muted-foreground">
+        <p className="text-muted-foreground max-w-4xl text-pretty whitespace-pre-line">
           {welcome || (viewer.member ? t("intro") : t("introVisitor"))}
         </p>
         {contactEmail && (
-          <p className="text-sm text-muted-foreground">
-            {t("contact")} <a className="text-link hover:text-link/80" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+          <p className="text-muted-foreground text-sm">
+            {t("contact")}{" "}
+            <a
+              className="text-link hover:text-link/80"
+              href={`mailto:${contactEmail}`}
+            >
+              {contactEmail}
+            </a>
           </p>
         )}
       </section>
       {memories && (
-        <Memories thisDay={memories.thisDayInHistory} premiereAlbums={memories.premiereAlbums} options={options}
-                  now={new Date().toISOString()} />
+        <Memories
+          thisDay={memories.thisDayInHistory}
+          premiereAlbums={memories.premiereAlbums}
+          options={options}
+          now={new Date().toISOString()}
+        />
       )}
-      <HomeSection id="home-browse" title={t("browse")}>
+      <HomeSection
+        id="home-browse"
+        title={t("browse")}
+      >
         <ul className="grid gap-3 sm:grid-cols-3">
-          {links.map(link => (
+          {links.map((link) => (
             <li key={link.href}>
-              <Link href={link.href} className="block h-full rounded-lg border p-4 transition-colors hover:bg-accent">
+              <Link
+                href={link.href}
+                className="hover:bg-accent block h-full rounded-lg border p-4 transition-colors"
+              >
                 <span className="font-medium">{link.title}</span>
-                <span className="mt-1 block text-sm text-muted-foreground">{link.text}</span>
+                <span className="text-muted-foreground mt-1 block text-sm">{link.text}</span>
               </Link>
             </li>
           ))}

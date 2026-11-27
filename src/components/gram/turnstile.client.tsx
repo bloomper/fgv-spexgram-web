@@ -28,7 +28,8 @@ function loadTurnstile(): Promise<TurnstileApi> {
 
       script.src = SCRIPT;
       script.async = true;
-      script.onload = () => window.turnstile ? resolve(window.turnstile) : reject(new Error("Turnstile did not load"));
+      script.onload = () =>
+        window.turnstile ? resolve(window.turnstile) : reject(new Error("Turnstile did not load"));
       script.onerror = () => {
         loading = null;
         reject(new Error("Turnstile did not load"));
@@ -43,10 +44,14 @@ function loadTurnstile(): Promise<TurnstileApi> {
  * Cloudflare Turnstile's widget, for visitors' reports. It hands a token to `onToken`, and null when the token runs out
  * or the check fails; the server verifies the token.
  */
-export function Turnstile({ siteKey, onToken, onError }: {
+export function Turnstile({
+  siteKey,
+  onToken,
+  onError,
+}: {
   siteKey: string;
   onToken: (token: string | null) => void;
-  onError?: () => void
+  onError?: () => void;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const locale = useLocale();
@@ -62,23 +67,26 @@ export function Turnstile({ siteKey, onToken, onError }: {
     let widgetId: string | null = null;
     let cancelled = false;
 
-    loadTurnstile().then(api => {
-      if (cancelled || !container.current) {
-        return;
-      }
-      widgetId = api.render(container.current, {
-        sitekey: siteKey,
-        language: locale,
-        // The normal widget is 300 px wide, more than a dialog has on a narrow phone
-        size: container.current.clientWidth < 300 ? "compact" : "normal",
-        callback: (token: string) => onTokenRef.current(token),
-        "expired-callback": () => onTokenRef.current(null),
-        "error-callback": () => {
-          onTokenRef.current(null);
-          onErrorRef.current?.();
-        },
-      });
-    }, () => onErrorRef.current?.());
+    loadTurnstile().then(
+      (api) => {
+        if (cancelled || !container.current) {
+          return;
+        }
+        widgetId = api.render(container.current, {
+          sitekey: siteKey,
+          language: locale,
+          // The normal widget is 300 px wide, more than a dialog has on a narrow phone
+          size: container.current.clientWidth < 300 ? "compact" : "normal",
+          callback: (token: string) => onTokenRef.current(token),
+          "expired-callback": () => onTokenRef.current(null),
+          "error-callback": () => {
+            onTokenRef.current(null);
+            onErrorRef.current?.();
+          },
+        });
+      },
+      () => onErrorRef.current?.()
+    );
 
     return () => {
       cancelled = true;
@@ -88,5 +96,11 @@ export function Turnstile({ siteKey, onToken, onError }: {
     };
   }, [siteKey, locale]);
 
-  return <div ref={container} data-testid="turnstile" className="min-h-[65px] w-full" />;
+  return (
+    <div
+      ref={container}
+      data-testid="turnstile"
+      className="min-h-[65px] w-full"
+    />
+  );
 }

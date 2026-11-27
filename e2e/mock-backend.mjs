@@ -21,7 +21,7 @@ const PERSONAS = {
   viewer: { sub: "p-viewer", name: "Tina Tittare", email: "tina@example.org", roles: ["USER"] },
   noaccess: { sub: "p-noaccess", name: "Nils Nekad", email: "nils@example.org", roles: [] },
 };
-const bySub = Object.fromEntries(Object.values(PERSONAS).map(persona => [persona.sub, persona]));
+const bySub = Object.fromEntries(Object.values(PERSONAS).map((persona) => [persona.sub, persona]));
 let currentPersona = "admin";
 
 class GraphQLError extends Error {
@@ -32,33 +32,92 @@ class GraphQLError extends Error {
 }
 
 /** The UUID the server would give the entity numbered n here. */
-const uuidOf = n => `00000000-0000-7000-8000-${String(n).padStart(12, "0")}`;
+const uuidOf = (n) => `00000000-0000-7000-8000-${String(n).padStart(12, "0")}`;
 
 // A 4×3 PNG, the only image the mock media server has
-const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAEklEQVR4nGP4z8AARwyEOQAA/5EL9bP8WbIAAAAASUVORK5CYII=", "base64");
+const PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAEklEQVR4nGP4z8AARwyEOQAA/5EL9bP8WbIAAAAASUVORK5CYII=",
+  "base64"
+);
 
 const SPEX = [
-  { id: uuidOf(1), title: "Nobel", year: 1975, revival: false, parentId: null, familyId: uuidOf(1), categoryId: uuidOf(1), categoryName: "Chalmersspexet" },
-  { id: uuidOf(2), title: "Nobel", year: 2026, revival: true, parentId: uuidOf(1), familyId: uuidOf(1), categoryId: uuidOf(1), categoryName: "Chalmersspexet" },
-  { id: uuidOf(3), title: "Statyerna", year: 1990, revival: false, parentId: null, familyId: uuidOf(3), categoryId: uuidOf(1), categoryName: "Chalmersspexet" },
+  {
+    id: uuidOf(1),
+    title: "Nobel",
+    year: 1975,
+    revival: false,
+    parentId: null,
+    familyId: uuidOf(1),
+    categoryId: uuidOf(1),
+    categoryName: "Chalmersspexet",
+  },
+  {
+    id: uuidOf(2),
+    title: "Nobel",
+    year: 2026,
+    revival: true,
+    parentId: uuidOf(1),
+    familyId: uuidOf(1),
+    categoryId: uuidOf(1),
+    categoryName: "Chalmersspexet",
+  },
+  {
+    id: uuidOf(3),
+    title: "Statyerna",
+    year: 1990,
+    revival: false,
+    parentId: null,
+    familyId: uuidOf(3),
+    categoryId: uuidOf(1),
+    categoryName: "Chalmersspexet",
+  },
 ];
 const CATEGORIES = [{ id: uuidOf(1), name: "Chalmersspexet" }];
 const RANK = { UNPUBLISHED: 0, MEMBERS: 1, PUBLIC: 2 };
 
 function album(n, title, extra = {}) {
   return {
-    id: uuidOf(n), title, kindId: uuidOf(901), spexIds: [uuidOf(1)], dateFrom: "1975-02-14", dateTo: null,
-    place: "Chalmers kårhus", description: null, visibility: "MEMBERS", coverItemId: null, suggestedBy: null,
-    trashedAt: null, createdAt: "2026-10-01T10:00:00Z", lastModifiedAt: null, ...extra,
+    id: uuidOf(n),
+    title,
+    kindId: uuidOf(901),
+    spexIds: [uuidOf(1)],
+    dateFrom: "1975-02-14",
+    dateTo: null,
+    place: "Chalmers kårhus",
+    description: null,
+    visibility: "MEMBERS",
+    coverItemId: null,
+    suggestedBy: null,
+    trashedAt: null,
+    createdAt: "2026-10-01T10:00:00Z",
+    lastModifiedAt: null,
+    ...extra,
   };
 }
 
 function item(n, albumN, extra = {}) {
   return {
-    id: uuidOf(n), albumId: albumN ? uuidOf(albumN) : null, type: "PHOTO", status: "READY", failure: null,
-    takenAt: "1975-02-14T20:00:00", caption: null, photographer: "Foto: Anna Andersson", latitude: null, longitude: null,
-    width: 1600, height: 1200, durationMs: null, visibility: "MEMBERS", contributionStatus: null, owner: "p-editor",
-    originalFileName: `IMG_${n}.jpg`, fileSize: 2_000_000, trashedAt: null, createdAt: "2026-10-01T10:00:00Z", ...extra,
+    id: uuidOf(n),
+    albumId: albumN ? uuidOf(albumN) : null,
+    type: "PHOTO",
+    status: "READY",
+    failure: null,
+    takenAt: "1975-02-14T20:00:00",
+    caption: null,
+    photographer: "Foto: Anna Andersson",
+    latitude: null,
+    longitude: null,
+    width: 1600,
+    height: 1200,
+    durationMs: null,
+    visibility: "MEMBERS",
+    contributionStatus: null,
+    owner: "p-editor",
+    originalFileName: `IMG_${n}.jpg`,
+    fileSize: 2_000_000,
+    trashedAt: null,
+    createdAt: "2026-10-01T10:00:00Z",
+    ...extra,
   };
 }
 
@@ -73,7 +132,11 @@ function resetState() {
       { id: uuidOf(903), nameSv: "Fest", nameEn: "Party", position: 3 },
     ],
     albums: [
-      album(10, "Nobel 1975 – premiären", { visibility: "PUBLIC", description: "Premiären i kårhuset.", coverItemId: uuidOf(101) }),
+      album(10, "Nobel 1975 – premiären", {
+        visibility: "PUBLIC",
+        description: "Premiären i kårhuset.",
+        coverItemId: uuidOf(101),
+      }),
       album(20, "Sittning efter premiären", { kindId: uuidOf(903), dateFrom: "1975-02-15" }),
       album(30, "Opublicerat album", { visibility: "UNPUBLISHED", spexIds: [uuidOf(3)], dateFrom: "1990-03-01" }),
       album(40, "Repetitioner våren 1975", { kindId: uuidOf(902), dateFrom: "1975-01-10", dateTo: "1975-02-10" }),
@@ -82,32 +145,101 @@ function resetState() {
       item(101, 10, { visibility: "PUBLIC", caption: "Finalen med hela ensemblen" }),
       item(102, 10, { visibility: "PUBLIC", caption: "Kärleksduetten", takenAt: "1975-02-14T20:30:00" }),
       item(103, 10, { visibility: "MEMBERS", caption: "Bakom scenen", takenAt: "1975-02-14T21:00:00" }),
-      item(104, 10, { visibility: "PUBLIC", type: "VIDEO", caption: "Ouvertyren", durationMs: 30000, width: 1280, height: 720, takenAt: "1975-02-14T19:00:00", originalFileName: "ouvertyr.mp4" }),
-      item(201, 20, { caption: "Sittningen börjar", takenAt: "1975-02-15T19:00:00", latitude: 57.6896, longitude: 11.9744 }),
+      item(104, 10, {
+        visibility: "PUBLIC",
+        type: "VIDEO",
+        caption: "Ouvertyren",
+        durationMs: 30000,
+        width: 1280,
+        height: 720,
+        takenAt: "1975-02-14T19:00:00",
+        originalFileName: "ouvertyr.mp4",
+      }),
+      item(201, 20, {
+        caption: "Sittningen börjar",
+        takenAt: "1975-02-15T19:00:00",
+        latitude: 57.6896,
+        longitude: 11.9744,
+      }),
       item(202, 20, { visibility: "PUBLIC", caption: "Gruppbild på trappan", takenAt: "1975-02-15T19:30:00" }),
       item(203, 20, { caption: "Talet", takenAt: "1975-02-15T21:00:00", latitude: 57.6897, longitude: 11.9745 }),
       item(301, 30, { caption: "Hemligt", takenAt: "1990-03-01T12:00:00" }),
-      item(401, 40, { caption: null, takenAt: "1975-01-20T18:00:00", visibility: "UNPUBLISHED", contributionStatus: "WAITING", owner: "p-viewer", photographer: "Tina Tittare", originalFileName: "mitt-foto.jpg" }),
+      item(401, 40, {
+        caption: null,
+        takenAt: "1975-01-20T18:00:00",
+        visibility: "UNPUBLISHED",
+        contributionStatus: "WAITING",
+        owner: "p-viewer",
+        photographer: "Tina Tittare",
+        originalFileName: "mitt-foto.jpg",
+      }),
       item(402, 40, { status: "PROCESSING", takenAt: "1975-01-21T18:00:00" }),
-      item(403, 40, { status: "FAILED", failure: "TOO_LONG", type: "VIDEO", takenAt: "1975-01-22T18:00:00", originalFileName: "hela-forestallningen.mp4" }),
+      item(403, 40, {
+        status: "FAILED",
+        failure: "TOO_LONG",
+        type: "VIDEO",
+        takenAt: "1975-01-22T18:00:00",
+        originalFileName: "hela-forestallningen.mp4",
+      }),
       item(501, null, { takenAt: "2026-10-30T20:00:00", originalFileName: "scan-1.jpg", owner: "p-admin" }),
       item(502, null, { takenAt: "2026-10-30T20:10:00", originalFileName: "scan-2.jpg", owner: "p-admin" }),
     ],
-    suggestions: [{
-      id: uuidOf(700), title: "Vårbalen 1975", albumId: null, suggestedBy: "p-viewer", status: "OPEN", message: null,
-      createdAt: "2026-10-20T10:00:00Z", handledAt: null,
-    }],
-    reports: [{
-      id: uuidOf(800), itemId: uuidOf(101), reason: "WRONG_CAPTION_OR_ALBUM", message: "Fel år", status: "OPEN",
-      reporter: null, email: "besokare@example.org", outcome: null, outcomeMessage: null, createdAt: "2026-10-25T10:00:00Z", handledAt: null,
-    }],
+    suggestions: [
+      {
+        id: uuidOf(700),
+        title: "Vårbalen 1975",
+        albumId: null,
+        suggestedBy: "p-viewer",
+        status: "OPEN",
+        message: null,
+        createdAt: "2026-10-20T10:00:00Z",
+        handledAt: null,
+      },
+    ],
+    reports: [
+      {
+        id: uuidOf(800),
+        itemId: uuidOf(101),
+        reason: "WRONG_CAPTION_OR_ALBUM",
+        message: "Fel år",
+        status: "OPEN",
+        reporter: null,
+        email: "besokare@example.org",
+        outcome: null,
+        outcomeMessage: null,
+        createdAt: "2026-10-25T10:00:00Z",
+        handledAt: null,
+      },
+    ],
     settings: {
-      welcomeSv: null, welcomeEn: null, publicWelcomeSv: null, publicWelcomeEn: null, contactEmail: "spexgram@example.org",
-      maxUploadGb: 4, maxVideoMinutes: 10, contributionMaxItems: 500, contributionMaxGb: 20, userDownloadsOriginals: false,
+      welcomeSv: null,
+      welcomeEn: null,
+      publicWelcomeSv: null,
+      publicWelcomeEn: null,
+      contactEmail: "spexgram@example.org",
+      maxUploadGb: 4,
+      maxVideoMinutes: 10,
+      contributionMaxItems: 500,
+      contributionMaxGb: 20,
+      userDownloadsOriginals: false,
       showPositions: true,
     },
-    maintenanceJobs: ["SPEX_REFRESH", "UNSORTED_SCAN", "PROCESSING_POLL", "ITEM_CHECK", "UPLOAD_CLEANUP", "RETENTION", "CONTRIBUTION_MAIL"]
-      .map(job => ({ job, schedule: "0 0 3 * * *", running: false, lastStartedAt: null, lastFinishedAt: null, lastSucceeded: null })),
+    maintenanceJobs: [
+      "SPEX_REFRESH",
+      "UNSORTED_SCAN",
+      "PROCESSING_POLL",
+      "ITEM_CHECK",
+      "UPLOAD_CLEANUP",
+      "RETENTION",
+      "CONTRIBUTION_MAIL",
+    ].map((job) => ({
+      job,
+      schedule: "0 0 3 * * *",
+      running: false,
+      lastStartedAt: null,
+      lastFinishedAt: null,
+      lastSucceeded: null,
+    })),
     audit: [],
     uploads: new Map(),
     failNext: new Map(),
@@ -119,11 +251,12 @@ function resetState() {
 
 resetState();
 
-const isMember = persona => Boolean(persona?.roles.includes("USER"));
-const isEditor = persona => isMember(persona) && (persona.roles.includes("EDITOR") || persona.roles.includes("ADMIN"));
-const isAdmin = persona => isMember(persona) && persona.roles.includes("ADMIN");
+const isMember = (persona) => Boolean(persona?.roles.includes("USER"));
+const isEditor = (persona) =>
+  isMember(persona) && (persona.roles.includes("EDITOR") || persona.roles.includes("ADMIN"));
+const isAdmin = (persona) => isMember(persona) && persona.roles.includes("ADMIN");
 const forbidden = () => new GraphQLError("FORBIDDEN", "Du har inte behörighet att göra det.");
-const requireMember = persona => {
+const requireMember = (persona) => {
   if (!persona) {
     throw new GraphQLError("UNAUTHORIZED", "Du är inte inloggad.");
   }
@@ -131,13 +264,13 @@ const requireMember = persona => {
     throw forbidden();
   }
 };
-const requireEditor = persona => {
+const requireEditor = (persona) => {
   requireMember(persona);
   if (!isEditor(persona)) {
     throw forbidden();
   }
 };
-const requireAdmin = persona => {
+const requireAdmin = (persona) => {
   requireMember(persona);
   if (!isAdmin(persona)) {
     throw forbidden();
@@ -145,9 +278,10 @@ const requireAdmin = persona => {
 };
 const notFound = () => new GraphQLError("NOT_FOUND", "Det finns inte, eller så har du inte tillgång till det.");
 
-const albumById = id => state.albums.find(candidate => candidate.id === id);
-const hiddenByReport = itemId => state.reports.some(r => r.itemId === itemId && r.status === "OPEN" && r.hiddenFrom);
-const itemById = id => state.items.find(candidate => candidate.id === id);
+const albumById = (id) => state.albums.find((candidate) => candidate.id === id);
+const hiddenByReport = (itemId) =>
+  state.reports.some((r) => r.itemId === itemId && r.status === "OPEN" && r.hiddenFrom);
+const itemById = (id) => state.items.find((candidate) => candidate.id === id);
 
 function canSeeAlbum(persona, a) {
   if (!a) {
@@ -197,14 +331,18 @@ function canSeeItem(persona, i) {
 }
 
 const expires = () => new Date(Date.now() + 4 * 3600_000).toISOString();
-const mediaOf = (persona, i) => i.failure === "TOO_LONG" ? null : {
-  thumbnailUrl: `${MEDIA}/a/${i.id}/thumbnail/1/sig`,
-  previewUrl: `${MEDIA}/a/${i.id}/preview/1/sig`,
-  videoUrl: i.type === "VIDEO" ? `${MEDIA}/a/${i.id}/video/1/sig` : null,
-  originalUrl: canDownloadOriginals(persona) ? `${MEDIA}/a/${i.id}/original/1/sig` : null,
-  expiresAt: expires(),
-};
-const canDownloadOriginals = persona => isEditor(persona) || (isMember(persona) && state.settings.userDownloadsOriginals);
+const mediaOf = (persona, i) =>
+  i.failure === "TOO_LONG"
+    ? null
+    : {
+        thumbnailUrl: `${MEDIA}/a/${i.id}/thumbnail/1/sig`,
+        previewUrl: `${MEDIA}/a/${i.id}/preview/1/sig`,
+        videoUrl: i.type === "VIDEO" ? `${MEDIA}/a/${i.id}/video/1/sig` : null,
+        originalUrl: canDownloadOriginals(persona) ? `${MEDIA}/a/${i.id}/original/1/sig` : null,
+        expiresAt: expires(),
+      };
+const canDownloadOriginals = (persona) =>
+  isEditor(persona) || (isMember(persona) && state.settings.userDownloadsOriginals);
 
 function itemOut(persona, i) {
   const a = albumById(i.albumId);
@@ -212,9 +350,15 @@ function itemOut(persona, i) {
 
   return {
     ...i,
-    album: a && canSeeAlbum(persona, a)
-      ? { id: a.id, title: a.title, visibility: a.visibility, spex: a.spexIds.map(id => SPEX.find(spex => spex.id === id)).filter(Boolean) }
-      : null,
+    album:
+      a && canSeeAlbum(persona, a)
+        ? {
+            id: a.id,
+            title: a.title,
+            visibility: a.visibility,
+            spex: a.spexIds.map((id) => SPEX.find((spex) => spex.id === id)).filter(Boolean),
+          }
+        : null,
     thumbhash: null,
     favourite: Boolean(persona && state.favourites.has(`${persona.sub}:${i.id}`)),
     effectiveVisibility: effective(i),
@@ -230,70 +374,96 @@ function itemOut(persona, i) {
 }
 
 const sortedKinds = () => [...state.kinds].sort((a, b) => a.position - b.position);
-const kindOut = kindId => ({
-  ...state.kinds.find(kind => kind.id === kindId),
+const kindOut = (kindId) => ({
+  ...state.kinds.find((kind) => kind.id === kindId),
   isDefault: sortedKinds()[0]?.id === kindId,
-  albumCount: state.albums.filter(a => a.kindId === kindId).length,
+  albumCount: state.albums.filter((a) => a.kindId === kindId).length,
 });
-const albumItems = (persona, a) => state.items.filter(i => i.albumId === a.id && canSeeItem(persona, i) && !i.trashedAt)
-  .sort((x, y) => (x.takenAt ?? "").localeCompare(y.takenAt ?? ""));
+const albumItems = (persona, a) =>
+  state.items
+    .filter((i) => i.albumId === a.id && canSeeItem(persona, i) && !i.trashedAt)
+    .sort((x, y) => (x.takenAt ?? "").localeCompare(y.takenAt ?? ""));
 
 function albumOut(persona, a) {
   const visible = albumItems(persona, a);
-  const cover = visible.find(i => i.id === a.coverItemId && i.status === "READY") ?? visible.find(i => i.status === "READY");
-  const own = state.items.filter(i => i.albumId === a.id && !i.trashedAt && i.contributionStatus !== "WAITING");
+  const cover =
+    visible.find((i) => i.id === a.coverItemId && i.status === "READY") ?? visible.find((i) => i.status === "READY");
+  const own = state.items.filter((i) => i.albumId === a.id && !i.trashedAt && i.contributionStatus !== "WAITING");
 
   return {
     ...a,
     kind: kindOut(a.kindId),
-    spex: a.spexIds.map(id => SPEX.find(spex => spex.id === id)).filter(Boolean),
+    spex: a.spexIds.map((id) => SPEX.find((spex) => spex.id === id)).filter(Boolean),
     cover: cover ? itemOut(persona, cover) : null,
-    itemCount: visible.filter(i => i.status === "READY").length,
-    items: { items: visible.map(i => itemOut(persona, i)), totalCount: visible.length, page: 0, size: 100 },
-    visibilityCounts: ["UNPUBLISHED", "MEMBERS", "PUBLIC"].map(visibility => ({ visibility, count: own.filter(i => i.visibility === visibility).length })),
-    suggested: Boolean(a.suggestedBy && state.suggestions.some(s => s.albumId === a.id && s.status === "OPEN")),
+    itemCount: visible.filter((i) => i.status === "READY").length,
+    items: { items: visible.map((i) => itemOut(persona, i)), totalCount: visible.length, page: 0, size: 100 },
+    visibilityCounts: ["UNPUBLISHED", "MEMBERS", "PUBLIC"].map((visibility) => ({
+      visibility,
+      count: own.filter((i) => i.visibility === visibility).length,
+    })),
+    suggested: Boolean(a.suggestedBy && state.suggestions.some((s) => s.albumId === a.id && s.status === "OPEN")),
   };
 }
 
 function pageOfItems(persona, a, page, size) {
   const visible = albumItems(persona, a);
 
-  return { items: visible.slice(page * size, page * size + size).map(i => itemOut(persona, i)), totalCount: visible.length, page, size };
+  return {
+    items: visible.slice(page * size, page * size + size).map((i) => itemOut(persona, i)),
+    totalCount: visible.length,
+    page,
+    size,
+  };
 }
 
-const visibleAlbums = persona => state.albums.filter(a => !a.trashedAt && canSeeAlbum(persona, a))
-  .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+const visibleAlbums = (persona) =>
+  state.albums
+    .filter((a) => !a.trashedAt && canSeeAlbum(persona, a))
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
 function filterAlbums(persona, filter = {}) {
-  return visibleAlbums(persona).filter(a => {
-    const spex = a.spexIds.map(id => SPEX.find(s => s.id === id)).filter(Boolean);
+  return visibleAlbums(persona).filter((a) => {
+    const spex = a.spexIds.map((id) => SPEX.find((s) => s.id === id)).filter(Boolean);
 
-    return (!filter.categoryId || spex.some(s => s.categoryId === filter.categoryId))
-      && (!filter.year || spex.some(s => s.year === filter.year) || a.dateFrom?.startsWith(String(filter.year)))
-      && (!filter.spexId || spex.some(s => s.id === filter.spexId || s.parentId === filter.spexId))
-      && (!filter.kindId || a.kindId === filter.kindId)
-      && (!filter.decade || spex.some(s => Math.floor(s.year / 10) * 10 === filter.decade) || a.dateFrom?.startsWith(String(filter.decade).slice(0, 3)))
-      && (!filter.place || a.place?.toLowerCase() === filter.place.toLowerCase())
-      && (!filter.visibility || a.visibility === filter.visibility);
+    return (
+      (!filter.categoryId || spex.some((s) => s.categoryId === filter.categoryId)) &&
+      (!filter.year || spex.some((s) => s.year === filter.year) || a.dateFrom?.startsWith(String(filter.year))) &&
+      (!filter.spexId || spex.some((s) => s.id === filter.spexId || s.parentId === filter.spexId)) &&
+      (!filter.kindId || a.kindId === filter.kindId) &&
+      (!filter.decade ||
+        spex.some((s) => Math.floor(s.year / 10) * 10 === filter.decade) ||
+        a.dateFrom?.startsWith(String(filter.decade).slice(0, 3))) &&
+      (!filter.place || a.place?.toLowerCase() === filter.place.toLowerCase()) &&
+      (!filter.visibility || a.visibility === filter.visibility)
+    );
   });
 }
 
 function browseExtras(persona) {
   const albums = visibleAlbums(persona);
-  const spexIds = [...new Set(albums.flatMap(a => a.spexIds))];
+  const spexIds = [...new Set(albums.flatMap((a) => a.spexIds))];
 
   return {
-    categories: CATEGORIES.map(category => ({ ...category, albumCount: albums.length })),
-    years: [...new Set(albums.map(a => Number(a.dateFrom?.slice(0, 4))).filter(Boolean))].sort((a, b) => b - a),
-    albumKinds: sortedKinds().map(kind => kindOut(kind.id)),
-    spexWithAlbums: spexIds.map(id => ({ ...SPEX.find(s => s.id === id), albumCount: albums.filter(a => a.spexIds.includes(id)).length })),
+    categories: CATEGORIES.map((category) => ({ ...category, albumCount: albums.length })),
+    years: [...new Set(albums.map((a) => Number(a.dateFrom?.slice(0, 4))).filter(Boolean))].sort((a, b) => b - a),
+    albumKinds: sortedKinds().map((kind) => kindOut(kind.id)),
+    spexWithAlbums: spexIds.map((id) => ({
+      ...SPEX.find((s) => s.id === id),
+      albumCount: albums.filter((a) => a.spexIds.includes(id)).length,
+    })),
   };
 }
 
 function audit(persona, action, entityType, entityId, summary) {
   state.audit.unshift({
-    id: uuidOf(state.nextId++), at: new Date().toISOString(), actorId: persona.sub, actorName: persona.name, action,
-    entityType, entityId, summary,
+    id: uuidOf(state.nextId++),
+    at: new Date().toISOString(),
+    actorId: persona.sub,
+    actorName: persona.name,
+    action,
+    entityType,
+    entityId,
+    summary,
   });
 }
 
@@ -305,34 +475,60 @@ function uploadResult(persona, uploadId, a, contribution) {
   }
   state.uploads.delete(uploadId);
   if (/\.txt$/i.test(upload.name)) {
-    return { uploadId, fileName: upload.name, outcome: "REJECTED", message: "Filtypen stöds inte", item: null, existingItem: null, existingAlbumTitle: null };
+    return {
+      uploadId,
+      fileName: upload.name,
+      outcome: "REJECTED",
+      message: "Filtypen stöds inte",
+      item: null,
+      existingItem: null,
+      existingAlbumTitle: null,
+    };
   }
   if (/dubblett/i.test(upload.name)) {
     const existing = itemById(uuidOf(101));
 
     // Only what the uploader may see is named
     return {
-      uploadId, fileName: upload.name, outcome: "DUPLICATE", message: null, item: null,
+      uploadId,
+      fileName: upload.name,
+      outcome: "DUPLICATE",
+      message: null,
+      item: null,
       existingItem: canSeeItem(persona, existing) ? itemOut(persona, existing) : null,
       existingAlbumTitle: canSeeAlbum(persona, albumById(existing.albumId)) ? albumById(existing.albumId).title : null,
     };
   }
 
   const created = item(state.nextId++, null, {
-    albumId: a.id, status: "PROCESSING", caption: null, owner: persona.sub, originalFileName: upload.name,
-    visibility: contribution ? "UNPUBLISHED" : "MEMBERS", contributionStatus: contribution ? "WAITING" : null,
-    photographer: contribution ? persona.name : null, createdAt: new Date().toISOString(),
+    albumId: a.id,
+    status: "PROCESSING",
+    caption: null,
+    owner: persona.sub,
+    originalFileName: upload.name,
+    visibility: contribution ? "UNPUBLISHED" : "MEMBERS",
+    contributionStatus: contribution ? "WAITING" : null,
+    photographer: contribution ? persona.name : null,
+    createdAt: new Date().toISOString(),
     type: /\.(mp4|mov)$/i.test(upload.name) ? "VIDEO" : "PHOTO",
   });
 
   state.items.push(created);
   audit(persona, "UPLOAD", "ITEM", created.id, `Laddade upp ${upload.name} till albumet ${a.title}`);
-  return { uploadId, fileName: upload.name, outcome: "CREATED", message: null, item: itemOut(persona, created), existingItem: null, existingAlbumTitle: null };
+  return {
+    uploadId,
+    fileName: upload.name,
+    outcome: "CREATED",
+    message: null,
+    item: itemOut(persona, created),
+    existingItem: null,
+    existingAlbumTitle: null,
+  };
 }
 
 function editableItems(persona, ids) {
   requireEditor(persona);
-  return ids.map(id => {
+  return ids.map((id) => {
     const found = itemById(id);
 
     if (!found) {
@@ -344,24 +540,31 @@ function editableItems(persona, ids) {
 
 function albumInput(input, existing) {
   const spexIds = input.spexIds ?? [];
-  const main = SPEX.find(s => s.id === spexIds[0]);
+  const main = SPEX.find((s) => s.id === spexIds[0]);
   const kindId = input.kindId ?? existing?.kindId ?? sortedKinds()[0].id;
 
   if (!input.title && !main) {
     throw new GraphQLError("BAD_REQUEST", "Ett album utan spex behöver en titel.");
   }
   return {
-    spexIds, kindId,
-    title: input.title || `${main.title} ${main.year} – ${state.kinds.find(kind => kind.id === kindId).nameSv.toLowerCase()}`,
-    dateFrom: input.dateFrom ?? null, dateTo: input.dateTo ?? null, place: input.place ?? null, description: input.description ?? null,
+    spexIds,
+    kindId,
+    title:
+      input.title ||
+      `${main.title} ${main.year} – ${state.kinds.find((kind) => kind.id === kindId).nameSv.toLowerCase()}`,
+    dateFrom: input.dateFrom ?? null,
+    dateTo: input.dateTo ?? null,
+    place: input.place ?? null,
+    description: input.description ?? null,
   };
 }
 
 // The timeline: every item the viewer may see in an album outside the trash, newest first
-const timelineItems = (persona, favourites) => state.items
-  .filter(i => i.albumId && !i.trashedAt && canSeeItem(persona, i) && !albumById(i.albumId)?.trashedAt)
-  .filter(i => !favourites || (persona && state.favourites.has(`${persona.sub}:${i.id}`)))
-  .sort((x, y) => (y.takenAt ?? "").localeCompare(x.takenAt ?? ""));
+const timelineItems = (persona, favourites) =>
+  state.items
+    .filter((i) => i.albumId && !i.trashedAt && canSeeItem(persona, i) && !albumById(i.albumId)?.trashedAt)
+    .filter((i) => !favourites || (persona && state.favourites.has(`${persona.sub}:${i.id}`)))
+    .sort((x, y) => (y.takenAt ?? "").localeCompare(x.takenAt ?? ""));
 
 function requireFavourites(persona, favourites) {
   if (favourites) {
@@ -385,11 +588,20 @@ const resolvers = {
   TimelineItems: (persona, { month = null, favourites = false, page = 0, size = 200 }) => {
     requireFavourites(persona, favourites);
 
-    const items = timelineItems(persona, favourites).filter(i => (i.takenAt ? i.takenAt.slice(0, 7) : null) === month);
+    const items = timelineItems(persona, favourites).filter(
+      (i) => (i.takenAt ? i.takenAt.slice(0, 7) : null) === month
+    );
 
-    return { timelineItems: { items: items.slice(page * size, page * size + size).map(i => itemOut(persona, i)), totalCount: items.length, page, size } };
+    return {
+      timelineItems: {
+        items: items.slice(page * size, page * size + size).map((i) => itemOut(persona, i)),
+        totalCount: items.length,
+        page,
+        size,
+      },
+    };
   },
-  Memories: persona => ({
+  Memories: (persona) => ({
     startPage: {
       welcome: isMember(persona) ? state.settings.welcomeSv : state.settings.publicWelcomeSv,
       contactEmail: state.settings.contactEmail,
@@ -397,13 +609,13 @@ const resolvers = {
     thisDayInHistory: [],
     premiereAlbums: [],
   }),
-  Explore: persona => {
+  Explore: (persona) => {
     const albums = visibleAlbums(persona);
     const places = new Map();
 
-    albums.filter(a => a.place).forEach(a => places.set(a.place, (places.get(a.place) ?? 0) + 1));
+    albums.filter((a) => a.place).forEach((a) => places.set(a.place, (places.get(a.place) ?? 0) + 1));
     return {
-      recentAlbums: albums.slice(0, 10).map(a => albumOut(persona, a)),
+      recentAlbums: albums.slice(0, 10).map((a) => albumOut(persona, a)),
       places: [...places.entries()].map(([name, albumCount]) => ({ name, albumCount })),
       ...browseExtras(persona),
     };
@@ -411,21 +623,25 @@ const resolvers = {
   FavouritesSet: (persona, { itemIds, favourite }) => {
     requireMember(persona);
 
-    const items = itemIds.map(itemById).filter(i => canSeeItem(persona, i));
+    const items = itemIds.map(itemById).filter((i) => canSeeItem(persona, i));
 
-    items.forEach(i => favourite ? state.favourites.add(`${persona.sub}:${i.id}`) : state.favourites.delete(`${persona.sub}:${i.id}`));
-    return { favouritesSet: items.map(i => itemOut(persona, i)) };
+    items.forEach((i) =>
+      favourite ? state.favourites.add(`${persona.sub}:${i.id}`) : state.favourites.delete(`${persona.sub}:${i.id}`)
+    );
+    return { favouritesSet: items.map((i) => itemOut(persona, i)) };
   },
-  Me: persona => ({
-    me: persona ? { username: persona.email, displayName: persona.name, email: persona.email, roles: persona.roles } : null,
+  Me: (persona) => ({
+    me: persona
+      ? { username: persona.email, displayName: persona.name, email: persona.email, roles: persona.roles }
+      : null,
     limits: limitsOut(persona),
   }),
-  Home: persona => ({
+  Home: (persona) => ({
     startPage: {
       welcome: isMember(persona) ? state.settings.welcomeSv : state.settings.publicWelcomeSv,
       contactEmail: state.settings.contactEmail,
     },
-    recentAlbums: visibleAlbums(persona).map(a => albumOut(persona, a)),
+    recentAlbums: visibleAlbums(persona).map((a) => albumOut(persona, a)),
     thisDayInHistory: [],
     ...browseExtras(persona),
   }),
@@ -433,7 +649,12 @@ const resolvers = {
     const albums = filterAlbums(persona, filter ?? {});
 
     return {
-      albums: { albums: albums.slice(page * size, page * size + size).map(a => albumOut(persona, a)), totalCount: albums.length, page, size },
+      albums: {
+        albums: albums.slice(page * size, page * size + size).map((a) => albumOut(persona, a)),
+        totalCount: albums.length,
+        page,
+        size,
+      },
       ...browseExtras(persona),
     };
   },
@@ -445,7 +666,9 @@ const resolvers = {
       limits: limitsOut(persona),
     };
   },
-  AlbumMeta: (persona, { id }) => ({ album: canSeeAlbum(persona, albumById(id)) ? albumOut(persona, albumById(id)) : null }),
+  AlbumMeta: (persona, { id }) => ({
+    album: canSeeAlbum(persona, albumById(id)) ? albumOut(persona, albumById(id)) : null,
+  }),
   AlbumItems: (persona, { id, page = 0, size = 60 }) => {
     const a = albumById(id);
 
@@ -459,55 +682,84 @@ const resolvers = {
 
     return { item: canSeeItem(persona, found) ? itemOut(persona, found) : null, limits: limitsOut(persona) };
   },
-  ItemMedia: (persona, { ids }) => ({ itemMedia: ids.map(itemById).filter(i => canSeeItem(persona, i)).map(i => itemOut(persona, i)) }),
+  ItemMedia: (persona, { ids }) => ({
+    itemMedia: ids
+      .map(itemById)
+      .filter((i) => canSeeItem(persona, i))
+      .map((i) => itemOut(persona, i)),
+  }),
   SpexAlbums: (persona, { spexId }) => ({
-    spexAlbums: visibleAlbums(persona).filter(a => a.spexIds.some(id => id === spexId || SPEX.find(s => s.id === id)?.parentId === spexId))
-      .map(a => albumOut(persona, a)),
+    spexAlbums: visibleAlbums(persona)
+      .filter((a) => a.spexIds.some((id) => id === spexId || SPEX.find((s) => s.id === id)?.parentId === spexId))
+      .map((a) => albumOut(persona, a)),
   }),
   Search: (persona, { q }) => {
     const term = q.toLowerCase();
-    const matches = text => (text ?? "").toLowerCase().includes(term);
+    const matches = (text) => (text ?? "").toLowerCase().includes(term);
 
     return {
       search: {
-        albums: visibleAlbums(persona).filter(a => matches(a.title) || matches(a.place) || matches(a.description)).map(a => albumOut(persona, a)),
-        items: state.items.filter(i => canSeeItem(persona, i) && !i.trashedAt && (matches(i.caption) || matches(i.photographer))).map(i => itemOut(persona, i)),
+        albums: visibleAlbums(persona)
+          .filter((a) => matches(a.title) || matches(a.place) || matches(a.description))
+          .map((a) => albumOut(persona, a)),
+        items: state.items
+          .filter((i) => canSeeItem(persona, i) && !i.trashedAt && (matches(i.caption) || matches(i.photographer)))
+          .map((i) => itemOut(persona, i)),
       },
     };
   },
   SmartSearch: (persona, { q, filter }) => {
     requireMember(persona);
     state.smartSearches.push({ q, filter });
-    return { smartSearch: state.items.filter(i => canSeeItem(persona, i) && !i.trashedAt && i.status === "READY").slice(0, 2).map(i => itemOut(persona, i)) };
+    return {
+      smartSearch: state.items
+        .filter((i) => canSeeItem(persona, i) && !i.trashedAt && i.status === "READY")
+        .slice(0, 2)
+        .map((i) => itemOut(persona, i)),
+    };
   },
-  SearchFilters: persona => {
+  SearchFilters: (persona) => {
     const { categories, years, albumKinds } = browseExtras(persona);
 
     return { categories, years, albumKinds };
   },
-  MapItems: persona => {
+  MapItems: (persona) => {
     requireMember(persona);
     return {
-      mapItems: state.items.filter(i => canSeeItem(persona, i) && !i.trashedAt && i.latitude !== null)
-        .map(i => ({ id: i.id, latitude: i.latitude, longitude: i.longitude, takenAt: i.takenAt, thumbnailUrl: mediaOf(persona, i)?.thumbnailUrl, expiresAt: expires() })),
+      mapItems: state.items
+        .filter((i) => canSeeItem(persona, i) && !i.trashedAt && i.latitude !== null)
+        .map((i) => ({
+          id: i.id,
+          latitude: i.latitude,
+          longitude: i.longitude,
+          takenAt: i.takenAt,
+          thumbnailUrl: mediaOf(persona, i)?.thumbnailUrl,
+          expiresAt: expires(),
+        })),
     };
   },
-  MyContributions: persona => {
+  MyContributions: (persona) => {
     requireMember(persona);
-    return { myContributions: state.items.filter(i => i.owner === persona.sub && i.contributionStatus && !i.trashedAt).map(i => itemOut(persona, i)) };
+    return {
+      myContributions: state.items
+        .filter((i) => i.owner === persona.sub && i.contributionStatus && !i.trashedAt)
+        .map((i) => itemOut(persona, i)),
+    };
   },
-  MySuggestions: persona => {
+  MySuggestions: (persona) => {
     requireMember(persona);
 
     return {
-      albumSuggestions: state.suggestions.filter(s => s.suggestedBy === persona.sub).map(s => suggestionOut(persona, s)),
-      albumKinds: sortedKinds().map(kind => kindOut(kind.id)),
+      albumSuggestions: state.suggestions
+        .filter((s) => s.suggestedBy === persona.sub)
+        .map((s) => suggestionOut(persona, s)),
+      albumKinds: sortedKinds().map((kind) => kindOut(kind.id)),
     };
   },
-  MyReports: persona => {
+  MyReports: (persona) => {
     requireMember(persona);
 
-    return { reports: state.reports.filter(r => r.reporter === persona.sub).map(r => reportOut(persona, r)) };
+    return { reports: state.reports.filter((r) => r.reporter === persona.sub).map((r) => reportOut(persona, r)) };
   },
   Contribute: (persona, { id }) => {
     requireMember(persona);
@@ -532,15 +784,27 @@ const resolvers = {
     }
 
     const report = {
-      id: uuidOf(state.nextId++), itemId: found.id, reason: input.reason, message: input.message ?? null, status: "OPEN",
-      reporter: isMember(persona) ? persona.sub : null, email: isMember(persona) ? null : input.email, outcome: null,
-      outcomeMessage: null, createdAt: new Date().toISOString(), handledAt: null,
+      id: uuidOf(state.nextId++),
+      itemId: found.id,
+      reason: input.reason,
+      message: input.message ?? null,
+      status: "OPEN",
+      reporter: isMember(persona) ? persona.sub : null,
+      email: isMember(persona) ? null : input.email,
+      outcome: null,
+      outcomeMessage: null,
+      createdAt: new Date().toISOString(),
+      handledAt: null,
     };
 
     state.reports.push(report);
     if (input.reason === "I_AM_IN_IT") {
       report.hiddenFrom = found.visibility;
-      found.visibility = isMember(persona) ? "UNPUBLISHED" : found.visibility === "PUBLIC" ? "MEMBERS" : found.visibility;
+      found.visibility = isMember(persona)
+        ? "UNPUBLISHED"
+        : found.visibility === "PUBLIC"
+          ? "MEMBERS"
+          : found.visibility;
     }
     return { reportCreate: { id: report.id, status: "OPEN" } };
   },
@@ -552,7 +816,7 @@ const resolvers = {
     if (!canSeeAlbum(persona, a)) {
       throw notFound();
     }
-    return { contributionsAdd: uploadIds.map(id => uploadResult(persona, id, a, true)) };
+    return { contributionsAdd: uploadIds.map((id) => uploadResult(persona, id, a, true)) };
   },
   ContributionWithdraw: (persona, { itemId }) => {
     requireMember(persona);
@@ -562,20 +826,32 @@ const resolvers = {
     if (!found || found.owner !== persona.sub || found.contributionStatus !== "WAITING") {
       throw notFound();
     }
-    state.items = state.items.filter(i => i !== found);
+    state.items = state.items.filter((i) => i !== found);
     return { contributionWithdraw: null };
   },
   AlbumSuggest: (persona, { input }) => {
     requireMember(persona);
 
     const created = album(state.nextId++, input.title, {
-      spexIds: [], kindId: input.kindId ?? sortedKinds()[0].id, dateFrom: input.dateFrom ?? null, dateTo: input.dateTo ?? null,
-      place: input.place ?? null, description: input.description ?? null, visibility: "UNPUBLISHED", suggestedBy: persona.sub,
+      spexIds: [],
+      kindId: input.kindId ?? sortedKinds()[0].id,
+      dateFrom: input.dateFrom ?? null,
+      dateTo: input.dateTo ?? null,
+      place: input.place ?? null,
+      description: input.description ?? null,
+      visibility: "UNPUBLISHED",
+      suggestedBy: persona.sub,
       createdAt: new Date().toISOString(),
     });
     const suggestion = {
-      id: uuidOf(state.nextId++), title: input.title, albumId: created.id, suggestedBy: persona.sub, status: "OPEN",
-      message: null, createdAt: new Date().toISOString(), handledAt: null,
+      id: uuidOf(state.nextId++),
+      title: input.title,
+      albumId: created.id,
+      suggestedBy: persona.sub,
+      status: "OPEN",
+      message: null,
+      createdAt: new Date().toISOString(),
+      handledAt: null,
     };
 
     state.albums.push(created);
@@ -587,62 +863,94 @@ const resolvers = {
     requireEditor(persona);
 
     const a = albumById(id);
-    const all = a ? state.items.filter(i => i.albumId === a.id && !i.trashedAt)
-      .sort((x, y) => (x.takenAt ?? "").localeCompare(y.takenAt ?? "")) : [];
+    const all = a
+      ? state.items
+          .filter((i) => i.albumId === a.id && !i.trashedAt)
+          .sort((x, y) => (x.takenAt ?? "").localeCompare(y.takenAt ?? ""))
+      : [];
 
     return {
-      album: a ? {
-        ...albumOut(persona, a),
-        items: { items: all.slice(page * size, (page + 1) * size).map(i => itemOut(persona, i)), totalCount: all.length, page, size },
-      } : null,
-      albumKinds: sortedKinds().map(kind => kindOut(kind.id)),
+      album: a
+        ? {
+            ...albumOut(persona, a),
+            items: {
+              items: all.slice(page * size, (page + 1) * size).map((i) => itemOut(persona, i)),
+              totalCount: all.length,
+              page,
+              size,
+            },
+          }
+        : null,
+      albumKinds: sortedKinds().map((kind) => kindOut(kind.id)),
       limits: limitsOut(persona),
     };
   },
-  AlbumKinds: () => ({ albumKinds: sortedKinds().map(kind => kindOut(kind.id)) }),
-  AlbumTitles: persona => {
+  AlbumKinds: () => ({ albumKinds: sortedKinds().map((kind) => kindOut(kind.id)) }),
+  AlbumTitles: (persona) => {
     requireEditor(persona);
-    return { albums: { albums: visibleAlbums(persona).map(a => ({ id: a.id, title: a.title, dateFrom: a.dateFrom, visibility: a.visibility })) } };
+    return {
+      albums: {
+        albums: visibleAlbums(persona).map((a) => ({
+          id: a.id,
+          title: a.title,
+          dateFrom: a.dateFrom,
+          visibility: a.visibility,
+        })),
+      },
+    };
   },
   SpexSearch: (persona, { q }) => {
     requireEditor(persona);
 
     const term = q.toLowerCase();
 
-    return { spexSearch: SPEX.filter(s => `${s.title} ${s.year}`.toLowerCase().includes(term)) };
+    return { spexSearch: SPEX.filter((s) => `${s.title} ${s.year}`.toLowerCase().includes(term)) };
   },
-  Contributions: persona => {
+  Contributions: (persona) => {
     requireEditor(persona);
     return {
-      contributions: state.items.filter(i => i.contributionStatus === "WAITING" && !i.trashedAt).map(i => itemOut(persona, i)),
-      albumSuggestions: state.suggestions.filter(s => s.status === "OPEN").map(s => suggestionOut(persona, s)),
+      contributions: state.items
+        .filter((i) => i.contributionStatus === "WAITING" && !i.trashedAt)
+        .map((i) => itemOut(persona, i)),
+      albumSuggestions: state.suggestions.filter((s) => s.status === "OPEN").map((s) => suggestionOut(persona, s)),
     };
   },
   Reports: (persona, { open = true }) => {
     requireEditor(persona);
-    return { reports: state.reports.filter(r => (r.status === "OPEN") === open).map(r => reportOut(persona, r)) };
+    return { reports: state.reports.filter((r) => (r.status === "OPEN") === open).map((r) => reportOut(persona, r)) };
   },
-  Unsorted: persona => {
+  Unsorted: (persona) => {
     requireEditor(persona);
 
-    const loose = state.items.filter(i => !i.albumId && !i.trashedAt);
-    const days = [...new Set(loose.map(i => i.takenAt?.slice(0, 10) ?? null))];
+    const loose = state.items.filter((i) => !i.albumId && !i.trashedAt);
+    const days = [...new Set(loose.map((i) => i.takenAt?.slice(0, 10) ?? null))];
 
-    return { unsorted: days.map(date => ({ date, items: loose.filter(i => (i.takenAt?.slice(0, 10) ?? null) === date).map(i => itemOut(persona, i)) })) };
+    return {
+      unsorted: days.map((date) => ({
+        date,
+        items: loose.filter((i) => (i.takenAt?.slice(0, 10) ?? null) === date).map((i) => itemOut(persona, i)),
+      })),
+    };
   },
-  Trash: persona => {
+  Trash: (persona) => {
     requireEditor(persona);
     return {
       trash: {
-        albums: state.albums.filter(a => a.trashedAt).map(a => ({ ...albumOut(persona, a), itemCount: state.items.filter(i => i.albumId === a.id).length })),
-        items: state.items.filter(i => i.trashedAt).map(i => itemOut(persona, i)),
+        albums: state.albums
+          .filter((a) => a.trashedAt)
+          .map((a) => ({ ...albumOut(persona, a), itemCount: state.items.filter((i) => i.albumId === a.id).length })),
+        items: state.items.filter((i) => i.trashedAt).map((i) => itemOut(persona, i)),
       },
     };
   },
   AlbumCreate: (persona, { input }) => {
     requireEditor(persona);
 
-    const created = album(state.nextId++, "", { ...albumInput(input), visibility: "UNPUBLISHED", createdAt: new Date().toISOString() });
+    const created = album(state.nextId++, "", {
+      ...albumInput(input),
+      visibility: "UNPUBLISHED",
+      createdAt: new Date().toISOString(),
+    });
 
     state.albums.push(created);
     audit(persona, "CREATE", "ALBUM", created.id, `Skapade albumet ${created.title}`);
@@ -666,13 +974,15 @@ const resolvers = {
 
     a.visibility = visibility;
     if (items) {
-      state.items.filter(i => i.albumId === id && !i.trashedAt && i.contributionStatus !== "WAITING").forEach(i => {
-        if (hiddenByReport(i.id)) {
-          skipped++;
-        } else {
-          i.visibility = visibility;
-        }
-      });
+      state.items
+        .filter((i) => i.albumId === id && !i.trashedAt && i.contributionStatus !== "WAITING")
+        .forEach((i) => {
+          if (hiddenByReport(i.id)) {
+            skipped++;
+          } else {
+            i.visibility = visibility;
+          }
+        });
     }
     audit(persona, "VISIBILITY", "ALBUM", id, `Gjorde albumet ${a.title} ${visibility}`);
     return { albumSetVisibility: { album: { id, visibility }, skipped } };
@@ -695,20 +1005,25 @@ const resolvers = {
   },
   AlbumDelete: (persona, { id, keepItems }) => {
     requireAdmin(persona);
-    state.albums = state.albums.filter(a => a.id !== id);
-    state.items = keepItems ? state.items.map(i => i.albumId === id ? { ...i, albumId: null } : i) : state.items.filter(i => i.albumId !== id);
+    state.albums = state.albums.filter((a) => a.id !== id);
+    state.items = keepItems
+      ? state.items.map((i) => (i.albumId === id ? { ...i, albumId: null } : i))
+      : state.items.filter((i) => i.albumId !== id);
     return { albumDelete: null };
   },
   ItemsAdd: (persona, { albumId, uploadIds }) => {
     requireEditor(persona);
-    return { itemsAdd: uploadIds.map(id => uploadResult(persona, id, albumById(albumId), false)) };
+    return { itemsAdd: uploadIds.map((id) => uploadResult(persona, id, albumById(albumId), false)) };
   },
   ItemUpdate: (persona, { id, input }) => {
     const [found] = editableItems(persona, [id]);
 
     Object.assign(found, {
-      caption: input.caption ?? null, photographer: input.photographer ?? null, takenAt: input.takenAt ?? found.takenAt,
-      latitude: input.latitude ?? null, longitude: input.longitude ?? null,
+      caption: input.caption ?? null,
+      photographer: input.photographer ?? null,
+      takenAt: input.takenAt ?? found.takenAt,
+      latitude: input.latitude ?? null,
+      longitude: input.longitude ?? null,
     });
     audit(persona, "UPDATE", "ITEM", id, `Ändrade ${found.caption ?? found.originalFileName}`);
     return { itemUpdate: { id } };
@@ -729,52 +1044,56 @@ const resolvers = {
       }
     }
     audit(persona, input.visibility ? "VISIBILITY" : "UPDATE", "ITEM", ids[0], `Ändrade ${ids.length} bilder`);
-    return { itemsUpdate: { items: found.map(i => ({ id: i.id })), skipped } };
+    return { itemsUpdate: { items: found.map((i) => ({ id: i.id })), skipped } };
   },
   ItemsTrash: (persona, { ids }) => {
-    editableItems(persona, ids).forEach(i => {
+    editableItems(persona, ids).forEach((i) => {
       i.trashedAt = new Date().toISOString();
     });
-    return { itemsTrash: ids.map(id => ({ id })) };
+    return { itemsTrash: ids.map((id) => ({ id })) };
   },
   ItemsRestore: (persona, { ids }) => {
-    editableItems(persona, ids).forEach(i => {
+    editableItems(persona, ids).forEach((i) => {
       i.trashedAt = null;
     });
-    return { itemsRestore: ids.map(id => ({ id })) };
+    return { itemsRestore: ids.map((id) => ({ id })) };
   },
   ItemsDelete: (persona, { ids }) => {
     requireAdmin(persona);
-    state.items = state.items.filter(i => !ids.includes(i.id));
+    state.items = state.items.filter((i) => !ids.includes(i.id));
     return { itemsDelete: null };
   },
-  TrashEmpty: persona => {
+  TrashEmpty: (persona) => {
     requireAdmin(persona);
-    state.albums = state.albums.filter(a => !a.trashedAt);
-    state.items = state.items.filter(i => !i.trashedAt);
+    state.albums = state.albums.filter((a) => !a.trashedAt);
+    state.items = state.items.filter((i) => !i.trashedAt);
     return { trashEmpty: null };
   },
   ContributionsReview: (persona, { itemIds, accept }) => {
     const found = editableItems(persona, itemIds);
 
     if (accept) {
-      found.forEach(i => Object.assign(i, { contributionStatus: "ACCEPTED", visibility: "MEMBERS" }));
+      found.forEach((i) => Object.assign(i, { contributionStatus: "ACCEPTED", visibility: "MEMBERS" }));
     } else {
-      state.items = state.items.filter(i => !itemIds.includes(i.id));
+      state.items = state.items.filter((i) => !itemIds.includes(i.id));
     }
-    return { contributionsReview: itemIds.map(id => ({ id: uuidOf(state.nextId++), itemId: id, accepted: accept })) };
+    return { contributionsReview: itemIds.map((id) => ({ id: uuidOf(state.nextId++), itemId: id, accepted: accept })) };
   },
   AlbumSuggestionReview: (persona, { id, accept, message }) => {
     requireEditor(persona);
 
-    const suggestion = state.suggestions.find(s => s.id === id);
+    const suggestion = state.suggestions.find((s) => s.id === id);
 
-    Object.assign(suggestion, { status: accept ? "ACCEPTED" : "REJECTED", message: message ?? null, handledAt: new Date().toISOString() });
+    Object.assign(suggestion, {
+      status: accept ? "ACCEPTED" : "REJECTED",
+      message: message ?? null,
+      handledAt: new Date().toISOString(),
+    });
     if (suggestion.albumId) {
       if (accept) {
         albumById(suggestion.albumId).visibility = "MEMBERS";
       } else {
-        state.albums = state.albums.filter(a => a.id !== suggestion.albumId);
+        state.albums = state.albums.filter((a) => a.id !== suggestion.albumId);
       }
     }
     return { albumSuggestionReview: { id, status: suggestion.status } };
@@ -782,9 +1101,14 @@ const resolvers = {
   ReportHandle: (persona, { id, outcome, message }) => {
     requireEditor(persona);
 
-    const report = state.reports.find(r => r.id === id);
+    const report = state.reports.find((r) => r.id === id);
 
-    Object.assign(report, { status: "HANDLED", outcome, outcomeMessage: message ?? null, handledAt: new Date().toISOString() });
+    Object.assign(report, {
+      status: "HANDLED",
+      outcome,
+      outcomeMessage: message ?? null,
+      handledAt: new Date().toISOString(),
+    });
     if (outcome === "REMOVED") {
       itemById(report.itemId).trashedAt = new Date().toISOString();
     } else if (report.hiddenFrom) {
@@ -796,17 +1120,24 @@ const resolvers = {
   AuditLog: (persona, { page = 0, size = 50, filter = {} }) => {
     requireEditor(persona);
 
-    const entries = state.audit.filter(entry => (isAdmin(persona) || entry.actorId === persona.sub)
-      && (!filter?.entityId || entry.entityId === filter.entityId) && (!filter?.entityType || entry.entityType === filter.entityType)
-      && (!filter?.action || entry.action === filter.action) && (!filter?.q || entry.summary.toLowerCase().includes(filter.q.toLowerCase())));
+    const entries = state.audit.filter(
+      (entry) =>
+        (isAdmin(persona) || entry.actorId === persona.sub) &&
+        (!filter?.entityId || entry.entityId === filter.entityId) &&
+        (!filter?.entityType || entry.entityType === filter.entityType) &&
+        (!filter?.action || entry.action === filter.action) &&
+        (!filter?.q || entry.summary.toLowerCase().includes(filter.q.toLowerCase()))
+    );
 
-    return { auditLog: { entries: entries.slice(page * size, page * size + size), totalCount: entries.length, page, size } };
+    return {
+      auditLog: { entries: entries.slice(page * size, page * size + size), totalCount: entries.length, page, size },
+    };
   },
-  AuditActors: persona => {
+  AuditActors: (persona) => {
     requireEditor(persona);
-    return { auditActors: Object.values(PERSONAS).map(p => ({ id: p.sub, name: p.name })) };
+    return { auditActors: Object.values(PERSONAS).map((p) => ({ id: p.sub, name: p.name })) };
   },
-  Settings: persona => {
+  Settings: (persona) => {
     requireAdmin(persona);
     return { settings: state.settings };
   },
@@ -816,48 +1147,60 @@ const resolvers = {
     audit(persona, "UPDATE", "SETTINGS", null, "Ändrade inställningarna");
     return { settingsUpdate: state.settings };
   },
-  SpexipediaSync: persona => {
+  SpexipediaSync: (persona) => {
     requireAdmin(persona);
     return {
       spexipediaSync: {
         lastPulledAt: "2026-11-01T11:55:00Z",
         lastSuccess: "2026-11-01T11:55:00Z",
         lastError: null,
-        skipped: [{
-          sequence: "412",
-          kind: "SPEX",
-          id: "00000000-0000-7000-8000-0000000000e2",
-          change: "UPSERT",
-          error: "The category is not here yet",
-          skippedAt: "2026-10-30T09:00:00Z",
-        }],
+        skipped: [
+          {
+            sequence: "412",
+            kind: "SPEX",
+            id: "00000000-0000-7000-8000-0000000000e2",
+            change: "UPSERT",
+            error: "The category is not here yet",
+            skippedAt: "2026-10-30T09:00:00Z",
+          },
+        ],
       },
     };
   },
-  MaintenanceJobs: persona => {
+  MaintenanceJobs: (persona) => {
     requireAdmin(persona);
     return { maintenanceJobs: state.maintenanceJobs };
   },
   MaintenanceJobRun: (persona, { job }) => {
     requireAdmin(persona);
 
-    const found = state.maintenanceJobs.find(candidate => candidate.job === job);
+    const found = state.maintenanceJobs.find((candidate) => candidate.job === job);
 
-    Object.assign(found, { lastStartedAt: new Date().toISOString(), lastFinishedAt: new Date().toISOString(), lastSucceeded: true });
+    Object.assign(found, {
+      lastStartedAt: new Date().toISOString(),
+      lastFinishedAt: new Date().toISOString(),
+      lastSucceeded: true,
+    });
     return { maintenanceJobRun: true };
   },
-  ImmichStatus: persona => {
+  ImmichStatus: (persona) => {
     requireAdmin(persona);
     return {
       immichStatus: {
-        available: state.immichUp, version: "v3.3.6", usedBytes: 12e9, availableBytes: 88e9, sizeBytes: 100e9,
-        queues: [{ name: "thumbnailGeneration", paused: false, active: 1, waiting: 3, failed: 0 },
-          { name: "videoConversion", paused: false, active: 0, waiting: 0, failed: 1 }],
-        failedItems: state.items.filter(i => i.status === "FAILED").map(i => itemOut(persona, i)),
+        available: state.immichUp,
+        version: "v3.3.6",
+        usedBytes: 12e9,
+        availableBytes: 88e9,
+        sizeBytes: 100e9,
+        queues: [
+          { name: "thumbnailGeneration", paused: false, active: 1, waiting: 3, failed: 0 },
+          { name: "videoConversion", paused: false, active: 0, waiting: 0, failed: 1 },
+        ],
+        failedItems: state.items.filter((i) => i.status === "FAILED").map((i) => itemOut(persona, i)),
       },
     };
   },
-  ImmichJobRun: persona => {
+  ImmichJobRun: (persona) => {
     requireAdmin(persona);
     return { immichJobRun: null };
   },
@@ -871,30 +1214,35 @@ const resolvers = {
   },
   AlbumKindUpdate: (persona, { id, input }) => {
     requireAdmin(persona);
-    Object.assign(state.kinds.find(kind => kind.id === id), input);
+    Object.assign(
+      state.kinds.find((kind) => kind.id === id),
+      input
+    );
     return { albumKindUpdate: { id } };
   },
   AlbumKindsReorder: (persona, { ids }) => {
     requireAdmin(persona);
     ids.forEach((id, index) => {
-      state.kinds.find(kind => kind.id === id).position = index + 1;
+      state.kinds.find((kind) => kind.id === id).position = index + 1;
     });
-    return { albumKindsReorder: ids.map(id => ({ id })) };
+    return { albumKindsReorder: ids.map((id) => ({ id })) };
   },
   AlbumKindDelete: (persona, { id }) => {
     requireAdmin(persona);
-    if (state.albums.some(a => a.kindId === id)) {
+    if (state.albums.some((a) => a.kindId === id)) {
       throw new GraphQLError("CONFLICT", "Sorten används.");
     }
-    state.kinds = state.kinds.filter(kind => kind.id !== id);
+    state.kinds = state.kinds.filter((kind) => kind.id !== id);
     return { albumKindDelete: null };
   },
 };
 
 function limitsOut(persona) {
   return {
-    maxUploadBytes: state.settings.maxUploadGb * 1e9, maxVideoMinutes: state.settings.maxVideoMinutes,
-    contributionMaxItems: state.settings.contributionMaxItems, contributionMaxGb: state.settings.contributionMaxGb,
+    maxUploadBytes: state.settings.maxUploadGb * 1e9,
+    maxVideoMinutes: state.settings.maxVideoMinutes,
+    contributionMaxItems: state.settings.contributionMaxItems,
+    contributionMaxGb: state.settings.contributionMaxGb,
     canDownloadOriginals: canDownloadOriginals(persona),
   };
 }
@@ -903,7 +1251,8 @@ function suggestionOut(persona, s) {
   const a = albumById(s.albumId);
 
   return {
-    ...s, suggestedBy: bySub[s.suggestedBy]?.name ?? s.suggestedBy,
+    ...s,
+    suggestedBy: bySub[s.suggestedBy]?.name ?? s.suggestedBy,
     album: a ? { ...albumOut(persona, a) } : null,
   };
 }
@@ -939,7 +1288,7 @@ function handleGraphql(req, body, res) {
   try {
     payload = JSON.parse(body);
   } catch {
-    res.writeHead(400).end("{\"errors\":[{\"message\":\"bad json\"}]}");
+    res.writeHead(400).end('{"errors":[{"message":"bad json"}]}');
     return;
   }
   const op = operationNameOf(payload.query || "");
@@ -947,7 +1296,12 @@ function handleGraphql(req, body, res) {
   res.writeHead(200, { "content-type": "application/json" });
   if (!resolver) {
     console.warn(`[mock-backend] no resolver for ${op}`);
-    res.end(JSON.stringify({ data: null, errors: [{ message: `No resolver for ${op}`, extensions: { classification: "INTERNAL_ERROR" } }] }));
+    res.end(
+      JSON.stringify({
+        data: null,
+        errors: [{ message: `No resolver for ${op}`, extensions: { classification: "INTERNAL_ERROR" } }],
+      })
+    );
     return;
   }
   try {
@@ -962,10 +1316,20 @@ function handleGraphql(req, body, res) {
     res.end(JSON.stringify({ data: resolver(persona, payload.variables || {}) }));
   } catch (error) {
     if (error instanceof GraphQLError) {
-      res.end(JSON.stringify({ data: null, errors: [{ message: error.message, extensions: { classification: error.classification } }] }));
+      res.end(
+        JSON.stringify({
+          data: null,
+          errors: [{ message: error.message, extensions: { classification: error.classification } }],
+        })
+      );
     } else {
       console.error(error);
-      res.end(JSON.stringify({ data: null, errors: [{ message: String(error), extensions: { classification: "INTERNAL_ERROR" } }] }));
+      res.end(
+        JSON.stringify({
+          data: null,
+          errors: [{ message: String(error), extensions: { classification: "INTERNAL_ERROR" } }],
+        })
+      );
     }
   }
 }
@@ -988,7 +1352,7 @@ const { privateKey, publicKey } = await generateKeyPair("RS256", { extractable: 
 const publicJwk = { ...(await exportJWK(publicKey)), kid: KID, alg: "RS256", use: "sig" };
 const pendingCodes = new Map();
 
-const userClaims = persona => ({
+const userClaims = (persona) => ({
   sub: persona.sub,
   name: persona.name,
   email: persona.email,
@@ -1038,19 +1402,25 @@ async function handleToken(body, res) {
   }
   const { persona, nonce } = pending;
   res.writeHead(200, { "content-type": "application/json" });
-  res.end(JSON.stringify({
-    access_token: await signJwt(persona, {
-      ...userClaims(persona),
-      typ: "Bearer",
-      azp: CLIENT_ID,
-      resource_access: { [CLIENT_ID]: { roles: persona.roles } },
-    }, "account"),
-    id_token: await signJwt(persona, { ...userClaims(persona), ...(nonce ? { nonce } : {}) }, CLIENT_ID),
-    refresh_token: `refresh-${randomUUID()}`,
-    token_type: "Bearer",
-    expires_in: TOKEN_TTL,
-    scope: "openid profile email",
-  }));
+  res.end(
+    JSON.stringify({
+      access_token: await signJwt(
+        persona,
+        {
+          ...userClaims(persona),
+          typ: "Bearer",
+          azp: CLIENT_ID,
+          resource_access: { [CLIENT_ID]: { roles: persona.roles } },
+        },
+        "account"
+      ),
+      id_token: await signJwt(persona, { ...userClaims(persona), ...(nonce ? { nonce } : {}) }, CLIENT_ID),
+      refresh_token: `refresh-${randomUUID()}`,
+      token_type: "Bearer",
+      expires_in: TOKEN_TTL,
+      scope: "openid profile email",
+    })
+  );
 }
 
 // --- tus ------------------------------------------------------------------------------------------------------------
@@ -1061,21 +1431,30 @@ function handleTus(req, path, body, res) {
   const persona = personaOf(req);
 
   if (req.method === "OPTIONS") {
-    res.writeHead(204, {
-      ...headers,
-      "tus-version": "1.0.0",
-      "tus-extension": "creation,termination",
-      "tus-max-size": "53687091200",
-    }).end();
+    res
+      .writeHead(204, {
+        ...headers,
+        "tus-version": "1.0.0",
+        "tus-extension": "creation,termination",
+        "tus-max-size": "53687091200",
+      })
+      .end();
   } else if (!persona || !isMember(persona)) {
-    res.writeHead(403, { "content-type": "application/json" }).end(JSON.stringify({
-      code: "FORBIDDEN",
-      message: "Du har inte behörighet att göra det.",
-    }));
+    res.writeHead(403, { "content-type": "application/json" }).end(
+      JSON.stringify({
+        code: "FORBIDDEN",
+        message: "Du har inte behörighet att göra det.",
+      })
+    );
   } else if (req.method === "POST") {
     const upload = randomUUID();
-    const metadata = Object.fromEntries((req.headers["upload-metadata"] ?? "").split(",").filter(Boolean)
-      .map(pair => pair.trim().split(" ")).map(([key, value]) => [key, Buffer.from(value ?? "", "base64").toString("utf8")]));
+    const metadata = Object.fromEntries(
+      (req.headers["upload-metadata"] ?? "")
+        .split(",")
+        .filter(Boolean)
+        .map((pair) => pair.trim().split(" "))
+        .map(([key, value]) => [key, Buffer.from(value ?? "", "base64").toString("utf8")])
+    );
 
     state.uploads.set(upload, {
       name: metadata.filename ?? "upload",
@@ -1088,12 +1467,14 @@ function handleTus(req, path, body, res) {
   } else if (req.method === "HEAD") {
     const upload = state.uploads.get(id);
 
-    res.writeHead(200, {
-      ...headers,
-      "upload-offset": String(upload.offset),
-      "upload-length": String(upload.length),
-      "cache-control": "no-store",
-    }).end();
+    res
+      .writeHead(200, {
+        ...headers,
+        "upload-offset": String(upload.offset),
+        "upload-length": String(upload.length),
+        "cache-control": "no-store",
+      })
+      .end();
   } else if (req.method === "PATCH") {
     const upload = state.uploads.get(id);
 
@@ -1113,14 +1494,16 @@ function handleTus(req, path, body, res) {
 
 const server = createServer((req, res) => {
   const chunks = [];
-  req.on("data", chunk => chunks.push(chunk));
-  req.on("end", () => handle(req, res, chunks).catch(error => {
-    // A broken handler answers 500 instead of taking the mock down for every later test
-    console.error(error);
-    if (!res.headersSent) {
-      res.writeHead(500).end();
-    }
-  }));
+  req.on("data", (chunk) => chunks.push(chunk));
+  req.on("end", () =>
+    handle(req, res, chunks).catch((error) => {
+      // A broken handler answers 500 instead of taking the mock down for every later test
+      console.error(error);
+      if (!res.headersSent) {
+        res.writeHead(500).end();
+      }
+    })
+  );
 });
 
 async function handle(req, res, chunks) {
@@ -1141,7 +1524,9 @@ async function handle(req, res, chunks) {
     const persona = personaOf(req) ?? PERSONAS[currentPersona];
     res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify(userClaims(persona)));
   } else if (path.endsWith("/protocol/openid-connect/logout")) {
-    res.writeHead(302, { location: url.searchParams.get("post_logout_redirect_uri") || `http://localhost:${PORT}/` }).end();
+    res
+      .writeHead(302, { location: url.searchParams.get("post_logout_redirect_uri") || `http://localhost:${PORT}/` })
+      .end();
   } else if (req.method === "POST" && path === "/__reset") {
     resetState();
     currentPersona = "admin";
@@ -1161,9 +1546,11 @@ async function handle(req, res, chunks) {
     res.writeHead(204).end();
   } else if (req.method === "POST" && path === "/__process") {
     // Immich finishes every item it is processing
-    state.items.filter(i => i.status === "PROCESSING").forEach(i => {
-      i.status = "READY";
-    });
+    state.items
+      .filter((i) => i.status === "PROCESSING")
+      .forEach((i) => {
+        i.status = "READY";
+      });
     res.writeHead(204).end();
   } else if (req.method === "POST" && path === "/__fill") {
     // More items in an album, taken after those it has, e.g. for the editor's pages
@@ -1172,17 +1559,30 @@ async function handle(req, res, chunks) {
     for (let i = 0; i < count; i++) {
       const n = state.nextId++;
 
-      state.items.push(item(n, null, { albumId, takenAt: `2030-01-01T00:${String(Math.floor(i / 60)).padStart(2, "0")}:${String(i % 60).padStart(2, "0")}`, caption: `Fyllnad ${i + 1}` }));
+      state.items.push(
+        item(n, null, {
+          albumId,
+          takenAt: `2030-01-01T00:${String(Math.floor(i / 60)).padStart(2, "0")}:${String(i % 60).padStart(2, "0")}`,
+          caption: `Fyllnad ${i + 1}`,
+        })
+      );
     }
     res.writeHead(204).end();
   } else if (req.method === "POST" && path === "/__settings") {
     Object.assign(state.settings, JSON.parse(body));
     res.writeHead(204).end();
   } else if (req.method === "GET" && path === "/__state") {
-    res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify({
-      uploads: state.uploads.size, albums: state.albums, items: state.items, reports: state.reports,
-      suggestions: state.suggestions, settings: state.settings, smartSearches: state.smartSearches,
-    }));
+    res.writeHead(200, { "content-type": "application/json" }).end(
+      JSON.stringify({
+        uploads: state.uploads.size,
+        albums: state.albums,
+        items: state.items,
+        reports: state.reports,
+        suggestions: state.suggestions,
+        settings: state.settings,
+        smartSearches: state.smartSearches,
+      })
+    );
   } else if (path === "/api/uploads" || path.startsWith("/api/uploads/")) {
     handleTus(req, path, rawBody, res);
   } else if (req.method === "GET" && /^\/api\/albums\/[^/]+\/zip$/.test(path)) {
@@ -1192,22 +1592,27 @@ async function handle(req, res, chunks) {
       res.writeHead(403).end();
       return;
     }
-    res.writeHead(200, { "content-type": "application/zip", "content-disposition": "attachment; filename=\"album.zip\"" })
+    res
+      .writeHead(200, { "content-type": "application/zip", "content-disposition": 'attachment; filename="album.zip"' })
       .end(Buffer.from("PK\u0005\u0006" + "\u0000".repeat(18), "binary"));
   } else if (req.method === "OPTIONS" && path.startsWith("/a/")) {
     // As nginx answers a preflight (the tests' extra headers cause one)
-    res.writeHead(204, {
-      "access-control-allow-origin": "*",
-      "access-control-allow-methods": "GET, HEAD, OPTIONS",
-      "access-control-allow-headers": req.headers["access-control-request-headers"] ?? "*",
-    }).end();
+    res
+      .writeHead(204, {
+        "access-control-allow-origin": "*",
+        "access-control-allow-methods": "GET, HEAD, OPTIONS",
+        "access-control-allow-headers": req.headers["access-control-request-headers"] ?? "*",
+      })
+      .end();
   } else if (req.method === "GET" && path.startsWith("/a/")) {
     // The media server: every photo is the same small PNG; videos are not served
     if (path.includes("/video/")) {
       res.writeHead(404, { "access-control-allow-origin": "*" }).end();
       return;
     }
-    res.writeHead(200, { "content-type": "image/png", "access-control-allow-origin": "*", "cache-control": "no-store" }).end(PNG);
+    res
+      .writeHead(200, { "content-type": "image/png", "access-control-allow-origin": "*", "cache-control": "no-store" })
+      .end(PNG);
   } else if (req.method === "POST" && path.includes("/api/graphql")) {
     handleGraphql(req, body, res);
   } else {

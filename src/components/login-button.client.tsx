@@ -15,7 +15,10 @@ export function LoginButton({ size = "sm", compact = false }: { size?: "sm" | "d
   const pathname = usePathname();
 
   return (
-    <a href={loginHref(pathname)} className={buttonVariants({ size })}>
+    <a
+      href={loginHref(pathname)}
+      className={buttonVariants({ size })}
+    >
       <LogIn aria-hidden /> <span className={compact ? "max-sm:sr-only" : undefined}>{t("login")}</span>
     </a>
   );
